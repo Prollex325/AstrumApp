@@ -1,5 +1,4 @@
-﻿
-using AstrumApp.Services;
+﻿using AstrumApp.Services;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,6 +6,7 @@ namespace AstrumApp.Controls
 {
     public partial class RightPanel : UserControl
     {
+        private string apiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY")!;
         public RightPanel()
         {
             InitializeComponent();
@@ -16,10 +16,9 @@ namespace AstrumApp.Controls
         private async void RightPanelLoaded(object? sender, RoutedEventArgs e)
         {
             var weatherService = new WeatherService();
-            Dictionary<string, object> weather = await weatherService.GetWeather("Almaty", "");
+            Dictionary<string, object> weather = await weatherService.GetWeather("Almaty", apiKey);
             if (weather == null)
-            {
-            }
+            { return;  }
             TextFilling(weather);
         }
 

@@ -2,6 +2,8 @@
 using AstrumApp.Session;
 using AstrumApp.Security;
 using System.Windows;
+using DotNetEnv;
+
 
 namespace AstrumApp
 {
@@ -26,6 +28,8 @@ namespace AstrumApp
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            Env.Load();
 
             await Supabase.InitializeAsync();
 

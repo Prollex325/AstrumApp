@@ -27,3 +27,8 @@ publish/
 
 # Visual Studio publish profiles
 **/Properties/PublishProfiles/
+
+# env
+.env
+.env.*
+!.env.example

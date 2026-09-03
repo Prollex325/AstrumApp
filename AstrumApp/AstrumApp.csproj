@@ -79,6 +79,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="Supabase" Version="1.6.0" />
     <PackageReference Include="zxcvbn-core" Version="7.0.92" />
   </ItemGroup>
