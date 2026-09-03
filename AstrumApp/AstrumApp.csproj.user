@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_LastSelectedProfileId>D:\VisualStudioProjects\AstrumApp\Properties\PublishProfiles\FolderProfile1.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Apps\Authentication\BioPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Authentication\LoginPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Authentication\MainAuthWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Authentication\RegistrationPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\AvatarEdit.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\NotFoundPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\ProfilePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\LeftPanel.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\ProfileEdit.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\Security\ChangePinPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\Security\CreatePinPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\Security\DeletePinPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\Security\PinSettingsPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\SecurityPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MenuControls\System.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Apps\Settings\MainSettingsPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\BreadcrumbControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\DragAndDrop.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\InputField.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\NotificationControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\SecurityCard.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="DesktopWidget.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MessageWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

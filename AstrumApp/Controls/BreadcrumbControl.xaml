@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="AstrumApp.Controls.BreadcrumbControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AstrumApp.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="720">
+    <Grid>
+        <ItemsControl ItemsSource="{Binding BreadcrumbItems}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" FontSize="26" FontWeight="SemiBold" Foreground="{Binding Foreground}" Margin="20,15,0,18"
+                                   MouseLeftButtonDown="OpenPage" Cursor="Hand" IsHitTestVisible="{Binding IsHitTestVisible}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Opacity" Value="0.9"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="1"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Path Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="3" StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" Margin="20 30 10 0"
+                              Visibility="{Binding Visible}"/>
+                    </StackPanel>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

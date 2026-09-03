@@ -1,0 +1,86 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\add.png" />
+    <None Remove="Assets\customer.png" />
+    <None Remove="Assets\desktop.png" />
+    <None Remove="Assets\dialogs\error.png" />
+    <None Remove="Assets\dialogs\info.png" />
+    <None Remove="Assets\dialogs\warning.png" />
+    <None Remove="Assets\game.png" />
+    <None Remove="Assets\icons\default-icon.png" />
+    <None Remove="Assets\icons\edit.png" />
+    <None Remove="Assets\icons\Navigator\customer.png" />
+    <None Remove="Assets\icons\Navigator\setting-lines.png" />
+    <None Remove="Assets\icons\settings\password.png" />
+    <None Remove="Assets\lock-screen.png" />
+    <None Remove="Assets\setting-lines.png" />
+    <None Remove="Assets\user.png" />
+    <None Remove="Assets\wallpapers\desktop.png" />
+    <None Remove="Assets\wallpapers\lock-screen.png" />
+    <None Remove="Assets\wallpapers\sample-5s.mp4" />
+    <None Remove="Assets\wallpapers\video.mp4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\dialogs\error.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\dialogs\info.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\dialogs\warning.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\default-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\edit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\Navigator\apps.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\Navigator\customer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\Navigator\games.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\Navigator\setting-lines.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icons\settings\password.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\user\default_avatar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\wallpapers\desktop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\wallpapers\lock-screen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\wallpapers\sample-5s.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\wallpapers\video.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Supabase" Version="1.6.0" />
+    <PackageReference Include="zxcvbn-core" Version="7.0.92" />
+  </ItemGroup>
+
+</Project>

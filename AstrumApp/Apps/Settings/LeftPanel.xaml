@@ -1,0 +1,149 @@
+﻿<UserControl x:Class="AstrumApp.Apps.Settings.LeftPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AstrumApp.Apps.Settings"
+             mc:Ignorable="d" 
+             d:DesignHeight="585" d:DesignWidth="320">
+
+    <UserControl.Resources>
+
+        <Style x:Key="HoverBorderStyle" TargetType="Border">
+            <Setter Property="Cursor" Value="Hand"/>
+            
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#FF141B22"/>
+                </Setter.Value>
+            </Setter>
+            
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF1E2730" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF141B22" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="HoverListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="#FF141B22" />
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid Margin="10 0 0 0" x:Name="Root">
+                            <VisualStateManager.VisualStateGroups>
+
+                                <VisualStateGroup x:Name="SelectionStates">
+
+                                    <VisualState x:Name="Unselected">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                    <VisualState x:Name="Selected">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FF2A3A4A" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                </VisualStateGroup>
+
+                            </VisualStateManager.VisualStateGroups>
+                            
+                            <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="10" CornerRadius="10">
+                                <Grid>
+                                    <ContentPresenter />
+                                    <TextBlock x:Name="ComingSoonText" Text="В разработке" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                               Margin="0,4,4,0" Foreground="DodgerBlue" FontSize="11" FontWeight="SemiBold" Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="SelectionIndicator" CornerRadius="3" Background="#FF1D79D6" Opacity="0" HorizontalAlignment="Left" Height="30" Width="6" Margin="-3 0 0 0">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="IndicatorTransform"/>
+                                </Border.RenderTransform>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF1E2730" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF141B22" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="ComingSoonText" Property="Visibility" Value="Visible"/>
+
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Background="#FF141B22">
+        <StackPanel Margin="0 10 0 0">
+            <Border Margin="5 10 5 0" CornerRadius="10" Height="120" Style="{StaticResource HoverBorderStyle}" MouseUp="Border_MouseUp" MouseDown="Border_MouseDown">
+                <Grid>
+                    <Image x:Name="UserAvatar" Width="100" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" 
+                           Margin="10 10 0 0" Source="{Binding Avatar}"/>
+                    <TextBlock Text="{Binding Username}" FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="120 30 0 0"/>
+                    <TextBlock Text="{Binding Email}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="120 60 0 0"/>
+                </Grid>
+            </Border>
+            
+            <ListBox x:Name="SettingsItems" Margin="15 20 5 0" Background="Transparent" BorderThickness="0" Foreground="White" FontSize="24"
+                     FontWeight="Bold" ItemContainerStyle="{StaticResource HoverListBoxItemStyle}" SelectionChanged="SettingsItems_SelectionChanged">
+                <ListBoxItem Content="Профиль" MouseLeftButtonUp="ProfileButton_Click"/>
+                <ListBoxItem Content="Безопасность" MouseLeftButtonUp="SecurityButton_Click"/>
+                <ListBoxItem Content="Уведомления" IsEnabled="False"/>
+                <ListBoxItem Content="О системе" MouseLeftButtonUp="SystemInfoButton_Click"/>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</UserControl>
