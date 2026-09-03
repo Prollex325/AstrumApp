@@ -24,3 +24,6 @@ Thumbs.db
 
 # Publish
 publish/
+
+# Visual Studio publish profiles
+**/Properties/PublishProfiles/
