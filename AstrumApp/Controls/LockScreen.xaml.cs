@@ -189,6 +189,7 @@ namespace AstrumApp.Controls
 
         private async Task ShowGreetingTitle()
         {
+            Debug.WriteLine(App.Security.Pin.HasPin());
             if (!App.Security.Pin.HasPin())
             {
                 _ = LiftLockScreenAsync(0);
@@ -213,7 +214,7 @@ namespace AstrumApp.Controls
         {
             await Task.Delay(delay);
 
-            App.LiftLockScreen();
+            App.Unlock();
         }
 
         private async Task IncorrectPassword()

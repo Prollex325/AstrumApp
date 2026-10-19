@@ -39,5 +39,10 @@ namespace AstrumApp.Apps.Authentication
         {
             Main.Navigate(new LoginPage());
         }
+
+        public void CloseAuth()
+        {
+            if (App.Current.MainWindow is MainWindow main) main.navdesktop();
+        }
     }
 }

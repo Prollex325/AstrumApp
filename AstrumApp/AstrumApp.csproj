@@ -6,78 +6,31 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ProjectGuid>{0DDFDE19-DD33-9AA2-A0D9-1DCFA1AD4216}</ProjectGuid>
   </PropertyGroup>
 
+  <!-- Конфигурация файла переменных окружения -->
   <ItemGroup>
-    <None Remove="Assets\add.png" />
-    <None Remove="Assets\customer.png" />
-    <None Remove="Assets\desktop.png" />
-    <None Remove="Assets\dialogs\error.png" />
-    <None Remove="Assets\dialogs\info.png" />
-    <None Remove="Assets\dialogs\warning.png" />
-    <None Remove="Assets\game.png" />
-    <None Remove="Assets\icons\default-icon.png" />
-    <None Remove="Assets\icons\edit.png" />
-    <None Remove="Assets\icons\Navigator\customer.png" />
-    <None Remove="Assets\icons\Navigator\setting-lines.png" />
-    <None Remove="Assets\icons\settings\password.png" />
-    <None Remove="Assets\lock-screen.png" />
-    <None Remove="Assets\setting-lines.png" />
-    <None Remove="Assets\user.png" />
-    <None Remove="Assets\wallpapers\desktop.png" />
-    <None Remove="Assets\wallpapers\lock-screen.png" />
-    <None Remove="Assets\wallpapers\sample-5s.mp4" />
-    <None Remove="Assets\wallpapers\video.mp4" />
+    <None Remove=".env" />
+    <Content Include=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
+  <!-- Управление ресурсами картинок и медиа (Assets) -->
   <ItemGroup>
-    <Content Include="Assets\dialogs\error.png">
+    <None Remove="Assets\**" />
+    <Content Include="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\dialogs\info.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dialogs\warning.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\default-icon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\edit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\Navigator\apps.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\Navigator\customer.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\Navigator\games.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\Navigator\setting-lines.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\icons\settings\password.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\user\default_avatar.png">
+    <!-- Особое правило для аватара, у вас там стояло Always -->
+    <Content Update="Assets\user\default_avatar.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\wallpapers\desktop.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\wallpapers\lock-screen.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\wallpapers\sample-5s.mp4">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\wallpapers\video.mp4">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
+  <!-- Подключенные NuGet пакеты -->
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="Supabase" Version="1.6.0" />

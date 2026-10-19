@@ -12,6 +12,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using AstrumApp.Services;
+using AstrumApp.AuthManager;
 
 namespace AstrumApp.Apps.Authentication
 {
@@ -29,7 +30,8 @@ namespace AstrumApp.Apps.Authentication
 
             RegistrationButton.IsEnabled = false;
 
-            AuthResult result = await App.Supabase.UserRegistration(name, bio);
+            AuthResult result = await App.Supabase.Registration(name, bio);
+
 
             if (!result.Success)
             {
@@ -39,6 +41,8 @@ namespace AstrumApp.Apps.Authentication
             }
 
             App.Notifications.Show("Успешная регистрация", CardTypes.Success);
+
+            MainAuthWindow.Instance.CloseAuth();
         }
 
         private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

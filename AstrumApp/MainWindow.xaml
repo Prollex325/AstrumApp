@@ -20,16 +20,18 @@
                 <TranslateTransform X="300" Y="20"/>
             </controls:RightPanel.RenderTransform>
         </controls:RightPanel>
+
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+
         <controls:LockScreen x:Name="LockScreenControl" Visibility="Visible">
             <controls:LockScreen.RenderTransform>
                 <TranslateTransform X="0" Y="0"/>
             </controls:LockScreen.RenderTransform>
         </controls:LockScreen>
 
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Hidden"/>
 
-        <controls:NotificationControl HorizontalAlignment="Right" VerticalAlignment="Stretch"
-                                      Margin="0, 0, 0, 50"/>
+        <controls:NotificationControl HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0, 0, 0, 50"/>
 
         <Rectangle x:Name="BlackoutMask" Fill="Black" Opacity="0.5" Visibility="Hidden"/>   
     </Grid>

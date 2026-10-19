@@ -2,16 +2,20 @@
 using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace AstrumApp.Services
 {
     public class WeatherService
     {
-        public async Task<Dictionary<string, object>?> GetWeather(string city, string apiKey)
+        private readonly string _apiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY")!;
+        public WeatherService() 
         {
-            string response = await GetRawWeather(city, apiKey);
+        }
+
+        public async Task<Dictionary<string, object>?> GetWeather(string city)
+        {
+            string response = await GetRawWeather(city);
 
             if (response == null)
             {
@@ -23,13 +27,14 @@ namespace AstrumApp.Services
 
             return parsed;
         }
-        private static async Task<string?> GetRawWeather(string city, string apiKey)
+        private async Task<string?> GetRawWeather(string city)
         {
             using HttpClient client = new();
-
+            
             try
             {
-                string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}&units=metric&lang=ru";
+                
+                string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric&lang=ru";
 
                 return await client.GetStringAsync(url);
             }

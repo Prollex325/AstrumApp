@@ -1,8 +1,10 @@
-﻿using AstrumApp.Services;
-using AstrumApp.Session;
+﻿using AstrumApp.AuthManager;
 using AstrumApp.Security;
-using System.Windows;
+using AstrumApp.Services;
+using AstrumApp.Session;
 using DotNetEnv;
+using System.Diagnostics;
+using System.Windows;
 
 
 namespace AstrumApp
@@ -19,10 +21,10 @@ namespace AstrumApp
 
         public static SupabaseService Supabase { get; private set; } = new();
 
-        public static void LiftLockScreen()
+        public static void Unlock()
         {
             if (Current.MainWindow is MainWindow main)
-                main.LockScreen_Lifting();
+                main.Unlock();
         }
 
         protected override async void OnStartup(StartupEventArgs e)
@@ -31,9 +33,16 @@ namespace AstrumApp
 
             Env.Load();
 
-            await Supabase.InitializeAsync();
+            bool authorized = await Supabase.Initialize();
 
-            //await Supabase.UserLogin();
+            var main = new MainWindow();
+
+            MainWindow = main;
+
+            if (!authorized)
+                main.OpenAuthPage();
+
+            main.Show();
         }
     }
 }

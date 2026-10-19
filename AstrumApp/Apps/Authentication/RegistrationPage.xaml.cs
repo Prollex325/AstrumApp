@@ -40,13 +40,16 @@ namespace AstrumApp.Apps.Authentication
 
             _ = EmailTextBox.RaiseSuccess("");
 
-            App.Supabase.SaveUserData(email, password);
+            App.Supabase.SaveData(email, password);
 
             MainAuthWindow.Instance?.NavigateToBio();
         }
 
         private bool IsValidEmail(string email)
         {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
             try
             {
                 var address = new MailAddress(email);

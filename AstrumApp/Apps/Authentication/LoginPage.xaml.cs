@@ -1,5 +1,6 @@
 ﻿using AstrumApp.Apps.Settings;
 using AstrumApp.Services;
+using AstrumApp.AuthManager;
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
@@ -13,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AstrumApp.Apps.Authentication
 {
@@ -47,7 +47,7 @@ namespace AstrumApp.Apps.Authentication
 
             try
             {
-                AuthResult result = await App.Supabase.UserLogin(email, password);
+                AuthResult result = await App.Supabase.Login(email, password);
 
                 if (!result.Success)
                 {
@@ -90,8 +90,8 @@ namespace AstrumApp.Apps.Authentication
                 PasswordBox.RaiseError("");
 
                 App.Notifications.Show("Авторизация успешна", CardTypes.Success);
-                MainWindow mw = App.Current.MainWindow as MainWindow;
-                mw?.MainFrame.Visibility = Visibility.Collapsed;
+
+                MainAuthWindow.Instance.CloseAuth();
             }
             finally
             {

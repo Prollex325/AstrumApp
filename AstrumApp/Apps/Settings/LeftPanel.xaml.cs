@@ -1,6 +1,7 @@
 ﻿using AstrumApp.Services;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -16,6 +17,16 @@ namespace AstrumApp.Apps.Settings
         public LeftPanel()
         {
             InitializeComponent();
+
+            Loaded += (s, e) => 
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    SettingsItems.SelectedIndex = 0;
+                    SettingsItems_SelectionChanged(s, new SelectionChangedEventArgs(Selector.SelectionChangedEvent, new List<object>(),
+                                                      new List<object>()));
+                }));
+            };
 
             this.DataContext = App.Session.Profile;
         }

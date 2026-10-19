@@ -1,4 +1,5 @@
 ﻿using AstrumApp.Apps.Settings;
+using AstrumApp.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,12 +12,10 @@ using System.Windows.Media.Imaging;
 
 namespace AstrumApp.Profile
 {
-    // Сделать сохранение в базу данных
     public class UserProfileViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged(string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         private bool isEditing = false;
 
         private UserProfile _profile = new UserProfile();
@@ -26,6 +25,8 @@ namespace AstrumApp.Profile
         public string Bio => _profile.Bio;
         public string Email => _profile.Email;
         public ImageSource Avatar => _profile.Avatar;
+        public string RegisteredAt { get; set; } = "NULL";
+        public string UpdatedAt { get; set; } = "NULL";
 
         public bool HasChanges { get; set; } = false;
 
@@ -83,10 +84,22 @@ namespace AstrumApp.Profile
             }
         }
 
-        public void UpdateAvatar(string avatarPath, ImageSource avatar)
+        public UserProfileViewModel(string username, string bio, string email, ImageSource avatar)
+        {
+            _profile = new UserProfile
+            {
+                Username = username,
+                Bio = bio,
+                Email = email,
+                Avatar = avatar
+            };
+            _draft = Clone(_profile);
+        }
+
+        public void UpdateAvatar(string avatarPath, BitmapSource avatar)
         {
             PendingAvatar = avatar;
-            _draft.AvatarPath = avatarPath;
+            //_draft.AvatarPath = avatarPath;
             CheckChanges();
         }
 
@@ -100,9 +113,12 @@ namespace AstrumApp.Profile
         public void Save()
         {
             _profile = Clone(_draft);
+
+            UpdatedAt = StringFormatService.FormatTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
             OnPropertyChanged();
 
-            SaveBitmap((BitmapSource)_profile.Avatar, _profile.AvatarPath);
+            SaveBitmap((BitmapSource)_profile.Avatar, AppPaths.AvatarPath); 
 
             EndEdit();
         }
@@ -124,7 +140,7 @@ namespace AstrumApp.Profile
             return isEditing;
         }
 
-        private void SaveBitmap(BitmapSource source, string filePath)
+        public void SaveBitmap(BitmapSource source, string filePath)
         {
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(source));
@@ -162,22 +178,10 @@ namespace AstrumApp.Profile
     }
     public class UserProfile
     {
-        private static readonly ImageSource DefaultAvatar = CreateFrozenImage( "pack://application:,,,/Assets/user/default_avatar.png");
-
         private string _username = "Имя пользователя";
         private string _bio = "биография";
         private string _email = "example@example.com";
-        private ImageSource _avatar;
-
-        public string AvatarPath { get; set; }
-
-        public UserProfile()
-        {
-            AvatarPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                      "AstrumApp", "user", "avatar.png");
-
-            _avatar = File.Exists(AvatarPath) ? CreateFrozenImage(AvatarPath) : DefaultAvatar;
-        }
+        private ImageSource _avatar = new BitmapImage(new Uri(AppPaths.DefaultAvatarPath));
 
         public string Username 
         { 

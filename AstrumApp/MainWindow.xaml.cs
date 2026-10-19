@@ -19,6 +19,16 @@ namespace AstrumApp
         {
             InitializeComponent();
 
+            ContentRendered += (s, e) =>
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    UseLayoutRounding = false;
+                    UseLayoutRounding = true;
+
+                }, DispatcherPriority.Background); // чтоб мыла не было
+            };
+
             Loaded += (s, e) =>
             {
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -26,30 +36,32 @@ namespace AstrumApp
                     //widget = new DesktopWidget();
                     //widget.Show();
                 }));
-                //DesktopControl.Visibility = Visibility.Visible;
-                //LeftPanelControl.Visibility = Visibility.Visible;
-                //RightPanelControl.Visibility = Visibility.Visible;
 
-
-                //RightPanel_Moving();
-
-                Dispatcher.BeginInvoke(() =>
-                {
-                    UseLayoutRounding = false;
-                    UseLayoutRounding = true;
-                }, DispatcherPriority.Render); // чтоб мыла не было
+                
             };
 
+            //MainFrame.Navigate(new Desktop());
             //MainFrame.Navigate(new LockScreen());
-            //MainFrame.Navigate(new MainAuthWindow()); // todo очень важно сделать позже если supabase ответит ошибкой после биографией отправлять на страницу регистрации!!!
+            //MainFrame.Navigate(new MainAuthWindow()); //TODO очень важно сделать позже если supabase ответит ошибкой после биографией отправлять на страницу регистрации!!!
             //MainFrame.Navigate(new MainSettingsPage());
-            opensets();
+            //opensets();
         }
 
         public void opensets()
         {
             MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(new MainSettingsPage());
+        }
+
+        public void navdesktop()
+        {
+            AuthFrame.Visibility = Visibility.Hidden;
+        }
+
+        public void OpenAuthPage()
+        {
+            AuthFrame.Visibility = Visibility.Visible;
+            AuthFrame.Navigate(new MainAuthWindow());
         }
 
         public void ShowBlackoutMask()
@@ -88,7 +100,7 @@ namespace AstrumApp
             BlackoutMask.BeginAnimation(UIElement.OpacityProperty, animation);
         }
 
-        public void LockScreen_Lifting()
+        public void Unlock()
         {
             var lockScreenTransform = LockScreenControl.RenderTransform as TranslateTransform;
 

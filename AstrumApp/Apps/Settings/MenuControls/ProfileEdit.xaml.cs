@@ -32,6 +32,9 @@ namespace AstrumApp.Apps.Settings.MenuControls
             profile.Save();
             isSaved = true;
 
+            App.Session.UpdateSupabase();
+            _ = App.Session.UpdateAvatar();
+
             App.Navigation.Back();
 
             App.Notifications.Show("Настройки сохранены!", CardTypes.Success);

@@ -62,7 +62,7 @@ namespace AstrumApp
         private async void DesktopLoaded(object? sender, RoutedEventArgs e)
         {
             var weatherService = new WeatherService();
-            Dictionary<string, object> weather = await weatherService.GetWeather("Almaty", "");
+            Dictionary<string, object> weather = await weatherService.GetWeather("Almaty");
             TextFilling(weather);
         }
 

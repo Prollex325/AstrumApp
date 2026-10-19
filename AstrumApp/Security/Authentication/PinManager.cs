@@ -24,7 +24,7 @@ namespace AstrumApp.Security.Authentication
 
         private IPinData _data;
         private HashService _hashService;
-        private RusStringFormatService rusFromat = new RusStringFormatService();
+        private StringFormatService rusFromat = new StringFormatService();
 
         private Brush _green = new SolidColorBrush(Color.FromRgb(46, 204, 113));
         private Brush _red = new SolidColorBrush(Color.FromRgb(224, 82, 82));

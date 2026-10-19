@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AstrumApp.Services
 {
-    public class RusStringFormatService
+    public class StringFormatService
     {
         public string Format(int value, string form1, string form2, string form3)
         {
@@ -24,6 +24,14 @@ namespace AstrumApp.Services
             {
                 return form3;
             }
+        }
+
+        public static string FormatTimestamp(long timestamp, string format = "dd.MM.yyyy HH:mm")
+        {
+            return DateTimeOffset
+                .FromUnixTimeMilliseconds(timestamp)
+                .ToLocalTime()
+                .ToString(format);
         }
     }
 }
