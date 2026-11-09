@@ -1,19 +1,31 @@
 ﻿using AstrumApp.Apps.Authentication;
 using AstrumApp.Apps.Settings;
-using AstrumApp.Controls;
+using AstrumApp.Services;
+using AstrumApp.Views;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+//TODO : консоль разработчика
 
+//TODO : изменение пароля (с защитой через пин) <-- Может быть
+//TODO : возможно устройства <-- Пока не надо
+//TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
+//TODO : выход из аккаунта и удаление аккаунта
+//TODO : управление аккаунтами
 namespace AstrumApp
 {
     public partial class MainWindow : Window
     {
-
         private DesktopWidget? widget;
+
+        private bool _startupStarted;
+
+        private StartupCoordinator? coordinator;
+        private MainAuthWindow authWindow;
+        private MainSettingsPage settingsPage;
 
         public MainWindow()
         {
@@ -36,32 +48,79 @@ namespace AstrumApp
                     //widget = new DesktopWidget();
                     //widget.Show();
                 }));
-
-                
             };
 
-            //MainFrame.Navigate(new Desktop());
-            //MainFrame.Navigate(new LockScreen());
-            //MainFrame.Navigate(new MainAuthWindow()); //TODO очень важно сделать позже если supabase ответит ошибкой после биографией отправлять на страницу регистрации!!!
-            //MainFrame.Navigate(new MainSettingsPage());
-            //opensets();
+            coordinator = new(StartupView, WelcomeView);
+
+            authWindow = new MainAuthWindow();
+            settingsPage = new MainSettingsPage();
+
+            ContentRendered += MainWindow_ContentRendered;
         }
 
-        public void opensets()
+        private async void MainWindow_ContentRendered(object? sender, EventArgs e)
+        {
+            if (_startupStarted) return;
+            _startupStarted = true;
+
+            try
+            {
+                // Даём загрузочному экрану немного времени появиться
+                await Task.Delay(200);
+
+                if (coordinator == null) return;
+
+                await coordinator.StartUpScenario();
+
+            }
+            catch (Exception ex)
+            {
+                // Здесь обработка ошибки запуска
+            }
+        }
+        public void CloseSettings()
+        {
+            MainFrame.Visibility = Visibility.Collapsed;
+            MainFrame.Content = null;
+        }
+        public void OpenSettings()
         {
             MainFrame.Visibility = Visibility.Visible;
-            MainFrame.Navigate(new MainSettingsPage());
+            MainFrame.Navigate(settingsPage);
+            settingsPage.ToStartWin();
         }
 
-        public void navdesktop()
+        public void NavigateToMain()
         {
-            AuthFrame.Visibility = Visibility.Hidden;
+            AuthFrame.Visibility = Visibility.Collapsed;
         }
 
-        public void OpenAuthPage()
+        public void NavigateToAuth(Apps.Authentication.NavigationPage page, string err = "")
         {
-            AuthFrame.Visibility = Visibility.Visible;
-            AuthFrame.Navigate(new MainAuthWindow());
+            if (!string.IsNullOrEmpty(err))
+            {
+                App.Notifications.Show(err, CardTypes.Error);
+            }
+            authWindow.SetStartPage(page);
+            AuthFrame.Navigate(authWindow);
+        }
+
+        public void NavigateToWelcome()
+        {
+            WelcomeView.Visibility = Visibility.Visible;
+        }
+
+        public void CloseStartupView()
+        {
+            StartupView.Visibility = Visibility.Collapsed;
+        }
+
+        public void CloseWelcomeView()
+        {
+            WelcomeView.Visibility = Visibility.Collapsed;
+
+            App.SettingsService.Settings.OnboardingVersion = 1;
+            _ = App.SettingsService.SaveAsync();
         }
 
         public void ShowBlackoutMask()

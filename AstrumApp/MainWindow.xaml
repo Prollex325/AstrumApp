@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AstrumApp"
+        xmlns:views="clr-namespace:AstrumApp.Views"
         xmlns:controls="clr-namespace:AstrumApp.Controls"
         xmlns:services="clr-namespace:AstrumApp.Services"
         xmlns:settings="clr-namespace:AstrumApp.Apps.Settings"
@@ -29,10 +30,13 @@
             </controls:LockScreen.RenderTransform>
         </controls:LockScreen>
 
-        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Hidden"/>
+        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Visible"/>
 
         <controls:NotificationControl HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0, 0, 0, 50"/>
-
-        <Rectangle x:Name="BlackoutMask" Fill="Black" Opacity="0.5" Visibility="Hidden"/>   
+        <views:WelcomeView x:Name="WelcomeView" Visibility="Collapsed" AutoPlayIntro="False"/>
+        
+        <views:StartupView x:Name="StartupView" Visibility="Visible"/>
+        
+        <Rectangle x:Name="BlackoutMask" Fill="Black" Opacity="0.5" Visibility="Hidden"/>
     </Grid>
 </Window>

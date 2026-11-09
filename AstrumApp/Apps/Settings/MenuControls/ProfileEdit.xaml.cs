@@ -29,11 +29,11 @@ namespace AstrumApp.Apps.Settings.MenuControls
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
-            profile.Save();
             isSaved = true;
 
-            App.Session.UpdateSupabase();
-            _ = App.Session.UpdateAvatar();
+            //App.Session.UpdateSupabase();
+            //_ = App.Session.UpdateAvatar();
+            _ = App.Session.SaveUserProfile();
 
             App.Navigation.Back();
 
@@ -42,7 +42,7 @@ namespace AstrumApp.Apps.Settings.MenuControls
 
         private void DiscardChanges_Click(object sender, RoutedEventArgs e)
         {
-            profile.Cancel();
+            App.Session.CancelChanges();
 
             App.Navigation.Back();
 

@@ -17,11 +17,13 @@ using System.Windows.Shapes;
 
 namespace AstrumApp.Apps.Authentication
 {
-    public partial class LoginPage : Page
+    public partial class LoginPage : UserControl
     {
         public LoginPage()
         {
             InitializeComponent();
+            EmailTextBox.RaiseError("");
+            PasswordBox.RaiseError("");
         }
 
         private async void AuthButton_Click(object sender, RoutedEventArgs e)
@@ -29,14 +31,24 @@ namespace AstrumApp.Apps.Authentication
             string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Text.Trim();
 
-            if (!IsValidEmail(email))
+            EmailTextBox.RaiseError(""); 
+            PasswordBox.RaiseError(""); 
+
+            if (string.IsNullOrEmpty(email))
+            {
+                App.Notifications.Show("Произошла ошибка", CardTypes.Error);
+                EmailTextBox.RaiseError("*Введите почту");
+                return;
+            }
+
+            if (!StringFormatService.IsValidEmail(email))
             {
                 App.Notifications.Show("Произошла ошибка", CardTypes.Error);
                 EmailTextBox.RaiseError("*Неверный формат почты");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrEmpty(password))
             {
                 App.Notifications.Show("Произошла ошибка", CardTypes.Error);
                 PasswordBox.RaiseError("*Введите пароль");
@@ -101,20 +113,12 @@ namespace AstrumApp.Apps.Authentication
 
         private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MainAuthWindow.Instance.NavigateToReg();
+            MainAuthWindow.Instance.NavigateToPage(NavigationPage.Registration, Directions.Left);
         }
 
-        private bool IsValidEmail(string email)
+        private void EmailBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            try
-            {
-                var address = new MailAddress(email);
-                return address.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
+            e.Handled = e.Text.Any(c => !StringFormatService.IsAllowedEmailChar(c));
         }
     }
 }

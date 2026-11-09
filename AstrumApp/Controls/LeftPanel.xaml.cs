@@ -90,8 +90,8 @@ namespace AstrumApp.Controls
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ((Border)sender).Opacity = 1;
-            MainWindow _mainWindow = Application.Current.MainWindow as MainWindow;
-            _mainWindow?.opensets();
+            if (App.Current.MainWindow is MainWindow _mainWindow)
+                _mainWindow.OpenSettings();
         }
 
         private void LeftPanel_Moving(double to)

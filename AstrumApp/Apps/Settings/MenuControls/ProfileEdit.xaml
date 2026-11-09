@@ -158,7 +158,7 @@
                                                  Width="350" MaxLength="16" Placeholder="Имя пользователя" Margin="0,0,0,20"/>
 
                             <controls:InputField TextContent="{Binding PendingEmail, UpdateSourceTrigger=PropertyChanged}" Width="350" 
-                                                 MaxLength="254" Placeholder="Почта" Margin="0,0,0,20"/>
+                                                 MaxLength="254" Placeholder="Почта" Margin="0,0,0,20" IsEnabled="False"/>
 
                             <controls:InputField TextContent="{Binding PendingBio, UpdateSourceTrigger=PropertyChanged}"
                                                  Width="350" Height="120" MaxLength="160" AcceptsReturn="True" Placeholder="О себе"
@@ -232,7 +232,8 @@
                             <StackPanel>
 
                                 <Border Width="200" Height="200" CornerRadius="100" BorderBrush="#33FFFFFF" BorderThickness="3">
-                                    <Image Source="{Binding PendingAvatar, UpdateSourceTrigger=PropertyChanged}" Stretch="UniformToFill"/>
+                                    <Image Source="{Binding PendingAvatar,
+                                        UpdateSourceTrigger=PropertyChanged}" Stretch="UniformToFill"/>
                                 </Border>
 
                                 <Button Width="150" Height="42" Content="Изменить" Foreground="White" BorderThickness="0" Click="EditAvatar_Click"

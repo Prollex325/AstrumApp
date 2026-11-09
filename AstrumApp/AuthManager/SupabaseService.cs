@@ -1,16 +1,18 @@
-﻿using Supabase;
+using AstrumApp.Profile;
+using AstrumApp.Services;
+using Supabase;
 using Supabase.Gotrue;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Policy;
-using System.Text;
+using System.Reactive;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using AuthSession = Supabase.Gotrue.Session;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using AuthUser = Supabase.Gotrue.User;
 using SupabaseClient = Supabase.Client;
 
@@ -18,43 +20,53 @@ namespace AstrumApp.AuthManager
 {
     public class SupabaseService
     {
-        private string SupabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL")!;
-        private string SupabaseKey = Environment.GetEnvironmentVariable("SUPABASE_KEY")!;
         public SupabaseClient? Client { get; private set; }
-        private string _email = string.Empty;
-        private string _password = string.Empty;
 
-        public async Task<bool> Initialize()
+        private AvatarStorageService? _avatarStorage;
+        private Dictionary<string, object> _userMetadata = new();
+
+
+        public bool PrepareClient()
         {
-            var options = new SupabaseOptions
+            var url = Environment.GetEnvironmentVariable("SUPABASE_URL")
+                ?? throw new InvalidOperationException("SUPABASE_URL не задан.");
+
+            var key = Environment.GetEnvironmentVariable("SUPABASE_KEY")
+                ?? throw new InvalidOperationException("SUPABASE_KEY не задан.");
+
+            try
             {
-                AutoRefreshToken = true,
-                AutoConnectRealtime = false
-            };
+                Client = new SupabaseClient(url, key, new SupabaseOptions
+                {
+                    AutoRefreshToken = true,
+                    AutoConnectRealtime = false
+                });
 
-            Client = new(
-                SupabaseUrl,
-                SupabaseKey,
-                options
-            );
+                Client.Auth.SetPersistence(new SessionStorage());
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
 
-            Client.Auth.SetPersistence(new SessionStorage());
+        public async Task<User?> RestoreSessionAsync()
+        {
+            if (Client == null)
+                return null;
 
             Client.Auth.LoadSession();
 
             await Client.InitializeAsync();
 
-            AuthUser? user = Client.Auth.CurrentUser;
-            bool isAuthenticated = user != null;
+            return Client.Auth.CurrentUser;
+        }
 
-            if (isAuthenticated)
-            {
-                ImageSource avatarImage = LoadAvatar(user);
 
-                App.Session.LoadFromSupabase(user, avatarImage);
-            }
+        public async Task ApplyUserAsync(User user)
+        {
+            _avatarStorage = new AvatarStorageService(Client);
 
-            return isAuthenticated;
+            await ApplyUser(user);
         }
 
         public async Task<AuthResult> Login(string email, string password)
@@ -65,58 +77,40 @@ namespace AstrumApp.AuthManager
                     throw new InvalidOperationException("Supabase client is not initialized.");
 
                 var response = await Client.Auth.SignIn(email, password);
-
-                if (response.User != null)
+                if (response?.User == null)
                 {
-                    AuthUser user = response.User;
-                    ImageSource avatarImage = LoadAvatar(user);
-                    App.Session.LoadFromSupabase(user, avatarImage);
+                    return new AuthResult
+                    {
+                        Success = false,
+                        ErrorCode = "401",
+                        Error = "Ошибка аутентификации"
+                    };
                 }
 
-                return new AuthResult{ Success = response.User != null };
+                await ApplyUserAsync(response.User);
+                return new AuthResult { Success = true };
             }
             catch (Supabase.Gotrue.Exceptions.GotrueException ex)
             {
-                Debug.WriteLine($"Supabase: {ex.Message}");
-
-                var error = JsonSerializer.Deserialize<SupabaseError>(ex.Message);
-
-                string errorMessage;
-
-                if (error != null)
+                var error = TryParseError(ex.Message);
+                var message = error?.ErrorCode switch
                 {
-                    switch (error.ErrorCode)
-                    {
-                        case "invalid_credentials":
-                            errorMessage = "Неверная почта или пароль";
-                            break;
-
-                        case "email_not_confirmed":
-                            errorMessage = "Почта не подтверждена";
-                            break;
-
-                        case "user_not_found":
-                            errorMessage = "Пользователь не найден";
-                            break;
-
-                        default:
-                            errorMessage = $"Код {error.Code}, {error.ErrorCode}";
-                            break;
-                    }
-                }
-                else errorMessage = ex.Message;
+                    "invalid_credentials" => "Неверная почта или пароль",
+                    "email_not_confirmed" => "Почта не подтверждена",
+                    "user_not_found" => "Пользователь не найден",
+                    _ => error == null ? ex.Message : $"Код {error.Code}, {error.ErrorCode}"
+                };
 
                 return new AuthResult
                 {
                     Success = false,
                     ErrorCode = error?.ErrorCode,
-                    Error = errorMessage
+                    Error = message
                 };
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка: {ex.Message}");
-
+                Debug.WriteLine($"Ошибка входа: {ex}");
                 return new AuthResult
                 {
                     Success = false,
@@ -126,75 +120,94 @@ namespace AstrumApp.AuthManager
             }
         }
 
-        public async Task<AuthResult> Registration(string name, string bio)
+        public async Task<string> FirstUploadAvatarAsync(string avatarPath)
+        {
+            string appPath = File.Exists(avatarPath) ? avatarPath : string.Empty;
+
+            string newStoragePath = string.Empty;
+            if (!string.IsNullOrEmpty(appPath))
+            {
+                newStoragePath = await UpdateAvatarAsync(appPath);
+            }
+
+            return newStoragePath;
+        }
+
+        public async Task<bool> UpdateAvatarPathAsync(string avatarPath)
+        {
+            if (Client == null)
+                throw new InvalidOperationException("Supabase client is not initialized.");
+
+            var attributes = new UserAttributes
+            {
+                Data = new Dictionary<string, object>
+                {
+                    ["avatar_path"] = avatarPath ?? string.Empty
+                }
+            };
+
+            var user = await Client.Auth.Update(attributes);
+
+            return user != null;
+        }
+
+        public async Task<AuthResult> Registration()
         {
             try
             {
+                if (Client == null)
+                    throw new InvalidOperationException("Supabase client is not initialized.");
+
+                var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                string _email = _userMetadata.GetValueOrDefault("email")?.ToString() ?? string.Empty;
+                string _password = _userMetadata.GetValueOrDefault("password")?.ToString() ?? string.Empty;
+                
+
+                _userMetadata["registered_at"] = now;
+                _userMetadata["updated_at"] = now;
+                _userMetadata["avatar_path"] = string.Empty;
+
+
+                _userMetadata.Remove("email");
+                _userMetadata.Remove("password");
+
                 var options = new SignUpOptions
                 {
-                    Data = new Dictionary<string, object>
-                    {
-                        ["display_name"] = name,
-                        ["bio"] = bio,
-                        ["registered_at"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                        ["updated_at"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                        ["avatar_path"] = string.Empty
-                    }
+                    Data = _userMetadata
                 };
 
-                var response = await Client.Auth.SignUp(
-                    _email,
-                    _password,
-                    options
-                );
+                Debug.WriteLine($"Attempting to register user with email: {_email}, metadata: {JsonSerializer.Serialize(_userMetadata)}");
 
-                if (response.User != null)
-                {
-                    AuthUser user = response.User;
-                    ImageSource avatarImage = LoadAvatar(user);
-                    App.Session.LoadFromSupabase(user, avatarImage);
-                }
+                var response = await Client.Auth.SignUp(_email, _password, options);
+                if (response?.User == null)
+                    return new AuthResult { Success = false };
 
-                    return new AuthResult { Success = response.User != null };
+                // При обязательном подтверждении почты регистрация НЕ равна входу.
+                // Подключаем профиль лишь тогда, когда SDK действительно имеет сессию.
+                if (Client.Auth.CurrentUser != null)
+                    _ = ApplyUserAsync(Client.Auth.CurrentUser);
+
+                return new AuthResult { Success = true };
             }
             catch (Supabase.Gotrue.Exceptions.GotrueException ex)
             {
-                Debug.WriteLine($"Supabase: {ex.Message}");
-
-                // Supabase: {"code":400,"error_code":"validation_failed","msg":"Signup requires a valid password"}
-                // {"code":422,"error_code":"weak_password","msg":"Password should be at least 6 characters.","weak_password":{"reasons":["length"]}}
-
-                var error = JsonSerializer.Deserialize<SupabaseError>(ex.Message);
-
-                string errorMessage = string.Empty;
-
-                if (error != null)
+                var error = TryParseError(ex.Message);
+                var message = error?.Code switch
                 {
-                    switch (error.Code)
-                    {
-                        case 400:
-                            errorMessage = "Пароль недействительный";
-                            break;
-                        case 422:
-                            errorMessage = "Минимальная длина пароля 6 символов";
-                            break;
-                        default:
-                            errorMessage = $"Код {error.Code}, {error.ErrorCode}";
-                            break;
-                    }
-                }
-                else errorMessage = ex.Message;
+                    400 => "Пароль недействительный",
+                    422 => "Минимальная длина пароля 6 символов",
+                    _ => error == null ? ex.Message : $"Код {error.Code}, {error.ErrorCode}"
+                };
 
                 return new AuthResult
                 {
                     Success = false,
-                    Error = errorMessage
+                    Error = message
                 };
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка: {ex.Message}");
-
+                Debug.WriteLine($"Ошибка регистрации: {ex}");
                 return new AuthResult
                 {
                     Success = false,
@@ -203,128 +216,104 @@ namespace AstrumApp.AuthManager
             }
         }
 
-        public void SaveData(string email, string password)
+
+        private async Task ApplyUser(AuthUser user)
         {
-            _email = email;
-            _password = password;
+            if (_avatarStorage == null || user == null) return;
+
+            var metadata = user.UserMetadata;
+            var appMetadata = user.AppMetadata;
+
+            string name = metadata?.GetValueOrDefault("username")?.ToString() ?? string.Empty;
+            string bio = metadata?.GetValueOrDefault("bio")?.ToString() ?? string.Empty;
+            string email = user.Email ?? string.Empty;
+            string profileAvatarPath = metadata?.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
+
+            long ReadTimestamp(string key) => long.TryParse(metadata?.GetValueOrDefault(key)?.ToString(), out var value) ? value : 0;
+
+            string registeredAt = StringFormatService.FormatTimestamp(ReadTimestamp("registered_at"));
+            string updatedAt = StringFormatService.FormatTimestamp(ReadTimestamp("updated_at"));
+
+            string isPremiumString = appMetadata?.GetValueOrDefault("is_premium")?.ToString() ?? "0";
+
+            bool isPremium = isPremiumString == "1";
+
+            Debug.WriteLine(isPremium);
+
+            App.Session.SetIdentity(user.Id, profileAvatarPath);
+
+            ImageSource? avatar = null;
+            if (!string.IsNullOrEmpty(profileAvatarPath))
+            {
+                avatar = await _avatarStorage.DownloadAvatarAsync(profileAvatarPath);
+                if (avatar != null)
+                {
+                    BitmapSource? localAvatar = FrozenImage.CreateFromUri(AppPaths.AvatarPath);
+
+                    if (avatar is BitmapSource bitmap)
+                    {
+                        if (!File.Exists(AppPaths.AvatarPath) || !ReferenceEquals(localAvatar, bitmap))
+                        {
+                            FrozenImage.SaveToFile(bitmap, AppPaths.AvatarPath);
+                        }
+                    }
+                }
+            }
+            App.Session.Profile.Load(name, bio, email, avatar, registeredAt, updatedAt, isPremium);
         }
 
-        public async void UpdateData(string newEmail, string newName, string newBio, long timestamp)
+        public async Task UpdateUserData(UserProfileViewModel profile, long timestamp, string? avatarPath)
         {
             if (Client == null)
                 throw new InvalidOperationException("Supabase client is not initialized.");
 
             var attributes = new UserAttributes
             {
-                Email = newEmail,
-
                 Data = new Dictionary<string, object>
                 {
-                    ["display_name"] = newName,
-                    ["bio"] = newBio,
-                    ["updated_at"] = timestamp
+                    ["display_name"] = profile.Username,
+                    ["bio"] = profile.Bio,
+                    ["updated_at"] = timestamp,
+                    ["avatar_path"] = avatarPath ?? string.Empty
                 }
             };
 
-            var user = await Client.Auth.Update(attributes);
+            if (profile.Email != Client.Auth.CurrentUser?.Email)
+            {
+                //attributes.Email = profile.Email;
+            }
+
+            var user = await Client.Auth.Update(attributes); // здесь ошибка че то с почтой ваще хз
         }
 
-        public async Task<string> UploadAvatar(string imagePath)
+        public async Task<string> UpdateAvatarAsync(string filePath)
         {
-            if (Client == null)
+            if (Client == null || Client.Auth.CurrentUser == null || Client.Auth.CurrentUser.Id == null || _avatarStorage == null)
                 throw new InvalidOperationException("Supabase client is not initialized.");
 
-            var user = Client.Auth.CurrentUser;
+            string oldPath = Client.Auth.CurrentUser.UserMetadata.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
 
-            string extension = Path.GetExtension(imagePath).ToLowerInvariant();
-
-            string contentType = extension switch
+            if (string.IsNullOrEmpty(filePath))
             {
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".webp" => "image/webp",
-                _ => throw new ArgumentException("Неподдерживаемый формат изображения")
-            };
-
-            if (new FileInfo(imagePath).Length > 2 * 1024 * 1024)
-                throw new ArgumentException("Изображение больше 2 МБ");
-
-            string avatarPath = user.UserMetadata?.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
-            Debug.WriteLine($"Текущий путь аватара: {avatarPath}");
-            if (!string.IsNullOrWhiteSpace(avatarPath))
-            {
-                await Client.Storage
-                    .From("avatars")
-                    .Remove(new List<string> { avatarPath });
+                await _avatarStorage.DeleteAvatarAsync(oldPath);
+                return string.Empty;
             }
-
-            avatarPath = $"{user.Id}/{Guid.NewGuid():N}{extension}";
-
-            // Загружаем изображение
-            try
-            {
-                await Client.Storage
-                    .From("avatars")
-                    .Upload(imagePath, avatarPath, new Supabase.Storage.FileOptions
-                    {
-                        ContentType = contentType,
-                        Upsert = false
-                    });
-
-                Debug.WriteLine("Аватар успешно загружен!");
-            }
-            catch (Supabase.Storage.Exceptions.SupabaseStorageException ex)
-            {
-                Debug.WriteLine($"Ошибка Storage: {ex.Message}");
-                Debug.WriteLine($"Подробности: {ex}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Другая ошибка: {ex}");
-            }
-
-            await Client.Auth.Update(new UserAttributes
-            {
-                Data = new Dictionary<string, object>
-                {
-                    ["avatar_path"] = avatarPath
-                }
-            });
-
-            // Получаем публичный URL
-            return Client.Storage
-                .From("avatars")
-                .GetPublicUrl(avatarPath);
+            return await _avatarStorage.UploadAvatarAsync(Client.Auth.CurrentUser.Id, filePath, oldPath);
         }
 
-        public ImageSource? LoadAvatar(AuthUser user)
+        public void SetData(string key, string value) => _userMetadata[key] = value;
+        public object? GetData(string key) => _userMetadata.GetValueOrDefault(key);
+
+        private static SupabaseError? TryParseError(string message)
         {
-            string avatarPath = user.UserMetadata?.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
-
-            string defPath = Path.Exists(AppPaths.AvatarPath) ? AppPaths.AvatarPath : AppPaths.DefaultAvatarPath;
-
-            string url = string.IsNullOrWhiteSpace(avatarPath)
-                ? defPath
-                : Client.Storage.From("avatars").GetPublicUrl(avatarPath);
-
-            var img = new BitmapImage();
-
-            img.DownloadCompleted += (s, e) =>
+            try
             {
-                Debug.WriteLine("Аватар успешно загружен!");
-            };
-
-            img.DownloadFailed += (s, e) =>
+                return JsonSerializer.Deserialize<SupabaseError>(message);
+            }
+            catch (JsonException)
             {
-                Debug.WriteLine($"Ошибка загрузки: {e.ErrorException.Message}");
-            };
-
-            img.BeginInit();
-            img.UriSource = new Uri(url, UriKind.Absolute);
-            img.CacheOption = BitmapCacheOption.OnLoad;
-            img.EndInit();
-
-            return img;
+                return null;
+            }
         }
     }
 

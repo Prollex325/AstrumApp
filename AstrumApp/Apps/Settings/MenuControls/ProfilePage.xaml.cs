@@ -16,20 +16,13 @@ namespace AstrumApp.Apps.Settings
         {
             InitializeComponent();
 
-            this.DataContext = App.Session.Profile;
-        }
+            UserCardControl.DataContext = App.Session.Profile;
 
-        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ((Border)sender).Opacity = 0.5;
-            App.Session.Profile.BeginEdit();
-            App.Navigation.NavigatePage(NavigationPage.ProfileEdit);
-            ((Border)sender).Opacity = 1;
-        }
-
-        private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            ((Border)sender).Opacity = 1;
+            UserCardControl.Clicked += () =>
+            {
+                App.Session.Profile.BeginEdit();
+                App.Navigation.NavigatePage(NavigationPage.ProfileEdit);
+            };
         }
     }
 }

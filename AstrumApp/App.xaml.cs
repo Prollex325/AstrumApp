@@ -2,6 +2,7 @@
 using AstrumApp.Security;
 using AstrumApp.Services;
 using AstrumApp.Session;
+using AstrumApp.SettingsManager;
 using DotNetEnv;
 using System.Diagnostics;
 using System.Windows;
@@ -13,13 +14,15 @@ namespace AstrumApp
     {
         public static NotificationService Notifications { get; } = new();
 
-        public static NavigationService Navigation { get; } = new();
-
         public static UserSession Session { get; } = new();
+
+        public static SupabaseService Supabase { get; private set; } = new();
+
+        public static NavigationService Navigation { get; } = new();
 
         public static SecurityManager Security { get; } = new();
 
-        public static SupabaseService Supabase { get; private set; } = new();
+        public static AppSettingsService SettingsService { get; } = new();
 
         public static void Unlock()
         {
@@ -33,16 +36,8 @@ namespace AstrumApp
 
             Env.Load();
 
-            bool authorized = await Supabase.Initialize();
-
-            var main = new MainWindow();
-
-            MainWindow = main;
-
-            if (!authorized)
-                main.OpenAuthPage();
-
-            main.Show();
+            if (SettingsService != null)
+                await SettingsService.LoadAsync();
         }
     }
 }

@@ -4,11 +4,45 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:AstrumApp.Apps.Authentication"
+      xmlns:controls="clr-namespace:AstrumApp.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MainAuthWindow">
 
-    <Grid>
+    <Page.Resources>
+        <DrawingImage x:Key="DecorativeCube">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+
+                    <!-- Передняя грань -->
+                    <GeometryDrawing Brush="#144F8DFF" Geometry="M 28,48 L 112,48 112,132 28,132 Z"/>
+
+                    <!-- Верхняя грань -->
+                    <GeometryDrawing Brush="#205C9FFF" Geometry="M 28,48 L 55,20 139,20 112,48 Z"/>
+
+                    <!-- Правая грань -->
+                    <GeometryDrawing Brush="#0D3574DD" Geometry="M 112,48 L 139,20 139,104 112,132 Z"/>
+
+                    <!-- Скрытые рёбра, более тусклые -->
+                    <GeometryDrawing Geometry="M 55,20 L 55,104 139,104 M 28,132 L 55,104">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#365B82C4" Thickness="1.5"/>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+
+                    <!-- Основные рёбра куба -->
+                    <GeometryDrawing Geometry="M 28,48 L 112,48 112,132 28,132 Z M 28,48 L 55,20 139,20 112,48 M 112,48 L 139,20 139,104 112,132">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#8A76A9FF" Thickness="2" LineJoin="Round"/>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+    </Page.Resources>
+    
+    <Grid x:Name="MainGrid">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#0B1015" Offset="0"/>
@@ -16,7 +50,61 @@
                 <GradientStop Color="#0E141B" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="MainTranslate" X="0" Y="0"/>
+        </Grid.RenderTransform>
 
-        <Frame x:Name="Main" NavigationUIVisibility="Hidden"/>
+        <Grid ClipToBounds="True">
+            <StackPanel x:Name="Logo" Orientation="Horizontal" VerticalAlignment="Top" Margin="42,24,42,20">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="LogoTranslate" Y="-70"/>
+                </StackPanel.RenderTransform>
+                    <Border Width="32" Height="32" CornerRadius="10" Background="#1B3249" BorderBrush="#345D81" BorderThickness="1">
+                    <Path Width="19" Height="19" Stretch="Fill" Fill="#B4DAFF" HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" Data="M 50,0 L 61,37 L 100,50 L 61,62 L 50,100 L 39,62 L 0,50 L 39,37 Z"/>
+                </Border>
+                <TextBlock Text="ASTRUM" FontSize="16" FontWeight="Bold" Foreground="#E8F1FA" VerticalAlignment="Center" 
+                           Margin="12,0,0,0"/>
+            </StackPanel>
+            <!-- Левый верхний куб -->
+            <Image x:Name="LeftCube" Source="{StaticResource DecorativeCube}" Width="155" Height="155" HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom" Margin="0,0,50,30" Opacity="0.75" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform x:Name="LeftCubeMove"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+
+            <Image x:Name="UpperCube" Source="{StaticResource DecorativeCube}" Width="100" Height="100" HorizontalAlignment="Right"
+                   VerticalAlignment="Top" Margin="0,45,45,0" Opacity="0.75" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5"
+                   Visibility="Collapsed">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform x:Name="UpperCubeMove"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+
+            <!-- Правый нижний куб -->
+            <Image x:Name="RightCube" Source="{StaticResource DecorativeCube}" Width="210" Height="210" HorizontalAlignment="Left"
+                   VerticalAlignment="Center" Margin="40,45,0,0" Opacity="0.50" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="20"/>
+                        <TranslateTransform x:Name="RightCubeMove"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+
+            <!-- Здесь твоя карточка и кнопки -->
+            <Frame x:Name="Main" NavigationUIVisibility="Hidden"/>
+            
+            <ContentControl x:Name="PageHost" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"/>
+        </Grid>
+
+        <controls:StepByStepControl x:Name="StepControl" StepsCount="-1" VerticalAlignment="Bottom" Margin="0,0,0,20"/>
     </Grid>
 </Page>

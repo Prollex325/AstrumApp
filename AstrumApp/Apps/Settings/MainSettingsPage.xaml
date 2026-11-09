@@ -37,6 +37,10 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <Button Content="✕" Width="32" Height="32" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0"
+                    Background="Transparent" Foreground="#9FB3C8" BorderThickness="0" FontSize="18" Cursor="Hand" Panel.ZIndex="10"
+                    Click="CloseSettings_Click"/>
+
             <Border CornerRadius="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" ClipToBounds="True"
                     Background="#1A2229" Margin="6, 6, 6, 0" Height="70">
                 <controls:BreadcrumbControl/>

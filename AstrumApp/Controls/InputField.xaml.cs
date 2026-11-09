@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using AstrumApp.Apps.Settings.MenuControls;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -47,6 +48,11 @@ namespace AstrumApp.Controls
                     VisiblePasswordBox.Visibility = Visibility.Visible;
                 }
 
+                if (IsRequiered)
+                {
+                    PlaceholderTextBlock.Text = Placeholder + "*";
+                }
+
                 PlaceholderTextBlock.Visibility = string.IsNullOrEmpty(Placeholder) ? Visibility.Collapsed : Visibility.Visible;
 
                 PasswordButton.Visibility = ShowPasswordButton ? Visibility.Visible : Visibility.Collapsed;
@@ -54,6 +60,19 @@ namespace AstrumApp.Controls
                 CounterTextBlock.Text = (MaxLength - VisiblePasswordBox.Text.Length).ToString();
             };
         }
+
+        public bool IsRequiered
+        {
+            get => (bool)GetValue(RequiredProperty);
+            set => SetValue(RequiredProperty, value);
+        }
+
+        public static readonly DependencyProperty RequiredProperty =
+            DependencyProperty.Register(
+                nameof(IsRequiered),
+                typeof(bool),
+                typeof(InputField),
+                new PropertyMetadata(false));
 
         private void PasswordButton_Click(object sender, RoutedEventArgs e)
         {

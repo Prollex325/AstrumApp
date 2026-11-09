@@ -36,9 +36,9 @@ namespace AstrumApp.Controls
         {
             InitializeComponent();
 
-            this.Loaded += (s, e) =>
+            Loaded += (s, e) =>
             {
-                this.Focus(); // даём фокус UserControl
+                Focus(); // даём фокус UserControl
             };
 
             clock.Tick += Clock_Tick;
@@ -189,7 +189,6 @@ namespace AstrumApp.Controls
 
         private async Task ShowGreetingTitle()
         {
-            Debug.WriteLine(App.Security.Pin.HasPin());
             if (!App.Security.Pin.HasPin())
             {
                 _ = LiftLockScreenAsync(0);

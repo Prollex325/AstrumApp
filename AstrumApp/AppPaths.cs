@@ -13,5 +13,7 @@ namespace AstrumApp
         public static string SecurityFile { get; } = Path.Combine(AppFolder, "security.json");
         public static string DefaultAvatarPath { get; } = "pack://application:,,,/Assets/user/default_avatar.png";
         public static string AvatarPath { get; } = Path.Combine(AppFolder, "user", "avatar.png");
+        public static string AvatarPathTemp { get; } = Path.Combine(AppFolder, "user", "avatar_temp.png");
+        public static string SettingsPath { get; } = Path.Combine(AppFolder, "settings.json");
     }
 }

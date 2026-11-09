@@ -1,0 +1,321 @@
+<UserControl x:Class="AstrumApp.Views.StartupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="StartupRoot"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True">
+
+    <UserControl.Resources>
+        <Style x:Key="AstrumLetterStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+            <Setter Property="FontSize" Value="68"/>
+            <Setter Property="Foreground" Value="#F0F6FE"/>
+            <Setter Property="Margin" Value="0,0,1,0"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        </Style>
+
+        <DataTemplate x:Key="StartupStepTemplate">
+            <Border x:Name="StepBackground"
+                    Background="Transparent"
+                    CornerRadius="9"
+                    Padding="10,9"
+                    Margin="0,2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Width="20" Height="20" VerticalAlignment="Center">
+                        <!-- Ожидание -->
+                        <Ellipse x:Name="PendingIcon" Width="7" Height="7"
+                                 Fill="#60748B"/>
+
+                        <!-- В процессе -->
+                        <Path x:Name="BusyIcon" Data="M 10,2 A 8,8 0 1 1 2,10"
+                              Stroke="#7FBCFF" StrokeThickness="2"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Visibility="Collapsed">
+                            <Path.RenderTransform>
+                                <RotateTransform CenterX="10" CenterY="10"/>
+                            </Path.RenderTransform>
+                        </Path>
+
+                        <!-- Выполнено -->
+                        <Path x:Name="CompletedIcon" Data="M 3,10 L 8,15 L 17,5"
+                              Stroke="#7AD7B0" StrokeThickness="2.1"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Visibility="Collapsed"/>
+
+                        <!-- Пропущено -->
+                        <TextBlock x:Name="SkippedIcon" Text="—" FontSize="16"
+                                   Foreground="#7D8DA0" Visibility="Collapsed"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                        <!-- Ошибка -->
+                        <Path x:Name="FailedIcon" Data="M 5,5 L 15,15 M 15,5 L 5,15"
+                              Stroke="#F3A29D" StrokeThickness="2"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Visibility="Collapsed"/>
+                    </Grid>
+
+                    <TextBlock x:Name="StepTitle" Grid.Column="1"
+                               Text="{Binding Title}"
+                               VerticalAlignment="Center"
+                               Foreground="#B6C4D4" FontSize="13"/>
+
+                    <TextBlock Grid.Column="2" Text="{Binding StatusText}"
+                               VerticalAlignment="Center"
+                               Foreground="#788BA0" FontSize="11" Margin="12,0,0,0"/>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Active">
+                    <Setter TargetName="StepBackground" Property="Background" Value="#192838"/>
+                    <Setter TargetName="StepTitle" Property="Foreground" Value="#F2F8FF"/>
+                    <Setter TargetName="PendingIcon" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="BusyIcon" Property="Visibility" Value="Visible"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="ActiveSpinner">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="BusyIcon"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                 From="0" To="360" Duration="0:0:1"
+                                                 RepeatBehavior="Forever"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="ActiveSpinner"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                    <Setter TargetName="PendingIcon" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="CompletedIcon" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Skipped">
+                    <Setter TargetName="PendingIcon" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="SkippedIcon" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                    <Setter TargetName="PendingIcon" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="FailedIcon" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <!-- Верхний UI-слой размещается ПОВЕРХ страницы входа/главного экрана. -->
+    <Grid x:Name="StartupContainer" Background="Transparent">
+    <Grid x:Name="SceneRoot">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#0B1015" Offset="0"/>
+                <GradientStop Color="#111923" Offset="0.55"/>
+                <GradientStop Color="#0E141B" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Звезда Astrum без рамки. Геометрия и свечение совпадают с WelcomeView. -->
+        <!-- CornerLogoHost управляет позицией, LogoArtwork — масштабом во время полёта. -->
+        <Grid x:Name="CornerLogoHost"
+              Width="44" Height="44"
+              HorizontalAlignment="Right" VerticalAlignment="Top"
+              Margin="28"
+              IsHitTestVisible="False">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="LogoShift"/>
+            </Grid.RenderTransform>
+
+            <Grid x:Name="LogoArtwork" Width="44" Height="44"
+                  RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform x:Name="LogoScale" ScaleX="1" ScaleY="1"/>
+                </Grid.RenderTransform>
+
+                <!-- Мягкий голубой ореол -->
+                <Ellipse Width="44" Height="44">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#70B0DFFF" Offset="0"/>
+                            <GradientStop Color="#305DADFA" Offset="0.45"/>
+                            <GradientStop Color="#005DADFA" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+
+                <!-- Четырёхлучевая звезда, как на экране приветствия -->
+                    <Path Width="31" Height="31" Stretch="Fill"
+                      Fill="#DBEEFF"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M 50,0 L 61,37 L 100,50 L 61,62 L 50,100 L 39,62 L 0,50 L 39,37 Z"
+                          RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <RotateTransform x:Name="StarRotation" Angle="0"/>
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+        </Grid>
+
+        <StackPanel x:Name="LoadingContent" Width="430"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <!-- Каждая буква отдельно, чтобы подпрыгивать независимо. -->
+            <StackPanel x:Name="TitleLetters"
+                        Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock x:Name="LetterA" Text="A" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="LetterS" Text="s" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="LetterT" Text="t" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="LetterR" Text="r" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="LetterU" Text="u" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="LetterM" Text="m" Style="{StaticResource AstrumLetterStyle}">
+                    <TextBlock.RenderTransform><TranslateTransform/></TextBlock.RenderTransform>
+                </TextBlock>
+            </StackPanel>
+
+            <!-- Кружок двигается под словом Astrum. -->
+            <Canvas x:Name="ParticleTrack" Height="24"
+                    Width="{Binding ActualWidth, ElementName=TitleLetters}"
+                    HorizontalAlignment="Center" Margin="0,1,0,0">
+                <Ellipse x:Name="Particle" Width="10" Height="10"
+                         Canvas.Left="0" Canvas.Top="2" Fill="#96CEFF">
+                    <Ellipse.Effect>
+                        <DropShadowEffect Color="#63AFFF" BlurRadius="12"
+                                          ShadowDepth="0" Opacity="0.75"/>
+                    </Ellipse.Effect>
+                    <Ellipse.RenderTransform>
+                        <TranslateTransform x:Name="ParticleShift"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+            </Canvas>
+
+            <TextBlock x:Name="StatusCaption"
+                       Text="Подготавливаем приложение"
+                       FontSize="12" Foreground="#8DA0B5"
+                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+
+            <!-- Список реальных этапов, без фиктивного процентного прогресса. -->
+            <Border Width="400" Margin="0,32,0,0"
+                    CornerRadius="16" Background="#151F2A"
+                    BorderBrush="#263747" BorderThickness="1"
+                    Padding="14,14">
+                <StackPanel>
+                    <TextBlock Text="ЗАПУСК ASTRUM"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="#8EA5BC" Margin="10,0,0,6"/>
+                    <ItemsControl x:Name="StepsList"
+                                  ItemTemplate="{StaticResource StartupStepTemplate}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Место зарезервировано заранее, чтобы экран не прыгал при Ready. -->
+            <StackPanel x:Name="ReadyNotice" Orientation="Horizontal"
+                        HorizontalAlignment="Center" Margin="0,17,0,0"
+                        Visibility="Hidden" Opacity="0">
+                <TextBlock Text="✓" Foreground="#7AD7B0"
+                           FontSize="15" FontWeight="Bold" Margin="0,0,8,0"/>
+                <TextBlock Text="Всё готово" Foreground="#D3E8FA" FontSize="13"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+
+    <!-- Свет загорается ровно в центре окна, куда прилетает логотип.
+         Полупрозрачные радиальные градиенты дают мягкие, а не резкие края.
+         Слой находится ВЫШЕ логотипа, но НИЖЕ завершающей белой заливки. -->
+    <Grid x:Name="StarIgnitionLayer" Visibility="Collapsed"
+          IsHitTestVisible="False" ClipToBounds="True">
+        <!-- Большой холодно-голубой ореол. -->
+        <Ellipse x:Name="StarOuterHalo" Width="360" Height="360"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 RenderTransformOrigin="0.5,0.5" Opacity="0">
+            <Ellipse.Fill>
+                <RadialGradientBrush>
+                    <GradientStop Color="#C7E9F9FF" Offset="0"/>
+                    <GradientStop Color="#91A9DBFF" Offset="0.34"/>
+                    <GradientStop Color="#406AAEFF" Offset="0.68"/>
+                    <GradientStop Color="#006AAEFF" Offset="1"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+            <Ellipse.RenderTransform>
+                <ScaleTransform ScaleX="0.12" ScaleY="0.12"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- Яркое белое ядро с постепенным переходом в голубой цвет. -->
+        <Ellipse x:Name="StarInnerGlow" Width="230" Height="230"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 RenderTransformOrigin="0.5,0.5" Opacity="0">
+            <Ellipse.Fill>
+                <RadialGradientBrush>
+                    <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                    <GradientStop Color="#FFFFFFFF" Offset="0.27"/>
+                    <GradientStop Color="#E6EAF7FF" Offset="0.48"/>
+                    <GradientStop Color="#8AA4DBFF" Offset="0.72"/>
+                    <GradientStop Color="#00A4DBFF" Offset="1"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+            <Ellipse.RenderTransform>
+                <ScaleTransform ScaleX="0.08" ScaleY="0.08"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- Два коротких световых луча: вспыхивают и исчезают до раскрытия. -->
+        <Rectangle x:Name="StarRayA" Width="290" Height="4"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   RadiusX="2" RadiusY="2" Opacity="0"
+                   RenderTransformOrigin="0.5,0.5">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <GradientStop Color="#00FFFFFF" Offset="0"/>
+                    <GradientStop Color="#E8E7F8FF" Offset="0.5"/>
+                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+            <Rectangle.RenderTransform>
+                <RotateTransform Angle="42"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle x:Name="StarRayB" Width="290" Height="4"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   RadiusX="2" RadiusY="2" Opacity="0"
+                   RenderTransformOrigin="0.5,0.5">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <GradientStop Color="#00FFFFFF" Offset="0"/>
+                    <GradientStop Color="#C9DFEFFF" Offset="0.5"/>
+                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+            <Rectangle.RenderTransform>
+                <RotateTransform Angle="-42"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <!-- Небольшая белая искра прямо в момент зажигания. -->
+        <Ellipse x:Name="StarCore" Width="64" Height="64" Fill="White"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 RenderTransformOrigin="0.5,0.5" Opacity="0">
+            <Ellipse.RenderTransform>
+                <ScaleTransform ScaleX="0.1" ScaleY="0.1"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+    </Grid>
+
+    <!-- Только последняя часть эффекта становится полностью белой.
+         После этого можно безопасно заменить страницу под StartupView. -->
+    <Grid x:Name="FlashOverlay" Background="White" Opacity="0"
+          Visibility="Collapsed" IsHitTestVisible="False"/>
+    </Grid>
+</UserControl>
