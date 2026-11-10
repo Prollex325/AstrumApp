@@ -19,6 +19,9 @@ namespace AstrumApp.Services
         SystemInfo,
         AvatarEdit,
         Security,
+        ChangelogPage,
+
+        ChangePasswordPage,
 
         PinSettingsPage,
         CreatePinPage,
@@ -34,13 +37,22 @@ namespace AstrumApp.Services
             {
                 NavigationPage.Profile => "Профиль",
                 NavigationPage.ProfileEdit => "Редактирование профиля",
-                NavigationPage.SystemInfo => "О системе",
                 NavigationPage.AvatarEdit => "Аватар",
+
+                NavigationPage.SystemInfo => "О системе",
+
                 NavigationPage.Security => "Безопасность",
+
                 NavigationPage.PinSettingsPage => "Настройки PIN",
+
                 NavigationPage.CreatePinPage => "Создание PIN",
                 NavigationPage.ChangePinPage => "Изменение PIN",
                 NavigationPage.DeletePinPage => "Удаление PIN",
+
+                NavigationPage.ChangePasswordPage => "Изменить пароль",
+
+                NavigationPage.ChangelogPage => "Список изменений",
+
                 NavigationPage.NotFoundPage => "Страница не найдена",
 
                 _ => "Неизвестно"
@@ -75,6 +87,8 @@ namespace AstrumApp.Services
             _pages[NavigationPage.SystemInfo] = new SystemInfo();
             _pages[NavigationPage.AvatarEdit] = new AvatarEdit();
             _pages[NavigationPage.Security] = new SecurityPage();
+            _pages[NavigationPage.ChangelogPage] = new ChangelogPage();
+            _pages[NavigationPage.ChangePasswordPage] = new ChangePasswordPage();
             _pages[NavigationPage.PinSettingsPage] = new PinSettingsPage();
             _pages[NavigationPage.CreatePinPage] = new CreatePinPage();
             _pages[NavigationPage.ChangePinPage] = new ChangePinPage();

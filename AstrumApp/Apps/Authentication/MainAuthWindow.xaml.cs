@@ -67,6 +67,8 @@ namespace AstrumApp.Apps.Authentication
             StepControl.Visibility = Visibility.Hidden;
 
             Loaded += (_, _) => StartLogoAnim();
+
+            PageHost.Content = _pages[NavigationPage.Login];
         }
 
         public void SetStartPage(NavigationPage page)

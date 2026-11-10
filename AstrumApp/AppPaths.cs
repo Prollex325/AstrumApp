@@ -15,5 +15,6 @@ namespace AstrumApp
         public static string AvatarPath { get; } = Path.Combine(AppFolder, "user", "avatar.png");
         public static string AvatarPathTemp { get; } = Path.Combine(AppFolder, "user", "avatar_temp.png");
         public static string SettingsPath { get; } = Path.Combine(AppFolder, "settings.json");
+        public static string ChangelogPath { get; } = Path.Combine(AppContext.BaseDirectory, "Docs", "CHANGELOG.md");
     }
 }

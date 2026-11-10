@@ -65,7 +65,7 @@
                                VerticalAlignment="Center"
                                Foreground="#B6C4D4" FontSize="13"/>
 
-                    <TextBlock Grid.Column="2" Text="{Binding StatusText}"
+                    <TextBlock x:Name="StepStatusText" Grid.Column="2" Text="{Binding StatusText}"
                                VerticalAlignment="Center"
                                Foreground="#788BA0" FontSize="11" Margin="12,0,0,0"/>
                 </Grid>
@@ -101,6 +101,7 @@
                 <DataTrigger Binding="{Binding Status}" Value="Failed">
                     <Setter TargetName="PendingIcon" Property="Visibility" Value="Collapsed"/>
                     <Setter TargetName="FailedIcon" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="StepStatusText" Property="Foreground" Value="#F3A29D"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -220,14 +221,39 @@
                 </StackPanel>
             </Border>
 
-            <!-- Место зарезервировано заранее, чтобы экран не прыгал при Ready. -->
-            <StackPanel x:Name="ReadyNotice" Orientation="Horizontal"
-                        HorizontalAlignment="Center" Margin="0,17,0,0"
-                        Visibility="Hidden" Opacity="0">
-                <TextBlock Text="✓" Foreground="#7AD7B0"
-                           FontSize="15" FontWeight="Bold" Margin="0,0,8,0"/>
-                <TextBlock Text="Всё готово" Foreground="#D3E8FA" FontSize="13"/>
-            </StackPanel>
+            <!-- Одна область для успешного запуска и ошибки: сообщения не накладываются. -->
+            <Grid Width="400" Height="62" Margin="0,15,0,0">
+                <StackPanel x:Name="ReadyNotice"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Visibility="Collapsed" Opacity="0">
+                    <TextBlock Text="✓" Foreground="#7AD7B0"
+                               FontSize="15" FontWeight="Bold" Margin="0,0,8,0"/>
+                    <TextBlock Text="Всё готово" Foreground="#D3E8FA" FontSize="13"/>
+                </StackPanel>
+
+                <StackPanel x:Name="NotReadyNotice"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Visibility="Collapsed" Opacity="0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Path Data="M 4,4 L 14,14 M 14,4 L 4,14"
+                              Width="15" Height="15" Stretch="Uniform"
+                              Stroke="#F3A29D" StrokeThickness="2"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Не удалось завершить запуск"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#F3A29D"/>
+                    </StackPanel>
+                    <TextBlock x:Name="NotReadyDescription"
+                               Text="Не удалось связаться с Supabase. Проверьте подключение."
+                               TextAlignment="Center" TextWrapping="Wrap"
+                               Width="400" FontSize="11" Foreground="#9DAFC0"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </Grid>
 

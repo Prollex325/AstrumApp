@@ -28,6 +28,9 @@ namespace AstrumApp.Apps.Settings
 
             TimeZoneInfo localZone = TimeZoneInfo.Local;
 
+            string version = typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion?
+                            .Split('+')[0] ?? "0.0.0";
+
             Items = new ObservableCollection<InfoItem>
             {
                 new InfoItem
@@ -40,7 +43,7 @@ namespace AstrumApp.Apps.Settings
                 new InfoItem
                 {
                     Title = "Версия приложения",
-                    Description = "0.1.0",
+                    Description = version,
                     Details = "Закрытая ранняя версия приложения."
                 },
 

@@ -27,6 +27,8 @@ namespace AstrumApp
             StartupView = StartupViewControl;
             WelcomeView = welcomeControl;
 
+            StartupView.Visibility = System.Windows.Visibility.Visible;
+
             if (App.Current.MainWindow is MainWindow window1) 
             {
                 window = window1;
@@ -45,9 +47,9 @@ namespace AstrumApp
 
         }
 
-        public async Task StartUpScenario()
+        public async Task<bool> StartUpScenario()
         {
-            if (StartupView == null || WelcomeView == null) return;
+            if (StartupView == null || WelcomeView == null) return false;
 
             StartupView.BeginStep(StartupStep.Supabase);
 
@@ -59,16 +61,32 @@ namespace AstrumApp
                 StartupView.FailStep(StartupStep.Supabase);
 
 
+            bool connected = await App.Supabase.CheckConnectionAsync();
+
+            if (connected)
+                StartupView.CompleteStep(StartupStep.Connection);
+            else
+            {
+                StartupView.ShowNotReady("Не удалось подключиться к Supabase. Проверьте интернет.");
+                StartupView.FailStep(StartupStep.Connection);
+                StartupView.SkipStep(StartupStep.Session);
+                StartupView.SkipStep(StartupStep.Profile);
+
+                await Task.Delay(1000);
+
+                return false;
+            }
+
+            Supabase.Gotrue.User? user = null;
             // Восстанавливаем сессию
             StartupView.BeginStep(StartupStep.Session);
 
-            var user = await supabase.RestoreSessionAsync();
+            user = await supabase.RestoreSessionAsync();
 
             if (user != null)
                 StartupView.CompleteStep(StartupStep.Session);
             else
                 StartupView.FailStep(StartupStep.Session);
-
 
             // Загружаем профиль только при наличии пользователя
             if (user != null)
@@ -82,7 +100,6 @@ namespace AstrumApp
             else
             {
                 App.Session.Clear();
-
                 StartupView.SkipStep(StartupStep.Profile);
             }
 
@@ -126,6 +143,8 @@ namespace AstrumApp
                 window.CloseStartupView();
                 await WelcomeView.PlayIntroAsync();
             }
+
+            return true;
         }
     }
 }

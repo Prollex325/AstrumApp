@@ -7,14 +7,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ProjectGuid>{0DDFDE19-DD33-9AA2-A0D9-1DCFA1AD4216}</ProjectGuid>
+
+     <Version>0.1.0</Version>
   </PropertyGroup>
 
   <!-- Конфигурация файла переменных окружения -->
   <ItemGroup>
     <None Remove=".env" />
+    <None Remove="Docs\changelog.md" />
     <Content Include=".env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Docs\changelog.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -33,6 +39,8 @@
   <!-- Подключенные NuGet пакеты -->
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
+    <PackageReference Include="MdXaml" Version="1.27.0" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.6" />
     <PackageReference Include="Supabase" Version="1.6.0" />
     <PackageReference Include="zxcvbn-core" Version="7.0.92" />
   </ItemGroup>

@@ -53,7 +53,8 @@
                 </TextBlock>
 
                 <PasswordBox x:Name="HidePasswordBox" MaxLength="{Binding MaxLength, ElementName=root}" 
-                             Style="{StaticResource DefaultPasswordBox}" PasswordChanged="HidePasswordBox_PasswordChanged"/>
+                             Style="{StaticResource DefaultPasswordBox}" PasswordChanged="HidePasswordBox_PasswordChanged"
+                             KeyDown="PasswordBox_KeyDown"/>
 
                 <TextBox x:Name="VisiblePasswordBox" MaxLength="{Binding MaxLength, ElementName=root}" 
                          TextChanged="VisiblePasswordBox_TextChanged" Style="{StaticResource DefaultTextBox}"
@@ -61,10 +62,8 @@
                          TextWrapping="{Binding TextWrapping, ElementName=root}"
                          VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility, ElementName=root}"
                          Height="{Binding Height, ElementName=root}"
-                         Text="{Binding TextContent,
-                   ElementName=root,
-                   Mode=TwoWay,
-                   UpdateSourceTrigger=PropertyChanged}" >
+                         Text="{Binding TextContent, ElementName=root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         KeyDown="PasswordBox_KeyDown">
 
                     <TextBox.Resources>
                         <Style TargetType="ScrollBar">

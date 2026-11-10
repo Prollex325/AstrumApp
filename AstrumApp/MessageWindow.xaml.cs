@@ -61,7 +61,7 @@ namespace AstrumApp
             _mainWindow = Application.Current.MainWindow as MainWindow;
         }
 
-        public MessageBoxResult ShowWindow() 
+        public MessageBoxResult ShowWindow()
         {
             SelectMessageType();
             CreateButtons();
@@ -97,7 +97,7 @@ namespace AstrumApp
                     NegativeButton.Visibility = Visibility.Visible;
                     CancelButton.Visibility = Visibility.Visible;
                     break;
-            }       
+            }
         }
 
         private void SelectMessageType()
@@ -105,7 +105,7 @@ namespace AstrumApp
             string iconPath = string.Empty;
             string iconText = string.Empty;
 
-            switch (_messageType) 
+            switch (_messageType)
             {
                 case MessageBoxType.Info:
                     iconPath = "/Assets/dialogs/info.png";
@@ -154,6 +154,27 @@ namespace AstrumApp
         private void Window_Closed(object sender, EventArgs e)
         {
             _mainWindow?.HideBlackoutMask();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                if (_messageButtons == MessageBoxButton.OKCancel || _messageButtons == MessageBoxButton.YesNoCancel)
+                {
+                    CancelButton_Click(new object(), new RoutedEventArgs());
+                }
+                else if (_messageButtons == MessageBoxButton.YesNo)
+                {
+                    NegativeButton_Click(new object(), new RoutedEventArgs());
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                PositiveButton_Click(new object(), new RoutedEventArgs());
+                e.Handled = true;
+            }
         }
     }
 }

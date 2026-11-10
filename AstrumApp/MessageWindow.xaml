@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AstrumApp"
         mc:Ignorable="d"
         Title="Ошибка" Height="220" Width="420" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="Transparent"
-        WindowStyle="None" AllowsTransparency="True" Closed="Window_Closed">
+        WindowStyle="None" AllowsTransparency="True" Closed="Window_Closed" KeyDown="Window_KeyDown">
 
     <Window.Resources>
         <LinearGradientBrush x:Key="WindowBackgroundBrush" StartPoint="0,0" EndPoint="1,1">

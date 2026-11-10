@@ -8,23 +8,30 @@
       xmlns:controls="clr-namespace:AstrumApp.Controls"
       d:DesignHeight="450" d:DesignWidth="300">
 
-    <Border Width="300" Height="450" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5"
-                CornerRadius="22" BorderThickness="1" Margin="0,0,0,20">
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FF1B222A" Offset="0"/>
-                <GradientStop Color="#FF2A3642" Offset="0.5"/>
-                <GradientStop Color="#FF1F2A33" Offset="1"/>
-            </LinearGradientBrush>
-        </Border.Background>
-        <Border.BorderBrush>
-            <SolidColorBrush Color="#22FFFFFF"/>
-        </Border.BorderBrush>
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
-        </Border.Effect>
+    <Grid Width="300" Height="450"
+          VerticalAlignment="Center"
+          HorizontalAlignment="Center"
+          Margin="0,0,0,20">
+        <!-- Визуальный слой: градиент, рамка и тень. Не содержит текста и контролов. -->
+        <Border CornerRadius="22" BorderThickness="1" IsHitTestVisible="False">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF1B222A" Offset="0"/>
+                    <GradientStop Color="#FF2A3642" Offset="0.5"/>
+                    <GradientStop Color="#FF1F2A33" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.BorderBrush>
+                <SolidColorBrush Color="#22FFFFFF"/>
+            </Border.BorderBrush>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
+            </Border.Effect>
+        </Border>
 
-        <Grid>
+        <!-- Содержимое отдельно от DropShadowEffect, чтобы WPF не размывал текст.
+             Margin=6 заменяет прежние BorderThickness=1 + Padding=5. -->
+        <Grid Margin="6">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -47,16 +54,16 @@
                 <controls:InputField x:Name="EmailTextBox" Placeholder="Почта" Margin="20,0" IsRequiered="True" 
                                      PreviewTextInput="EmailBox_PreviewTextInput"/>
                 <controls:InputField x:Name="PasswordBox" Placeholder="Пароль" IsPassword="True" ShowPasswordButton="True" 
-                                         Margin="20,0,20,0" IsRequiered="True"/>
+                                     Margin="20,0,20,0" IsRequiered="True" MaxLength="16"/>
                 <controls:InputField x:Name="ConfirmPasswordBox" Placeholder="Повтор пароля" IsPassword="True" ShowPasswordButton="True" 
-                         Margin="20,0,20,0" IsRequiered="True"/>
+                                     Margin="20,0,20,0" IsRequiered="True" MaxLength="16"/>
             </StackPanel>
 
             <Button x:Name="NextButton" Grid.Row="2" Content="Далее"  Background="#4A8DFF" Foreground="White" 
                         BorderBrush="#35FFFFFF" Click="NextButton_Click" Margin="10"/>
 
 
-            <StackPanel x:Name="RegisterHint" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <StackPanel x:Name="RegisterHint" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
 
                 <TextBlock Text="Уже есть аккаунт? " FontSize="11" Foreground="#8292A6"/>
 
@@ -85,5 +92,5 @@
 
             </StackPanel>
         </Grid>
-    </Border>
+    </Grid>
 </UserControl>

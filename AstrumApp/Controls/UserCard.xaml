@@ -6,148 +6,120 @@
              xmlns:local="clr-namespace:AstrumApp.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <!-- Область наведения чуть больше карточки: при увеличении курсор не теряет наведение. -->
+        <Grid x:Name="CardHoverArea"
+              Width="620" Height="260"
+              VerticalAlignment="Top"
+              HorizontalAlignment="Center"
+              Margin="0,70,0,0"
+              Background="Transparent">
 
-    <Grid x:Name="CardHoverArea" Width="620" Height="260" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,70,0,0"
-          Background="Transparent">
+            <!-- Вся карточка масштабируется целиком, как и в старой версии. -->
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="CardBody"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1.03" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetName="CardBody"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1.03" Duration="0:0:0.2"/>
+                            <ColorAnimation Storyboard.TargetName="CardSurface"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#4DA3FF" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="CardBody"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetName="CardBody"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1" Duration="0:0:0.2"/>
+                            <ColorAnimation Storyboard.TargetName="CardSurface"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#22FFFFFF" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
 
-        <Grid.Triggers>
-            <EventTrigger RoutedEvent="MouseEnter">
-                <BeginStoryboard>
-                    <Storyboard>
+            <Grid x:Name="CardBody" Width="600" Height="240"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Grid.RenderTransform>
 
-                        <!-- Поднимаем всю карточку -->
-                        <DoubleAnimation
-                        Storyboard.TargetName="CardBody"
-                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                        To="-4"
-                        Duration="0:0:0.2">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
+                <!-- Только задний фон с рамкой имеет эффект. Текст и аватар НЕ внутри него. -->
+                <Border x:Name="CardSurface" CornerRadius="22" BorderThickness="1"
+                        IsHitTestVisible="False">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF1B222A" Offset="0"/>
+                            <GradientStop Color="#FF2A3642" Offset="0.5"/>
+                            <GradientStop Color="#FF1F2A33" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <SolidColorBrush Color="#22FFFFFF"/>
+                    </Border.BorderBrush>
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
+                    </Border.Effect>
+                </Border>
 
-                        <!-- Усиливаем тень -->
-                        <DoubleAnimation
-                        Storyboard.TargetName="CardBackground"
-                        Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)"
-                        To="0.55"
-                        Duration="0:0:0.2"/>
+                <!-- Отдельная прозрачная область с теми же обработчиками мыши. -->
+                <Border CornerRadius="22" Background="Transparent" Padding="25"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="Border_MouseLeftButtonDown"
+                        MouseLeftButtonUp="Border_MouseLeftButtonUp"
+                        TextOptions.TextFormattingMode="Display">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                        <!-- Подсвечиваем рамку -->
-                        <ColorAnimation
-                        Storyboard.TargetName="CardBackground"
-                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                        To="#4DA3FF"
-                        Duration="0:0:0.2"/>
+                <Border Width="150" Height="150" CornerRadius="75" BorderBrush="#33FFFFFF" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#2C3A46" Offset="0"/>
+                            <GradientStop Color="#1B242C" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Image Source="{Binding Avatar}" Stretch="UniformToFill"/>
+                </Border>
 
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
+                    <TextBlock Text="{Binding Username}" FontSize="30" FontWeight="SemiBold" Foreground="White"/>
 
-            <EventTrigger RoutedEvent="MouseLeave">
-                <BeginStoryboard>
-                    <Storyboard>
+                    <TextBlock Text="{Binding Email}"  FontSize="14" Foreground="#BFD3E3" Margin="0,6,0,0"/>
 
-                        <DoubleAnimation
-                        Storyboard.TargetName="CardBody"
-                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                        To="0"
-                        Duration="0:0:0.25">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-
-                        <DoubleAnimation
-                        Storyboard.TargetName="CardBackground"
-                        Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)"
-                        To="0.35"
-                        Duration="0:0:0.25"/>
-
-                        <ColorAnimation
-                        Storyboard.TargetName="CardBackground"
-                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                        To="#22FFFFFF"
-                        Duration="0:0:0.25"/>
-
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-        </Grid.Triggers>
-
-        <!-- Вся карточка -->
-        <Grid x:Name="CardBody" Width="600" Height="240" VerticalAlignment="Center" HorizontalAlignment="Center" Cursor="Hand"
-              MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseLeftButtonUp="Border_MouseLeftButtonUp">
-
-            <Grid.RenderTransform>
-                <TranslateTransform Y="0"/>
-            </Grid.RenderTransform>
-
-            <!-- Фон, рамка и тень -->
-            <Border x:Name="CardBackground" CornerRadius="22" BorderThickness="1" IsHitTestVisible="False">
-
-                <Border.BorderBrush>
-                    <SolidColorBrush Color="#22FFFFFF"/>
-                </Border.BorderBrush>
-
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#FF1B222A" Offset="0"/>
-                        <GradientStop Color="#FF2A3642" Offset="0.5"/>
-                        <GradientStop Color="#FF1F2A33" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="25"
-                                  ShadowDepth="0"
-                                  Opacity="0.35"/>
-                </Border.Effect>
-            </Border>
-
-            <!-- Контент -->
-            <Border Padding="25" Background="Transparent" CornerRadius="22" UseLayoutRounding="True" SnapsToDevicePixels="True"
-                    TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Width="150" Height="150" CornerRadius="75" BorderBrush="#33FFFFFF" BorderThickness="1">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#2C3A46" Offset="0"/>
-                                <GradientStop Color="#1B242C" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <Image Source="{Binding Avatar}" Stretch="UniformToFill"/>
-                    </Border>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="25,0,0,0">
-                        <TextBlock Text="{Binding Username}" FontSize="30" FontWeight="SemiBold" Foreground="White"/>
-
-                        <TextBlock Text="{Binding Email}"  FontSize="14" Foreground="#BFD3E3" Margin="0,6,0,0"/>
-
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Registered:" FontSize="12" Foreground="#88FFFFFF" Margin="0,10,0,0"/>
-                            <TextBlock Text="{Binding RegisteredAt}" FontSize="12" Foreground="#88FFFFFF" Margin="5,10,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Последнее изменение:" FontSize="12" Foreground="#88FFFFFF" Margin="0,10,0,0"/>
-                            <TextBlock Text="{Binding UpdatedAt}" FontSize="12" Foreground="#88FFFFFF" Margin="5,10,0,0"/>
-                        </StackPanel>
-
-                        <Border x:Name="PremiumMark" Width="90" Height="24" CornerRadius="12" Background="#223A4B" 
-                            Margin="0,12,0,0">
-                            <TextBlock Text="Active" Foreground="#6EE7FF" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Registered:" FontSize="12" Foreground="#88FFFFFF" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding RegisteredAt}" FontSize="12" Foreground="#88FFFFFF" Margin="5,10,0,0"/>
                     </StackPanel>
-                </Grid>
-            </Border>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Последнее изменение:" FontSize="12" Foreground="#88FFFFFF" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding UpdatedAt}" FontSize="12" Foreground="#88FFFFFF" Margin="5,10,0,0"/>
+                    </StackPanel>
+
+                    <Border x:Name="PremiumMark" Width="90" Height="24" CornerRadius="12" Background="#223A4B" 
+        Margin="0,12,0,0">
+                        <TextBlock Text="Active" Foreground="#6EE7FF" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

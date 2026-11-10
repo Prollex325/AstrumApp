@@ -20,8 +20,9 @@ namespace AstrumApp.Controls
 {
     public partial class InputField : UserControl
     {
-        public string Text { get; private set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
         private bool _hasErrored = false;
+        public event Action? EnterPressed;
         public InputField()
         {
             InitializeComponent();
@@ -286,6 +287,15 @@ namespace AstrumApp.Controls
         {
             get => (ScrollBarVisibility)GetValue(VerticalScrollBarVisibilityProperty);
             set => SetValue(VerticalScrollBarVisibilityProperty, value);
+        }
+
+        private void PasswordBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EnterPressed?.Invoke();
+                e.Handled = true;
+            }
         }
     }
 }

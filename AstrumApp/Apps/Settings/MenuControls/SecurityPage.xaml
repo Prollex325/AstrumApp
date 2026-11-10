@@ -20,19 +20,20 @@
                     <Setter Property="Margin" Value="0,0,30,0"/>
                 </Style>
             </WrapPanel.Resources>
-            <controls:SecurityCard Title="Пароль" Icon="\Assets\icons\settings\password.png" AccentColor="#8B7BFF">
+            <controls:SecurityCard Title="Пароль" Icon="\Assets\icons\settings\key-round.svg" AccentColor="#8B7BFF" Width="220"
+                                   NavPage="ChangePasswordPage">
                 <controls:SecurityCard.CardContent>
-                    <TextBlock Text="Надежный пароль" FontSize="18" Foreground="White"/>
+                    <TextBlock Text="Ваш текущий пароль от аккаунта" FontSize="18" Foreground="White" TextWrapping="Wrap"/>
                 </controls:SecurityCard.CardContent>
             </controls:SecurityCard>
 
-            <controls:SecurityCard Title="Устройства" Icon="\Assets\icons\settings\password.png" AccentColor="#3DD7C8" Width="220">
+            <controls:SecurityCard Title="Устройства" Icon="\Assets\icons\settings\monitor-smartphone.svg" AccentColor="#3DD7C8" Width="220">
                 <controls:SecurityCard.CardContent>
-                    <TextBlock Text="Desktop..." FontSize="18" Foreground="White"/>
+                    <TextBlock Text="В разработке..." FontSize="18" Foreground="White"/>
                 </controls:SecurityCard.CardContent>
             </controls:SecurityCard>
 
-            <controls:SecurityCard Title="PIN" Icon="\Assets\icons\settings\password.png" AccentColor="#58D68D" 
+            <controls:SecurityCard Title="PIN" Icon="\Assets\icons\settings\shield-keyhole.svg" AccentColor="#58D68D" 
                                    NavPage="PinSettingsPage" NavButton="Настроить PIN">
                 <controls:SecurityCard.CardContent>
                     <StackPanel Margin="10,0,0,0">

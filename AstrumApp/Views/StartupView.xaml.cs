@@ -15,6 +15,7 @@ namespace AstrumApp.Views;
 public enum StartupStep
 {
     Supabase,
+    Connection,
     Session,
     Profile,
     Interface
@@ -83,7 +84,8 @@ public partial class StartupView : UserControl
 
     private readonly ObservableCollection<StartupStepItem> _steps =
     [
-        new(StartupStep.Supabase, "Подключение к Supabase"),
+        new(StartupStep.Supabase, "Создание локального клиента"),
+        new(StartupStep.Connection, "Проверка подключения к Supabase"),
         new(StartupStep.Session, "Проверка сессии"),
         new(StartupStep.Profile, "Загрузка профиля"),
         new(StartupStep.Interface, "Подготовка интерфейса")
@@ -92,6 +94,7 @@ public partial class StartupView : UserControl
     private readonly TextBlock[] _letters;
     private Storyboard? _loadingStoryboard;
     private bool _ready;
+    private bool _notReady;
     private bool _outroStarted;
     private bool _flashCovered;
 
@@ -107,7 +110,7 @@ public partial class StartupView : UserControl
 
     private void StartupView_Loaded(object sender, RoutedEventArgs e)
     {
-        if (!_ready && _loadingStoryboard is null)
+        if (!_ready && !_notReady && _loadingStoryboard is null)
             StartLoadingAnimation();
     }
 
@@ -131,13 +134,52 @@ public partial class StartupView : UserControl
     public void ShowReady()
     {
         if (_ready) return;
+        if (_outroStarted)
+            throw new InvalidOperationException("Финальный переход уже запущен.");
+
         _ready = true;
+        _notReady = false;
         StopLoadingAnimation();
         Particle.Opacity = 0;
         StatusCaption.Text = "Инициализация завершена";
-        ReadyNotice.Visibility = Visibility.Visible;
-        ReadyNotice.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1,
-            TimeSpan.FromMilliseconds(230)));
+
+        HideNotice(NotReadyNotice);
+        ShowNotice(ReadyNotice);
+    }
+
+    // Ошибка подготовки/подключения: остаёмся на экране StartupView.
+    // Не запускаем финальный переход и не показываем «Всё готово».
+    public void ShowNotReady(string message = "Не удалось связаться с Supabase. Проверьте подключение и попробуйте позже.")
+    {
+        if (_outroStarted)
+            throw new InvalidOperationException("Финальный переход уже запущен.");
+
+        _ready = false;
+        _notReady = true;
+        StopLoadingAnimation();
+        Particle.Opacity = 0;
+        StatusCaption.Text = "Запуск приостановлен";
+        NotReadyDescription.Text = message;
+
+        HideNotice(ReadyNotice);
+        ShowNotice(NotReadyNotice);
+    }
+
+    private static void HideNotice(UIElement element)
+    {
+        element.BeginAnimation(OpacityProperty, null);
+        element.Opacity = 0;
+        element.Visibility = Visibility.Collapsed;
+    }
+
+    private static void ShowNotice(UIElement element)
+    {
+        element.BeginAnimation(OpacityProperty, null);
+        element.Opacity = 0;
+        element.Visibility = Visibility.Visible;
+        element.Opacity = 1;
+        element.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1,
+            TimeSpan.FromMilliseconds(230)) { FillBehavior = FillBehavior.Stop });
     }
 
     // Этап 1 финального перехода: звезда проходит по спирали и экран покрывается белым.

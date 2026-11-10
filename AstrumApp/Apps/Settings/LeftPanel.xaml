@@ -144,6 +144,7 @@
                 <ListBoxItem Content="Профиль" MouseLeftButtonUp="ProfileButton_Click"/>
                 <ListBoxItem Content="Безопасность" MouseLeftButtonUp="SecurityButton_Click"/>
                 <ListBoxItem Content="Уведомления" IsEnabled="False"/>
+                <ListBoxItem Content="Обновления" MouseLeftButtonUp="ChangelogButton_Click"/>
                 <ListBoxItem Content="О системе" MouseLeftButtonUp="SystemInfoButton_Click"/>
             </ListBox>
         </StackPanel>

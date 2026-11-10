@@ -43,6 +43,10 @@ namespace AstrumApp.Apps.Settings
         {
             App.Navigation.NavigateMenu(NavigationPage.Security);
         }
+        private void ChangelogButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigation.NavigateMenu(NavigationPage.ChangelogPage);
+        }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {

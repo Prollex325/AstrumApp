@@ -1,4 +1,4 @@
-<UserControl x:Class="AstrumApp.Controls.ProgressPage"
+﻿<UserControl x:Class="AstrumApp.Controls.ProgressPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -62,7 +62,8 @@
             <ScaleTransform x:Name="AppearScale" ScaleX="0.96" ScaleY="0.96"/>
         </Grid.RenderTransform>
 
-        <Border CornerRadius="25" BorderThickness="1">
+        <!-- Отдельный визуальный слой: тень применяется только к фону, а не к контенту. -->
+        <Border CornerRadius="25" BorderThickness="1" IsHitTestVisible="False">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <GradientStop Color="#182431" Offset="0"/>
@@ -81,8 +82,10 @@
                 <DropShadowEffect Color="#000000" BlurRadius="29"
                                   ShadowDepth="11" Opacity="0.65"/>
             </Border.Effect>
+        </Border>
 
-            <Grid ClipToBounds="True">
+        <!-- Содержимое поверх фона. Margin=1 компенсирует прежний BorderThickness=1. -->
+        <Grid Margin="1" ClipToBounds="True">
                 <!-- Деликатные световые пятна на фоне -->
                 <!--<Ellipse Width="280" Height="280" Fill="#153E83CB"
                      HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -247,7 +250,5 @@
                            TextAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </Grid>
-
-        </Border>
     </Grid>
 </UserControl>

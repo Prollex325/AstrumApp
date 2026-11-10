@@ -8,24 +8,29 @@
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="300">
 
-    <Border Width="300" Height="400" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5"
-            CornerRadius="22" BorderThickness="1">
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FF1B222A" Offset="0"/>
-                <GradientStop Color="#FF2A3642" Offset="0.5"/>
-                <GradientStop Color="#FF1F2A33" Offset="1"/>
-            </LinearGradientBrush>
-        </Border.Background>
-        <Border.BorderBrush>
-            <SolidColorBrush Color="#22FFFFFF"/>
-        </Border.BorderBrush>
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
-        </Border.Effect>
-        
+    <Grid Width="300" Height="400"
+          VerticalAlignment="Center"
+          HorizontalAlignment="Center">
+        <!-- Визуальный слой: градиент, рамка и тень. Не содержит текста и контролов. -->
+        <Border CornerRadius="22" BorderThickness="1" IsHitTestVisible="False">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF1B222A" Offset="0"/>
+                    <GradientStop Color="#FF2A3642" Offset="0.5"/>
+                    <GradientStop Color="#FF1F2A33" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.BorderBrush>
+                <SolidColorBrush Color="#22FFFFFF"/>
+            </Border.BorderBrush>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
+            </Border.Effect>
+        </Border>
 
-        <Grid>
+        <!-- Содержимое отдельно от DropShadowEffect, чтобы WPF не размывал текст.
+             Margin=6 заменяет прежние BorderThickness=1 + Padding=5. -->
+        <Grid Margin="6">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -54,5 +59,5 @@
             <Button x:Name="NextButton" Content="Далее" Grid.Row="2" Width="160" Background="#4A8DFF" 
                     Foreground="White" BorderBrush="#35FFFFFF" Click="NextButton_Click"/>
         </Grid>
-    </Border>
+    </Grid>
 </UserControl>

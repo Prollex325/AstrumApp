@@ -43,19 +43,25 @@ namespace AstrumApp.Apps.Authentication
         {
             ProgressPageControl.SetStatus("Создаём аккаунт...");
             AuthResult result = await App.Supabase.Registration();
-            ProgressPageControl.SetStatus("Загружаем аватарку...");
-            string newPath = await App.Supabase.FirstUploadAvatarAsync(AppPaths.AvatarPathTemp);
-            ProgressPageControl.SetStatus("Сохраняем аватарку...");
-            bool avatarSaved = await App.Supabase.UpdateAvatarPathAsync(newPath);
-
-            if (result.Success && avatarSaved)
+            if (result.Success)
             {
-                ProgressPageControl.ShowSuccess();
-                FrozenImage.DeleteFile(AppPaths.AvatarPathTemp);
+                ProgressPageControl.SetStatus("Загружаем аватарку...");
+                string newPath = await App.Supabase.FirstUploadAvatarAsync(AppPaths.AvatarPathTemp);
+                ProgressPageControl.SetStatus("Сохраняем аватарку...");
+                bool avatarSaved = await App.Supabase.UpdateAvatarPathAsync(newPath);
+
+                if (avatarSaved)
+                {
+                    ProgressPageControl.ShowSuccess();
+                    FrozenImage.DeleteFile(AppPaths.AvatarPathTemp);
+                }
+                else
+                    ProgressPageControl.ShowError();
             }
             else
             {
-                ProgressPageControl.ShowError();
+                if (result.Error != null) ProgressPageControl.ShowError(result.Error);
+                else ProgressPageControl.ShowError();
             }
         }
     }

@@ -23,7 +23,6 @@ namespace AstrumApp.Apps.Settings.MenuControls
 
             Loaded += (s, e) =>
             {
-                Debug.WriteLine(App.Security.Pin.PinStatusText);
             };
         }
     }

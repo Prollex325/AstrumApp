@@ -2,6 +2,7 @@ using AstrumApp.Profile;
 using AstrumApp.Services;
 using Supabase;
 using Supabase.Gotrue;
+using Supabase.Gotrue.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,6 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using AuthUser = Supabase.Gotrue.User;
 using SupabaseClient = Supabase.Client;
 
@@ -60,7 +60,6 @@ namespace AstrumApp.AuthManager
 
             return Client.Auth.CurrentUser;
         }
-
 
         public async Task ApplyUserAsync(User user)
         {
@@ -178,16 +177,30 @@ namespace AstrumApp.AuthManager
 
                 Debug.WriteLine($"Attempting to register user with email: {_email}, metadata: {JsonSerializer.Serialize(_userMetadata)}");
 
-                var response = await Client.Auth.SignUp(_email, _password, options);
-                if (response?.User == null)
-                    return new AuthResult { Success = false };
+                try { 
+                    var response = await Client.Auth.SignUp(_email, _password, options);
+                    Debug.WriteLine(response);
+                    if (response?.User == null)
+                        return new AuthResult { Success = false };
 
-                // При обязательном подтверждении почты регистрация НЕ равна входу.
-                // Подключаем профиль лишь тогда, когда SDK действительно имеет сессию.
-                if (Client.Auth.CurrentUser != null)
-                    _ = ApplyUserAsync(Client.Auth.CurrentUser);
+                    // При обязательном подтверждении почты регистрация НЕ равна входу.
+                    // Подключаем профиль лишь тогда, когда SDK действительно имеет сессию.
+                    if (Client.Auth.CurrentUser != null)
+                        _ = ApplyUserAsync(Client.Auth.CurrentUser);
 
-                return new AuthResult { Success = true };
+                    return new AuthResult { Success = true };
+                }
+                catch (GotrueException ex)
+                {
+                    if (ex.Message.Contains("User already registered"))
+                    {
+                        return new AuthResult { Success = false, Error = "Пользователь с такой почтой уже существует" };
+                    }
+                    else
+                    {
+                        return new AuthResult { Success = false };
+                    }
+                }
             }
             catch (Supabase.Gotrue.Exceptions.GotrueException ex)
             {
@@ -213,6 +226,130 @@ namespace AstrumApp.AuthManager
                     Success = false,
                     Error = ex.Message
                 };
+            }
+        }
+
+        public async Task UpdateUserData(UserProfileViewModel profile, long timestamp, string? avatarPath)
+        {
+            if (Client == null)
+                throw new InvalidOperationException("Supabase client is not initialized.");
+
+            var attributes = new UserAttributes
+            {
+                Data = new Dictionary<string, object>
+                {
+                    ["display_name"] = profile.Username,
+                    ["bio"] = profile.Bio,
+                    ["updated_at"] = timestamp,
+                    ["avatar_path"] = avatarPath ?? string.Empty
+                }
+            };
+
+            if (profile.Email != Client.Auth.CurrentUser?.Email)
+            {
+                //attributes.Email = profile.Email;
+            }
+
+            var user = await Client.Auth.Update(attributes); // здесь ошибка че то с почтой ваще хз
+        }
+
+        public async Task<bool> UpdateUserPassword(string newPassword)
+        {
+            if (Client == null) return false;
+
+            var attributes = new UserAttributes
+            {
+                Password = newPassword
+            };
+
+            var user = await Client.Auth.Update(attributes);
+            return user != null;
+        }
+
+        public async Task<string> UpdateAvatarAsync(string filePath)
+        {
+            if (Client == null || Client.Auth.CurrentUser == null || Client.Auth.CurrentUser.Id == null || _avatarStorage == null)
+                throw new InvalidOperationException("Supabase client is not initialized.");
+
+            string oldPath = Client.Auth.CurrentUser.UserMetadata.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                await _avatarStorage.DeleteAvatarAsync(oldPath);
+                return string.Empty;
+            }
+            return await _avatarStorage.UploadAvatarAsync(Client.Auth.CurrentUser.Id, filePath, oldPath);
+        }
+
+        public void SetData(string key, string value) => _userMetadata[key] = value;
+        public object? GetData(string key) => _userMetadata.GetValueOrDefault(key);
+
+        public async Task<bool> VerifyPasswordAsync(string password)
+            {
+                if (Client?.Auth.CurrentUser is not { } currentUser)
+                    throw new InvalidOperationException("Пользователь не авторизован.");
+
+                string email = currentUser.Email
+                    ?? throw new InvalidOperationException("Email пользователя отсутствует.");
+
+                string url = Environment.GetEnvironmentVariable("SUPABASE_URL")!;
+                string key = Environment.GetEnvironmentVariable("SUPABASE_KEY")!;
+
+                // Отдельный клиент, не связанный с основной сессией
+                var verifier = new SupabaseClient(url, key, new SupabaseOptions
+                {
+                    AutoRefreshToken = false,
+                    AutoConnectRealtime = false
+                });
+
+                await verifier.InitializeAsync();
+
+                try
+                {
+                    var session = await verifier.Auth.SignIn(email, password);
+
+                    return session?.User?.Id == currentUser.Id;
+                }
+                catch (GotrueException ex) when (
+                    ex.StatusCode == 400 &&
+                    ex.Message.Contains("Invalid login credentials",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+                finally
+                {
+                    if (verifier.Auth.CurrentSession != null)
+                    {
+                        try
+                        {
+                            await verifier.Auth.SignOut(
+                                Supabase.Gotrue.Constants.SignOutScope.Local);
+                        }
+                        catch
+                        {
+                            // Ошибку очистки временной сессии можно записать в лог.
+                        }
+                    }
+                }
+            }
+
+        public async Task<bool> CheckConnectionAsync()
+        {
+            if (Client == null)
+                return false;
+
+            try
+            {
+                var settings = await Client.Auth.Settings()
+                    .WaitAsync(TimeSpan.FromSeconds(5));
+
+                return settings != null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка подключения к Supabase: {ex.Message}");
+                return false;
             }
         }
 
@@ -261,48 +398,6 @@ namespace AstrumApp.AuthManager
             }
             App.Session.Profile.Load(name, bio, email, avatar, registeredAt, updatedAt, isPremium);
         }
-
-        public async Task UpdateUserData(UserProfileViewModel profile, long timestamp, string? avatarPath)
-        {
-            if (Client == null)
-                throw new InvalidOperationException("Supabase client is not initialized.");
-
-            var attributes = new UserAttributes
-            {
-                Data = new Dictionary<string, object>
-                {
-                    ["display_name"] = profile.Username,
-                    ["bio"] = profile.Bio,
-                    ["updated_at"] = timestamp,
-                    ["avatar_path"] = avatarPath ?? string.Empty
-                }
-            };
-
-            if (profile.Email != Client.Auth.CurrentUser?.Email)
-            {
-                //attributes.Email = profile.Email;
-            }
-
-            var user = await Client.Auth.Update(attributes); // здесь ошибка че то с почтой ваще хз
-        }
-
-        public async Task<string> UpdateAvatarAsync(string filePath)
-        {
-            if (Client == null || Client.Auth.CurrentUser == null || Client.Auth.CurrentUser.Id == null || _avatarStorage == null)
-                throw new InvalidOperationException("Supabase client is not initialized.");
-
-            string oldPath = Client.Auth.CurrentUser.UserMetadata.GetValueOrDefault("avatar_path")?.ToString() ?? string.Empty;
-
-            if (string.IsNullOrEmpty(filePath))
-            {
-                await _avatarStorage.DeleteAvatarAsync(oldPath);
-                return string.Empty;
-            }
-            return await _avatarStorage.UploadAvatarAsync(Client.Auth.CurrentUser.Id, filePath, oldPath);
-        }
-
-        public void SetData(string key, string value) => _userMetadata[key] = value;
-        public object? GetData(string key) => _userMetadata.GetValueOrDefault(key);
 
         private static SupabaseError? TryParseError(string message)
         {

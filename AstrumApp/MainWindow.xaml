@@ -30,13 +30,13 @@
             </controls:LockScreen.RenderTransform>
         </controls:LockScreen>
 
-        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Visible"/>
+        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Collapsed"/>
 
         <controls:NotificationControl HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0, 0, 0, 50"/>
         <views:WelcomeView x:Name="WelcomeView" Visibility="Collapsed" AutoPlayIntro="False"/>
-        
-        <views:StartupView x:Name="StartupView" Visibility="Visible"/>
-        
+
+        <views:StartupView x:Name="StartupView" Visibility="Collapsed" IsHitTestVisible="False"/>
+
         <Rectangle x:Name="BlackoutMask" Fill="Black" Opacity="0.5" Visibility="Hidden"/>
     </Grid>
 </Window>

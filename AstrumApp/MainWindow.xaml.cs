@@ -4,13 +4,14 @@ using AstrumApp.Services;
 using AstrumApp.Views;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using AstrumApp.Security.PasswordWindowDir;
 //TODO : консоль разработчика
 
-//TODO : изменение пароля (с защитой через пин) <-- Может быть
 //TODO : возможно устройства <-- Пока не надо
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
 //TODO : выход из аккаунта и удаление аккаунта
@@ -48,6 +49,8 @@ namespace AstrumApp
                     //widget = new DesktopWidget();
                     //widget.Show();
                 }));
+
+                
             };
 
             coordinator = new(StartupView, WelcomeView);
@@ -56,6 +59,9 @@ namespace AstrumApp
             settingsPage = new MainSettingsPage();
 
             ContentRendered += MainWindow_ContentRendered;
+
+            //CloseStartupView();
+            //Unlock();
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -70,7 +76,11 @@ namespace AstrumApp
 
                 if (coordinator == null) return;
 
-                await coordinator.StartUpScenario();
+                bool result = await coordinator.StartUpScenario();
+                if (!result)
+                {
+                    Close();
+                }
 
             }
             catch (Exception ex)
@@ -98,9 +108,9 @@ namespace AstrumApp
         public void NavigateToAuth(Apps.Authentication.NavigationPage page, string err = "")
         {
             if (!string.IsNullOrEmpty(err))
-            {
                 App.Notifications.Show(err, CardTypes.Error);
-            }
+
+            AuthFrame.Visibility = Visibility.Visible;
             authWindow.SetStartPage(page);
             AuthFrame.Navigate(authWindow);
         }
