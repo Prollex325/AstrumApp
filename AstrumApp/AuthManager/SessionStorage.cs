@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,34 +11,37 @@ namespace AstrumApp.AuthManager
 {
     public class SessionStorage : IGotrueSessionPersistence<AuthSession>
     {
-        private static readonly string SessionPath = Path.Combine(AppPaths.AppFolder, "session.dat");
+        private string? _sessionPath;
+
+        public SessionStorage(string? path = null)
+        {
+            _sessionPath = path;
+        }
 
         public void SaveSession(AuthSession session)
         {
+            if (_sessionPath == null)
+            {
+
+            }
             string json = JsonConvert.SerializeObject(session);
             byte[] data = Encoding.UTF8.GetBytes(json);
 
-            byte[] encrypted = ProtectedData.Protect(
-                data,
-                null,
-                DataProtectionScope.CurrentUser
-            );
+            byte[] encrypted = ProtectedData.Protect(data, null, DataProtectionScope.CurrentUser);
 
-            Directory.CreateDirectory(
-                Path.GetDirectoryName(SessionPath)!
-            );
+            Directory.CreateDirectory(Path.GetDirectoryName(_sessionPath)!);
 
-            File.WriteAllBytes(SessionPath, encrypted);
+            File.WriteAllBytes(_sessionPath, encrypted);
         }
 
         public AuthSession? LoadSession()
         {
-            if (!File.Exists(SessionPath))
+            if (!File.Exists(_sessionPath))
                 return null;
 
             try
             {
-                byte[] encrypted = File.ReadAllBytes(SessionPath);
+                byte[] encrypted = File.ReadAllBytes(_sessionPath);
 
                 byte[] data = ProtectedData.Unprotect(
                     encrypted,
@@ -61,8 +65,8 @@ namespace AstrumApp.AuthManager
 
         public void DestroySession()
         {
-            if (File.Exists(SessionPath))
-                File.Delete(SessionPath);
+            if (File.Exists(_sessionPath))
+                File.Delete(_sessionPath);
         }
     }
 }

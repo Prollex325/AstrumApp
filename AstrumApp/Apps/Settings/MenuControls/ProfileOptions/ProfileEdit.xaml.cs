@@ -5,8 +5,9 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
+using AstrumApp.Apps.Settings.Navigation;
 
-namespace AstrumApp.Apps.Settings.MenuControls
+namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
 {
     public partial class ProfileEdit : UserControl, ICanClose
     {

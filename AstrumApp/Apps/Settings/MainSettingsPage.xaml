@@ -7,7 +7,8 @@
              xmlns:controls="clr-namespace:AstrumApp.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="585" d:DesignWidth="1040"
-             x:Name="SettingsControl">
+             x:Name="SettingsControl"
+             PreviewMouseDown="Settings_PreviewMouseDown">
 
     <Grid>
         <Grid.Background>

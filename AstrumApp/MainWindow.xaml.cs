@@ -8,14 +8,21 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
-using AstrumApp.Security.PasswordWindowDir;
+using System.Windows.Threading;     
 //TODO : консоль разработчика
 
 //TODO : возможно устройства <-- Пока не надо
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
 //TODO : выход из аккаунта и удаление аккаунта
 //TODO : управление аккаунтами
+//TODO : Добавить переход на страницы управления аккаунта
+
+//TODO : опустить сервис навигации до уровня приложения настроек
+
+//TODO : закрывать меню опций аккаунта при нажатии на другие части окна
+//TODO : реализовать еще две функции кнопок опций
+
+//TODO : регистрация авторизация и тд добавить обработку Enter
 namespace AstrumApp
 {
     public partial class MainWindow : Window
@@ -49,8 +56,6 @@ namespace AstrumApp
                     //widget = new DesktopWidget();
                     //widget.Show();
                 }));
-
-                
             };
 
             coordinator = new(StartupView, WelcomeView);
@@ -60,8 +65,9 @@ namespace AstrumApp
 
             ContentRendered += MainWindow_ContentRendered;
 
-            //CloseStartupView();
-            //Unlock();
+            CloseStartupView();
+            Unlock();
+            OpenSettings();
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -97,7 +103,6 @@ namespace AstrumApp
         {
             MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(settingsPage);
-            settingsPage.ToStartWin();
         }
 
         public void NavigateToMain()
@@ -210,18 +215,7 @@ namespace AstrumApp
         {
             /*if (App.Core.CurrentProcessName != "SettingsApp") return;*/
 
-            switch (e.ChangedButton)
-            {
-                case MouseButton.XButton1:
-                    App.Navigation.Back();
-                    e.Handled = true;
-                    break;
-
-                case MouseButton.XButton2:
-                    //App.Navigation.Forward();
-                    //e.Handled = true;
-                    break;
-            }
+            
         }
 
         private void UnLoad(object sender, RoutedEventArgs e)

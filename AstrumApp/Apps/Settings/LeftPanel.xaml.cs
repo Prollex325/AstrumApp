@@ -1,4 +1,6 @@
-﻿using AstrumApp.Services;
+﻿using AstrumApp.Apps.Settings.Navigation;
+using Supabase.Postgrest;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,6 +15,16 @@ namespace AstrumApp.Apps.Settings
     public partial class LeftPanel : UserControl
     {
         int previousIndex = -1;
+        private bool _isProfileMenuOpen;
+
+        private Dictionary<NavigationPage, int> _pagesIndexes = new()
+        {
+            [NavigationPage.Profile] = 0,
+            [NavigationPage.Security] = 1,
+            // Уведомления = 2
+            [NavigationPage.ChangelogPage] = 3,
+            [NavigationPage.SystemInfo] = 4,
+        };
 
         public LeftPanel()
         {
@@ -23,12 +35,17 @@ namespace AstrumApp.Apps.Settings
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     SettingsItems.SelectedIndex = 0;
-                    SettingsItems_SelectionChanged(s, new SelectionChangedEventArgs(Selector.SelectionChangedEvent, new List<object>(),
-                                                      new List<object>()));
                 }));
             };
 
+            App.Navigation.NavigationNewMenu += SelectIndexFromPage;
+
             this.DataContext = App.Session.Profile;
+        }
+
+        public void SelectIndexFromPage(NavigationPage page)
+        {
+            SettingsItems.SelectedIndex = _pagesIndexes.GetValueOrDefault(page, 0);
         }
         
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
@@ -56,8 +73,47 @@ namespace AstrumApp.Apps.Settings
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
             ((Border)sender).Opacity = 1;
-            SettingsItems.SelectedIndex = 0;
-            App.Navigation.NavigateMenu(NavigationPage.Profile);
+
+            SetProfileMenuOpen(!_isProfileMenuOpen);
+        }
+
+        private void SetProfileMenuOpen(bool open)
+        {
+            _isProfileMenuOpen = open;
+
+            double currentHeight = ProfileMenuHost.ActualHeight;
+
+            // Определяем необходимую высоту по содержимому
+            ProfileInteractOptions.Measure(new Size(ProfileButton.ActualWidth, double.PositiveInfinity));
+
+            double targetHeight = open
+                ? ProfileInteractOptions.DesiredSize.Height
+                : 0;
+
+            // Останавливаем предыдущую анимацию
+            ProfileMenuHost.BeginAnimation(FrameworkElement.HeightProperty, null);
+            ProfileMenuHost.Height = currentHeight;
+
+            var animation = new DoubleAnimation
+            {
+                From = currentHeight,
+                To = targetHeight,
+                Duration = TimeSpan.FromMilliseconds(220),
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseInOut
+                },
+                FillBehavior = FillBehavior.Stop
+            };
+
+            animation.Completed += (_, _) =>
+            {
+                if (_isProfileMenuOpen == open)
+                    ProfileMenuHost.Height = open ? double.NaN : 0;
+            };
+
+            ProfileMenuHost.BeginAnimation(
+                FrameworkElement.HeightProperty, animation);
         }
 
         private void SettingsItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -69,8 +125,7 @@ namespace AstrumApp.Apps.Settings
 
             Dispatcher.InvokeAsync(() =>
             {
-                var newItem = SettingsItems.ItemContainerGenerator
-                    .ContainerFromIndex(newIndex) as ListBoxItem;
+                var newItem = SettingsItems.ItemContainerGenerator.ContainerFromIndex(newIndex) as ListBoxItem;
 
                 if (newItem == null)
                     return;
@@ -78,7 +133,8 @@ namespace AstrumApp.Apps.Settings
                 TranslateTransform? lastItemTransform = null;
                 FrameworkElement? lastItemIndicator = null;
 
-                if (previousIndex > -1)
+
+                if (previousIndex > -1) 
                 {
                     var lastItem = SettingsItems.ItemContainerGenerator
                         .ContainerFromIndex(previousIndex) as ListBoxItem;
@@ -134,11 +190,32 @@ namespace AstrumApp.Apps.Settings
                 };
 
                 newItemTransform?.BeginAnimation(TranslateTransform.YProperty, newItemTransformAnim);
-                
-                newItemIndicator?.Opacity = 1;
 
                 previousIndex = newIndex;
             });
+        }
+
+        private void ProfileEdit_Option(object sender, RoutedEventArgs e)
+        {
+            App.Navigation.NavigateMenu(NavigationPage.ProfileEdit);
+            SettingsItems.SelectedIndex = 0;
+        }
+
+        private void ProfileChange_Option(object sender, RoutedEventArgs e)
+        {
+            App.Navigation.NavigateMenu(NavigationPage.SwitchProfilePage);
+            SettingsItems.SelectedIndex = 0;
+        }
+
+        public void MouseDownPreviewed()
+        {
+            if (!_isProfileMenuOpen)
+                return;
+
+            if (ProfileButton.IsMouseOver || ProfileMenuHost.IsMouseOver)
+                return;
+
+            SetProfileMenuOpen(false);
         }
     }
 }

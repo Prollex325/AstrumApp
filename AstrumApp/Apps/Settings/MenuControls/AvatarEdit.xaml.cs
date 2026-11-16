@@ -31,7 +31,7 @@ namespace AstrumApp.Apps.Settings.MenuControls
                 App.Navigation.Back();
             };
 
-            AvatarPicker.EditCancelled += () =>
+            AvatarPicker.EditBack += () =>
             {
                 App.Navigation.Back();
             };

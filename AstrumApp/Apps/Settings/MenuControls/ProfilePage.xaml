@@ -9,5 +9,96 @@
              mc:Ignorable="d" 
              d:DesignHeight="585" d:DesignWidth="720">
 
-    <controls:UserCard x:Name="UserCardControl" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+    <UserControl.Resources>
+        <Style TargetType="Border" x:Key="CardType">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF1E262D" Offset="0"/>
+                        <GradientStop Color="#FF2F3A43" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="#00000000"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                To="#FF4DA3FF" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                To="#00000000" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <controls:UserCard x:Name="UserCardControl" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0"
+                           Margin="0, 60, 0, 0"/>
+
+        <StackPanel Grid.Row="1" Visibility="Collapsed">
+            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+                    Style="{StaticResource CardType}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Сменить профиль" FontSize="18" FontWeight="SemiBold" Foreground="White"
+                               Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
+                        StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+                    Style="{StaticResource CardType}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Выйти из аккаунта" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="10,0,0,0"
+                               VerticalAlignment="Center"/>
+
+                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+                    Style="{StaticResource CardType}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Удалить аккаунт" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="10,0,0,0"
+                               VerticalAlignment="Center"/>
+
+                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </Grid>
 </UserControl>

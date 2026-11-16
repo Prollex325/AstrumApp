@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using AstrumApp.Apps.Settings.Navigation;
 using AstrumApp.Services;
 
 namespace AstrumApp.Apps.Settings.MenuControls.Security

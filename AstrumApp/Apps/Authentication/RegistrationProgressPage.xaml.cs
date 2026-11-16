@@ -53,7 +53,12 @@ namespace AstrumApp.Apps.Authentication
                 if (avatarSaved)
                 {
                     ProgressPageControl.ShowSuccess();
+                    BitmapSource? file = FrozenImage.CreateFromUri(AppPaths.AvatarPathTemp);
                     FrozenImage.DeleteFile(AppPaths.AvatarPathTemp);
+                    if (file != null)
+                    {
+                        FrozenImage.SaveToFile(file, AppPaths.AvatarPath);
+                    }
                 }
                 else
                     ProgressPageControl.ShowError();

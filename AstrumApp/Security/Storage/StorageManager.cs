@@ -12,6 +12,8 @@ namespace AstrumApp.Security.Storage
     {
         public SecurityData? Load()
         {
+            if (!File.Exists(AppPaths.SecurityFile)) return null;
+
             string json = File.ReadAllText(AppPaths.SecurityFile);
             if (string.IsNullOrWhiteSpace(json)) return null;
 

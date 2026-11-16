@@ -9,6 +9,91 @@
 
     <UserControl.Resources>
 
+        <Style x:Key="HoverMenuButtonStyle" TargetType="Border">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#FF141B22"/>
+
+            <Style.Triggers>
+
+                <!-- Наведение -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF253440" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF141B22" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#FF141B22"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,11"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Tag" Value="#FF253440"/>
+            <Setter Property="BorderBrush" Value="#FF344B5E"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="10" 
+                                Padding="{TemplateBinding Padding}">
+
+                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- Наведение -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding Tag, 
+                                    RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Trigger>
+
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BorderBrush, 
+                                        RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Trigger>
+
+                                <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="DangerMenuButtonStyle" TargetType="Button" BasedOn="{StaticResource MenuButtonStyle}">
+
+            <Setter Property="Background" Value="#241D23"/>
+            <Setter Property="Tag" Value="#48272D"/>
+            <Setter Property="BorderBrush" Value="#633038"/>
+        </Style>
+
+
         <Style x:Key="HoverBorderStyle" TargetType="Border">
             <Setter Property="Cursor" Value="Hand"/>
             
@@ -41,62 +126,94 @@
             </Style.Triggers>
         </Style>
 
+
         <Style x:Key="HoverListBoxItemStyle" TargetType="ListBoxItem">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Background" Value="#FF141B22" />
             <Setter Property="Cursor" Value="Hand"/>
 
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Grid Margin="10 0 0 0" x:Name="Root">
-                            <VisualStateManager.VisualStateGroups>
 
-                                <VisualStateGroup x:Name="SelectionStates">
+                        <Grid Margin="10,0,0,0">
 
-                                    <VisualState x:Name="Unselected">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity"
-                                                         To="0" Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </VisualState>
+                            <!-- Основной фон -->
+                            <Border x:Name="Bd"
+                            Background="#FF141B22"
+                            CornerRadius="10">
 
-                                    <VisualState x:Name="Selected">
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#FF2A3A4A" Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </VisualState>
-
-                                </VisualStateGroup>
-
-                            </VisualStateManager.VisualStateGroups>
-                            
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="10" CornerRadius="10">
                                 <Grid>
-                                    <ContentPresenter />
-                                    <TextBlock x:Name="ComingSoonText" Text="В разработке" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                               Margin="0,4,4,0" Foreground="DodgerBlue" FontSize="11" FontWeight="SemiBold" Visibility="Collapsed"/>
+                                    <!-- Фон наведения -->
+                                    <Border x:Name="HoverBackground"
+                                    Background="#FF1E2730"
+                                    CornerRadius="10"
+                                    Opacity="0"/>
+
+                                    <!-- Фон выбранного пункта -->
+                                    <Border x:Name="SelectedBackground"
+                                    Background="#FF2A3A4A"
+                                    CornerRadius="10"
+                                    Opacity="0"/>
+
+                                    <!-- Выбранный пункт + наведение -->
+                                    <Border x:Name="SelectedHoverBackground"
+                                    Background="#FF344A60"
+                                    CornerRadius="10"
+                                    Opacity="0"/>
+
+                                    <!-- Содержимое -->
+                                    <Border Padding="10"
+                                    Background="Transparent">
+                                        <Grid>
+                                            <ContentPresenter/>
+
+                                            <TextBlock x:Name="ComingSoonText"
+                                               Text="В разработке"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Top"
+                                               Margin="0,4,4,0"
+                                               Foreground="DodgerBlue"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Visibility="Collapsed"/>
+                                        </Grid>
+                                    </Border>
                                 </Grid>
                             </Border>
 
-                            <Border x:Name="SelectionIndicator" CornerRadius="3" Background="#FF1D79D6" Opacity="0" HorizontalAlignment="Left" Height="30" Width="6" Margin="-3 0 0 0">
+                            <!-- Индикатор выбора -->
+                            <Border x:Name="SelectionIndicator"
+                            CornerRadius="3"
+                            Background="#FF1D79D6"
+                            Opacity="0"
+                            HorizontalAlignment="Left"
+                            Height="30"
+                            Width="6"
+                            Margin="-3,0,0,0">
+
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="IndicatorTransform"/>
                                 </Border.RenderTransform>
                             </Border>
+
                         </Grid>
 
                         <ControlTemplate.Triggers>
+
+                            <!-- НАВЕДЕНИЕ -->
                             <Trigger Property="IsMouseOver" Value="True">
+
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#FF1E2730" Duration="0:0:0.2"/>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="HoverBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="1"
+                                        Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
@@ -104,19 +221,102 @@
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                            To="#FF141B22" Duration="0:0:0.2"/>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="HoverBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="0"
+                                        Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
+
                             </Trigger>
 
+                            <!-- ВЫБРАННЫЙ ЭЛЕМЕНТ -->
+                            <Trigger Property="IsSelected" Value="True">
+
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectedBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="1"
+                                        Duration="0:0:0.2"/>
+
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectionIndicator"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="1"
+                                        Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectedBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="0"
+                                        Duration="0:0:0.2"/>
+
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectionIndicator"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="0"
+                                        Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+
+                            </Trigger>
+
+                            <!-- ВЫБРАННЫЙ + НАВЕДЕНИЕ -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+
+                                <MultiTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectedHoverBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="1"
+                                        Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.EnterActions>
+
+                                <MultiTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                        Storyboard.TargetName="SelectedHoverBackground"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="0"
+                                        Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.ExitActions>
+
+                            </MultiTrigger>
+
+                            <!-- ОТКЛЮЧЁННЫЙ ЭЛЕМЕНТ -->
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="Gray"/>
-                                <Setter TargetName="ComingSoonText" Property="Visibility" Value="Visible"/>
-
-                                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+                                <Setter TargetName="ComingSoonText"
+                                Property="Visibility"
+                                Value="Visible"/>
+                                <Setter TargetName="Bd"
+                                Property="Opacity"
+                                Value="0.7"/>
                             </Trigger>
+
                         </ControlTemplate.Triggers>
 
                     </ControlTemplate>
@@ -124,11 +324,14 @@
             </Setter>
         </Style>
 
+
+
     </UserControl.Resources>
 
     <Grid Background="#FF141B22">
         <StackPanel Margin="0 10 0 0">
-            <Border Margin="5 10 5 0" CornerRadius="10" Height="120" Style="{StaticResource HoverBorderStyle}" MouseUp="Border_MouseUp" MouseDown="Border_MouseDown">
+            <Border x:Name="ProfileButton" Margin="5 10 5 0" CornerRadius="10" Height="120" Style="{StaticResource HoverBorderStyle}" 
+                    MouseUp="Border_MouseUp" MouseDown="Border_MouseDown">
                 <Grid>
                     <Image x:Name="UserAvatar" Width="100" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" 
                            Margin="10 10 0 0" Source="{Binding Avatar}"/>
@@ -138,7 +341,65 @@
                                HorizontalAlignment="Left" Margin="120 60 0 0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                 </Grid>
             </Border>
-            
+
+
+            <!--Click="EditProfile_Click" Click="SwitchProfile_Click" Click="DeleteProfile_Click"-->
+
+            <Border x:Name="ProfileMenuHost" Height="0" ClipToBounds="True">
+
+                <StackPanel x:Name="ProfileInteractOptions">
+
+                    <!-- Редактирование -->
+                    <Button Style="{StaticResource MenuButtonStyle}" Margin="5,2" Background="#1B2731" Click="ProfileEdit_Option">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="✎" FontSize="20" Foreground="#AABBC6" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1" Text="Редактировать профиль" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
+                    <!-- Смена профиля -->
+                    <Button Style="{StaticResource MenuButtonStyle}" Margin="5,2" Background="#1B2731"  Click="ProfileChange_Option">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="⇄" FontSize="20" Foreground="#AABBC6" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1" Text="Сменить профиль" FontSize="16" FontWeight="SemiBold" 
+                                VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
+                    <Border Height="1" Background="#34414D" Margin="16,8"/>
+
+                    <!-- Удаление -->
+                    <Button Style="{StaticResource DangerMenuButtonStyle}" Margin="5,2" Background="#241D23">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="×" FontSize="21" Foreground="#F08A8A" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1" Text="Удалить профиль" FontSize="16" FontWeight="SemiBold" Foreground="#F08A8A"
+                                VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
+                </StackPanel>
+            </Border>
+
+
+
             <ListBox x:Name="SettingsItems" Margin="15 20 5 0" Background="Transparent" BorderThickness="0" Foreground="White" FontSize="24"
                      FontWeight="Bold" ItemContainerStyle="{StaticResource HoverListBoxItemStyle}" SelectionChanged="SettingsItems_SelectionChanged">
                 <ListBoxItem Content="Профиль" MouseLeftButtonUp="ProfileButton_Click"/>

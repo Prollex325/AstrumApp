@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using AuthUser = Supabase.Gotrue.User;
 using SupabaseClient = Supabase.Client;
 
@@ -42,7 +43,9 @@ namespace AstrumApp.AuthManager
                     AutoConnectRealtime = false
                 });
 
-                Client.Auth.SetPersistence(new SessionStorage());
+                SessionStorage? storage = App.AccountManager.CreateStorage();
+
+                Client.Auth.SetPersistence(storage);
                 return true;
             } catch (Exception ex) {
                 return false;
@@ -51,8 +54,7 @@ namespace AstrumApp.AuthManager
 
         public async Task<User?> RestoreSessionAsync()
         {
-            if (Client == null)
-                return null;
+            if (Client == null) return null;
 
             Client.Auth.LoadSession();
 
@@ -160,7 +162,7 @@ namespace AstrumApp.AuthManager
                 var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 string _email = _userMetadata.GetValueOrDefault("email")?.ToString() ?? string.Empty;
                 string _password = _userMetadata.GetValueOrDefault("password")?.ToString() ?? string.Empty;
-                
+
 
                 _userMetadata["registered_at"] = now;
                 _userMetadata["updated_at"] = now;
@@ -177,7 +179,7 @@ namespace AstrumApp.AuthManager
 
                 Debug.WriteLine($"Attempting to register user with email: {_email}, metadata: {JsonSerializer.Serialize(_userMetadata)}");
 
-                try { 
+                try {
                     var response = await Client.Auth.SignUp(_email, _password, options);
                     Debug.WriteLine(response);
                     if (response?.User == null)
@@ -285,54 +287,54 @@ namespace AstrumApp.AuthManager
         public object? GetData(string key) => _userMetadata.GetValueOrDefault(key);
 
         public async Task<bool> VerifyPasswordAsync(string password)
+        {
+            if (Client?.Auth.CurrentUser is not { } currentUser)
+                throw new InvalidOperationException("Пользователь не авторизован.");
+
+            string email = currentUser.Email
+                ?? throw new InvalidOperationException("Email пользователя отсутствует.");
+
+            string url = Environment.GetEnvironmentVariable("SUPABASE_URL")!;
+            string key = Environment.GetEnvironmentVariable("SUPABASE_KEY")!;
+
+            // Отдельный клиент, не связанный с основной сессией
+            var verifier = new SupabaseClient(url, key, new SupabaseOptions
             {
-                if (Client?.Auth.CurrentUser is not { } currentUser)
-                    throw new InvalidOperationException("Пользователь не авторизован.");
+                AutoRefreshToken = false,
+                AutoConnectRealtime = false
+            });
 
-                string email = currentUser.Email
-                    ?? throw new InvalidOperationException("Email пользователя отсутствует.");
+            await verifier.InitializeAsync();
 
-                string url = Environment.GetEnvironmentVariable("SUPABASE_URL")!;
-                string key = Environment.GetEnvironmentVariable("SUPABASE_KEY")!;
+            try
+            {
+                var session = await verifier.Auth.SignIn(email, password);
 
-                // Отдельный клиент, не связанный с основной сессией
-                var verifier = new SupabaseClient(url, key, new SupabaseOptions
+                return session?.User?.Id == currentUser.Id;
+            }
+            catch (GotrueException ex) when (
+                ex.StatusCode == 400 &&
+                ex.Message.Contains("Invalid login credentials",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            finally
+            {
+                if (verifier.Auth.CurrentSession != null)
                 {
-                    AutoRefreshToken = false,
-                    AutoConnectRealtime = false
-                });
-
-                await verifier.InitializeAsync();
-
-                try
-                {
-                    var session = await verifier.Auth.SignIn(email, password);
-
-                    return session?.User?.Id == currentUser.Id;
-                }
-                catch (GotrueException ex) when (
-                    ex.StatusCode == 400 &&
-                    ex.Message.Contains("Invalid login credentials",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-                finally
-                {
-                    if (verifier.Auth.CurrentSession != null)
+                    try
                     {
-                        try
-                        {
-                            await verifier.Auth.SignOut(
-                                Supabase.Gotrue.Constants.SignOutScope.Local);
-                        }
-                        catch
-                        {
-                            // Ошибку очистки временной сессии можно записать в лог.
-                        }
+                        await verifier.Auth.SignOut(
+                            Supabase.Gotrue.Constants.SignOutScope.Local);
+                    }
+                    catch
+                    {
+                        // Ошибку очистки временной сессии можно записать в лог.
                     }
                 }
             }
+        }
 
         public async Task<bool> CheckConnectionAsync()
         {
@@ -353,7 +355,6 @@ namespace AstrumApp.AuthManager
             }
         }
 
-
         private async Task ApplyUser(AuthUser user)
         {
             if (_avatarStorage == null || user == null) return;
@@ -361,6 +362,7 @@ namespace AstrumApp.AuthManager
             var metadata = user.UserMetadata;
             var appMetadata = user.AppMetadata;
 
+            string userId = user.Id ?? string.Empty;
             string name = metadata?.GetValueOrDefault("username")?.ToString() ?? string.Empty;
             string bio = metadata?.GetValueOrDefault("bio")?.ToString() ?? string.Empty;
             string email = user.Email ?? string.Empty;
@@ -375,9 +377,7 @@ namespace AstrumApp.AuthManager
 
             bool isPremium = isPremiumString == "1";
 
-            Debug.WriteLine(isPremium);
-
-            App.Session.SetIdentity(user.Id, profileAvatarPath);
+            App.Session.SetIdentity(userId, profileAvatarPath);
 
             ImageSource? avatar = null;
             if (!string.IsNullOrEmpty(profileAvatarPath))
@@ -396,6 +396,8 @@ namespace AstrumApp.AuthManager
                     }
                 }
             }
+            SaveProfileToCache(userId, name, email, avatar);
+            SaveUserIDToAuth(userId);
             App.Session.Profile.Load(name, bio, email, avatar, registeredAt, updatedAt, isPremium);
         }
 
@@ -409,6 +411,42 @@ namespace AstrumApp.AuthManager
             {
                 return null;
             }
+        }
+
+        private static void SaveProfileToCache(string userId, string username, string email, ImageSource? avatar)
+        {
+            if (!Directory.Exists(AppPaths.CacheFolder)) Directory.CreateDirectory(AppPaths.CacheFolder);
+
+            string userCachePath = Path.Combine(AppPaths.CacheFolder, userId);
+            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
+
+            string profilePath = Path.Combine(userCachePath, "profile.json");
+            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
+
+            var profile = new
+            {
+                username,
+                email
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(profile, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(profilePath, json);
+
+            string avatarCachePath = Path.Combine(userCachePath, "avatar.png");
+            if (avatar != null) FrozenImage.SaveToFile((BitmapSource)avatar, avatarCachePath);
+        }
+
+        private static void SaveUserIDToAuth(string activeID)
+        {
+            if(!Directory.Exists(AppPaths.AuthFolder)) Directory.CreateDirectory(AppPaths.AuthFolder);
+
+            string activePath = Path.Combine(AppPaths.AuthFolder, "active.json");
+
+            var profile = new
+            {
+                activeID
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(profile, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(activePath, json);
         }
     }
 

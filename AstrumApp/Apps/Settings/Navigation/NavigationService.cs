@@ -1,62 +1,48 @@
 ﻿using AstrumApp.Apps.Settings;
 using AstrumApp.Apps.Settings.MenuControls;
 using AstrumApp.Apps.Settings.MenuControls.Security;
+using AstrumApp.Apps.Settings.MenuControls.ProfileOptions;
 using AstrumApp.Controls;
 using AstrumApp.Interfaces;
+using AstrumApp.Services;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace AstrumApp.Services
+namespace AstrumApp.Apps.Settings.Navigation
 {
     public enum NavigationPage
     {
-        NotFoundPage,
         Profile,
         ProfileEdit,
-        SystemInfo,
         AvatarEdit,
+        SwitchProfilePage,
+
         Security,
-        ChangelogPage,
-
-        ChangePasswordPage,
-
         PinSettingsPage,
         CreatePinPage,
         ChangePinPage,
-        DeletePinPage
+        DeletePinPage,
+        ChangePasswordPage,
+
+        ChangelogPage,
+
+        SystemInfo,
+
+        NotFoundPage,
+
+        Null,
     }
+
+    public record NavigationNode(NavigationPage? Parent, string Title);
 
     public static class NavigationPageExtensions
     {
         public static string GetTitle(this NavigationPage page)
         {
-            return page switch
-            {
-                NavigationPage.Profile => "Профиль",
-                NavigationPage.ProfileEdit => "Редактирование профиля",
-                NavigationPage.AvatarEdit => "Аватар",
-
-                NavigationPage.SystemInfo => "О системе",
-
-                NavigationPage.Security => "Безопасность",
-
-                NavigationPage.PinSettingsPage => "Настройки PIN",
-
-                NavigationPage.CreatePinPage => "Создание PIN",
-                NavigationPage.ChangePinPage => "Изменение PIN",
-                NavigationPage.DeletePinPage => "Удаление PIN",
-
-                NavigationPage.ChangePasswordPage => "Изменить пароль",
-
-                NavigationPage.ChangelogPage => "Список изменений",
-
-                NavigationPage.NotFoundPage => "Страница не найдена",
-
-                _ => "Неизвестно"
-            };
+            return App.Navigation.GetPageTitle(page);
         }
     }
 
@@ -66,35 +52,76 @@ namespace AstrumApp.Services
 
         private readonly Dictionary<NavigationPage, UserControl> _pages = new();
 
+        private readonly Dictionary<NavigationPage, NavigationNode> _tree = new()
+        {
+            [NavigationPage.Profile] = new(null, "Профиль"),
+            [NavigationPage.ProfileEdit] = new(NavigationPage.Profile, "Редактирование профиля"),
+            [NavigationPage.AvatarEdit] = new(NavigationPage.ProfileEdit, "Аватар"),
+            [NavigationPage.SwitchProfilePage] = new(NavigationPage.Profile, "Смена профиля"),
+
+            [NavigationPage.Security] = new(null, "Безопасность"),
+            [NavigationPage.ChangePasswordPage] = new(NavigationPage.Security, "Изменить пароль"),
+            [NavigationPage.PinSettingsPage] = new(NavigationPage.Security, "PIN"),
+            [NavigationPage.CreatePinPage] = new(NavigationPage.PinSettingsPage, "Создание"),
+            [NavigationPage.ChangePinPage] = new(NavigationPage.PinSettingsPage, "Изменение"),
+            [NavigationPage.DeletePinPage] = new(NavigationPage.PinSettingsPage, "Удаление"),
+
+            [NavigationPage.SystemInfo] = new(null, "О системе"),
+
+            [NavigationPage.ChangelogPage] = new(null, "Список изменений"),
+
+            [NavigationPage.NotFoundPage] = new(null, "Страница не найдена"),
+        };
+
         private readonly List<NavigationPage> _backHistory = [];
         private readonly List<NavigationPage> _forwardHistory = [];
+        private List<NavigationPage> _currentTreeHist = [];
 
         public event Action<List<NavigationPage>>? NavigationChanged;
 
-        public NavigationPage CurrentPage { get; private set; } = NavigationPage.NotFoundPage;
+        public event Action<NavigationPage>? NavigationNewMenu;
 
-        public void Initialize(ContentControl host)
+        public NavigationPage CurrentPage { get; private set; } = NavigationPage.Null;
+
+        public void Initialize(ContentControl host, NavigationPage? startPage)
         {
             _host = host;
 
             RegisterPages();
+
+            if (startPage is { } page)
+            { // NavigationPage? -> NavigationPage
+                _host.Content = _pages[page]; 
+                NavigateMenu(page);
+            }
         }
 
         private void RegisterPages()
         {
             _pages[NavigationPage.Profile] = new ProfilePage();
+            _pages[NavigationPage.SwitchProfilePage] = new SwitchProfilePage();
             _pages[NavigationPage.ProfileEdit] = new ProfileEdit();
-            _pages[NavigationPage.SystemInfo] = new SystemInfo();
             _pages[NavigationPage.AvatarEdit] = new AvatarEdit();
+
+
             _pages[NavigationPage.Security] = new SecurityPage();
-            _pages[NavigationPage.ChangelogPage] = new ChangelogPage();
             _pages[NavigationPage.ChangePasswordPage] = new ChangePasswordPage();
+
             _pages[NavigationPage.PinSettingsPage] = new PinSettingsPage();
             _pages[NavigationPage.CreatePinPage] = new CreatePinPage();
             _pages[NavigationPage.ChangePinPage] = new ChangePinPage();
             _pages[NavigationPage.DeletePinPage] = new DeletePinPage();
 
+            _pages[NavigationPage.SystemInfo] = new SystemInfo();
+
+            _pages[NavigationPage.ChangelogPage] = new ChangelogPage();
+
             _pages[NavigationPage.NotFoundPage] = new NotFoundPage();
+        }
+
+        public string GetPageTitle(NavigationPage page)
+        {
+            return _tree[page].Title;
         }
 
         public void BreadcrumbNavigate(NavigationPage page)
@@ -117,11 +144,12 @@ namespace AstrumApp.Services
                     int countToRemove = _backHistory.Count - index;
                     _backHistory.RemoveRange(index, countToRemove);
                 }
-                _forwardHistory.Add(CurrentPage);
 
                 CurrentPage = page;
 
                 SetPage(_pages[page], "Right");
+
+                ChangeTreeHist(page);
 
                 SendHistory();
             }
@@ -131,12 +159,14 @@ namespace AstrumApp.Services
         {
             if (CurrentPage == page)
                 return;
+
+            if (!(CurrentPage is NavigationPage.Null)) _backHistory.Add(CurrentPage);
+
             CurrentPage = page;
 
-            _backHistory.Clear();
-            _forwardHistory.Clear();
-
             SetMenu(_pages[page]);
+
+            ChangeTreeHist(page);
 
             SendHistory();
         }
@@ -145,32 +175,44 @@ namespace AstrumApp.Services
         {
             if (CurrentPage == page) return;
 
-            _backHistory.Add(CurrentPage);
-            _forwardHistory.Clear();
+            if (!(CurrentPage is NavigationPage.Null)) _backHistory.Add(CurrentPage);
 
             CurrentPage = page;
 
             SetPage(_pages[page], "Left");
 
+            ChangeTreeHist(page);
+
             SendHistory();
+        }
+
+        public void ChangeTreeHist(NavigationPage page)
+        {
+            _currentTreeHist.Clear();
+            NavigationPage lastPage = GetTreePath(page);
+            _currentTreeHist.Add(lastPage);
         }
 
         public void Back()
         {
-            if (_backHistory.Count == 0)
-                return;
+            if (_backHistory.Count == 0) return;
 
-            if (_pages[CurrentPage] is ICanClose closable && !closable.CanClose())
-                return;
+            if (_pages[CurrentPage] is ICanClose closable && !closable.CanClose()) return;
 
-            var previous = _backHistory[^1];
+            NavigationPage lastPage = _backHistory.Last();
 
             _backHistory.RemoveAt(_backHistory.Count - 1);
             _forwardHistory.Add(CurrentPage);
 
-            CurrentPage = previous;
+            if (_forwardHistory.Count > 20) _backHistory.RemoveAt(0);
 
-            SetPage(_pages[CurrentPage], "Right");
+            if (_tree[lastPage].Parent == null) NavigationNewMenu?.Invoke(lastPage);
+
+            CurrentPage = lastPage;
+
+            SetPage(_pages[lastPage], "Right");
+
+            ChangeTreeHist(lastPage);
 
             SendHistory();
         }
@@ -182,30 +224,40 @@ namespace AstrumApp.Services
             var next = _forwardHistory.Last();
             var current = _pages[CurrentPage];
 
-            if (current is ProfileEdit && _pages[next] is AvatarEdit)
-            {
-                if (current is ICanClose closable)
-                {
-                    if (!closable.CanClose()) return;
-                }
-            }
-
             _forwardHistory.RemoveAt(_forwardHistory.Count - 1);
             _backHistory.Add(CurrentPage);
+
+            if (_backHistory.Count > 20) _backHistory.RemoveAt(0);
+
+            if (_tree[next].Parent == null) NavigationNewMenu?.Invoke(next);
 
             CurrentPage = next;
 
             SetPage(_pages[next], "Left");
+
+            ChangeTreeHist(next);
 
             SendHistory();
         }
 
         public List<NavigationPage> SendHistory()
         {
-            var history = _backHistory.ToList();
-            history.Add(CurrentPage);
+            var history = _currentTreeHist.ToList();
+            //history.Add(CurrentPage);
             NavigationChanged?.Invoke(history);
             return history;
+        }
+
+        private NavigationPage GetTreePath(NavigationPage currentPage)
+        {
+            if (_tree[currentPage].Parent != null)
+            {
+                NavigationPage parent = _tree[currentPage].Parent ?? NavigationPage.NotFoundPage;
+                NavigationPage newPage = GetTreePath(parent);
+                _currentTreeHist.Add(newPage);
+            }
+
+            return currentPage; 
         }
 
         private void SetMenu(UserControl page)
@@ -219,7 +271,7 @@ namespace AstrumApp.Services
             }
         }
 
-        private async Task SetPage(UserControl page, String direction)
+        private void SetPage(UserControl page, String direction)
         {
             AnimatePage(page, direction);
 

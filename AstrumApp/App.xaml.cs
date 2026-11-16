@@ -1,4 +1,5 @@
-﻿using AstrumApp.AuthManager;
+﻿using AstrumApp.Apps.Settings.Navigation;
+using AstrumApp.AuthManager;
 using AstrumApp.Security;
 using AstrumApp.Services;
 using AstrumApp.Session;
@@ -12,6 +13,8 @@ namespace AstrumApp
 {
     public partial class App : Application
     {
+        public static AccountManager AccountManager { get; } = new();
+
         public static NotificationService Notifications { get; } = new();
 
         public static UserSession Session { get; } = new();

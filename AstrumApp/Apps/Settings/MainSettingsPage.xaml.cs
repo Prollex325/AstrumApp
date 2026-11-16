@@ -1,5 +1,6 @@
-﻿using AstrumApp.Services;
+﻿using AstrumApp.Apps.Settings.Navigation;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace AstrumApp.Apps.Settings
 {
@@ -9,20 +10,31 @@ namespace AstrumApp.Apps.Settings
         {
             InitializeComponent();
 
-            App.Navigation.Initialize(MenuPageHost);
-            App.Navigation.NavigateMenu(NavigationPage.Profile);
-        }
-
-        public void ToStartWin()
-        {
-            NavigationPage startWin = NavigationPage.Profile;
-            App.Navigation.NavigateMenu(startWin);
+            App.Navigation.Initialize(MenuPageHost, NavigationPage.SwitchProfilePage);
         }
 
         private void CloseSettings_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             App.Navigation.NavigateMenu(NavigationPage.NotFoundPage);
             if (App.Current.MainWindow is MainWindow window) window.CloseSettings();
+        }
+
+        private void Settings_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            switch (e.ChangedButton)
+            {
+                case MouseButton.XButton1:
+                    App.Navigation.Back();
+                    //e.Handled = true;
+                    break;
+
+                case MouseButton.XButton2:
+                    App.Navigation.Forward();
+                    //e.Handled = true;
+                    break;
+            }
+
+            LeftPanelControl.MouseDownPreviewed();
         }
     }
 }
