@@ -51,6 +51,8 @@ namespace AstrumApp
         {
             if (StartupView == null || WelcomeView == null) return false;
 
+            // ПОДГОТОВКА КЛИЕНТА
+
             StartupView.BeginStep(StartupStep.Supabase);
 
             bool done = supabase.PrepareClient();
@@ -60,6 +62,8 @@ namespace AstrumApp
             else
                 StartupView.FailStep(StartupStep.Supabase);
 
+
+            // ПРОВЕРКА ПОДКЛЮЧЕНИЯ
 
             bool connected = await App.Supabase.CheckConnectionAsync();
 
@@ -77,8 +81,10 @@ namespace AstrumApp
                 return false;
             }
 
+
+            // ПРОВЕРЯЕМ СУЩЕСТВУЮЩУЮ СЕССИЮ
+
             Supabase.Gotrue.User? user = null;
-            // Восстанавливаем сессию
             StartupView.BeginStep(StartupStep.Session);
 
             user = await supabase.RestoreSessionAsync();
@@ -88,7 +94,9 @@ namespace AstrumApp
             else
                 StartupView.FailStep(StartupStep.Session);
 
-            // Загружаем профиль только при наличии пользователя
+            
+            // ЕСЛИ ЕСТЬ ПОЛЬЗОВАТЕЛЬ ГРУЗИМ ПРОФИЛЬ
+
             if (user != null)
             {
                 StartupView.BeginStep(StartupStep.Profile);
@@ -104,7 +112,7 @@ namespace AstrumApp
             }
 
 
-            // Подготовка интерфейса
+            // ГОТОВИМ ИНТЕРФЕЙС
             StartupView.BeginStep(StartupStep.Interface);
 
             await Task.Delay(150);
