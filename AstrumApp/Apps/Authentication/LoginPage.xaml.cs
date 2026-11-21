@@ -26,13 +26,13 @@ namespace AstrumApp.Apps.Authentication
             PasswordBox.RaiseError("");
         }
 
-        private async void AuthButton_Click(object sender, RoutedEventArgs e)
+        public async void AuthButton_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Text.Trim();
 
-            EmailTextBox.RaiseError(""); 
-            PasswordBox.RaiseError(""); 
+            EmailTextBox.RaiseError("");
+            PasswordBox.RaiseError("");
 
             if (string.IsNullOrEmpty(email))
             {
@@ -119,6 +119,24 @@ namespace AstrumApp.Apps.Authentication
         private void EmailBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = e.Text.Any(c => !StringFormatService.IsAllowedEmailChar(c));
+        }
+
+        private void SwitchAccount(object sender, RoutedEventArgs e)
+        {
+            MainAuthWindow.Instance.NavigateToPage(NavigationPage.SelectProfile, Directions.Right);
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                MainAuthWindow.Instance.NavigateToPage(NavigationPage.SelectProfile, Directions.Right);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                AuthButton_Click(new(), new());
+            }
         }
     }
 }

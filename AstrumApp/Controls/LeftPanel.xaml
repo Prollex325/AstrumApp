@@ -96,8 +96,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Border Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" RenderTransformOrigin="0.5,0.5" 
-                        MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="1">
+                <Border x:Name="SettingsButton" Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" 
+                        RenderTransformOrigin="0.5,0.5" MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="1">
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource NavButtonStyle}">
                             <Setter Property="Background">
@@ -116,8 +116,8 @@
                     </Grid>
                 </Border>
 
-                <Border Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" RenderTransformOrigin="0.5,0.5" 
-                        MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="3">
+                <Border x:Name="AppsButton" Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" 
+                        RenderTransformOrigin="0.5,0.5" MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="3">
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource NavButtonStyle}">
                             <Setter Property="Background">
@@ -136,8 +136,8 @@
                     </Grid>
                 </Border>
 
-                <Border Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" RenderTransformOrigin="0.5,0.5" 
-                        MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="5">
+                <Border x:Name="GamesButton" Width="350" CornerRadius="25" MouseLeftButtonDown="Border_MouseLeftButtonDown" 
+                        RenderTransformOrigin="0.5,0.5" MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand" Grid.Row="5">
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource NavButtonStyle}">
                             <Setter Property="Background">

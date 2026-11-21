@@ -1,7 +1,7 @@
 ﻿using AstrumApp.Apps.Settings;
 using AstrumApp.Apps.Settings.MenuControls;
-using AstrumApp.Apps.Settings.MenuControls.Security;
 using AstrumApp.Apps.Settings.MenuControls.ProfileOptions;
+using AstrumApp.Apps.Settings.MenuControls.Security;
 using AstrumApp.Controls;
 using AstrumApp.Interfaces;
 using AstrumApp.Services;
@@ -10,15 +10,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace AstrumApp.Apps.Settings.Navigation
 {
     public enum NavigationPage
     {
+        None,
         Profile,
         ProfileEdit,
         AvatarEdit,
         SwitchProfilePage,
+        DeleteProfilePage,
 
         Security,
         PinSettingsPage,
@@ -31,9 +34,7 @@ namespace AstrumApp.Apps.Settings.Navigation
 
         SystemInfo,
 
-        NotFoundPage,
-
-        Null,
+        NotFoundPage
     }
 
     public record NavigationNode(NavigationPage? Parent, string Title);
@@ -58,6 +59,7 @@ namespace AstrumApp.Apps.Settings.Navigation
             [NavigationPage.ProfileEdit] = new(NavigationPage.Profile, "Редактирование профиля"),
             [NavigationPage.AvatarEdit] = new(NavigationPage.ProfileEdit, "Аватар"),
             [NavigationPage.SwitchProfilePage] = new(NavigationPage.Profile, "Смена профиля"),
+            [NavigationPage.DeleteProfilePage] = new(NavigationPage.Profile, "Удаления профиля"),
 
             [NavigationPage.Security] = new(null, "Безопасность"),
             [NavigationPage.ChangePasswordPage] = new(NavigationPage.Security, "Изменить пароль"),
@@ -81,7 +83,7 @@ namespace AstrumApp.Apps.Settings.Navigation
 
         public event Action<NavigationPage>? NavigationNewMenu;
 
-        public NavigationPage CurrentPage { get; private set; } = NavigationPage.Null;
+        public NavigationPage CurrentPage { get; private set; } = NavigationPage.None;
 
         public void Initialize(ContentControl host, NavigationPage? startPage)
         {
@@ -102,6 +104,7 @@ namespace AstrumApp.Apps.Settings.Navigation
             _pages[NavigationPage.SwitchProfilePage] = new SwitchProfilePage();
             _pages[NavigationPage.ProfileEdit] = new ProfileEdit();
             _pages[NavigationPage.AvatarEdit] = new AvatarEdit();
+            _pages[NavigationPage.DeleteProfilePage] = new DeleteProfilePage();
 
 
             _pages[NavigationPage.Security] = new SecurityPage();
@@ -160,11 +163,22 @@ namespace AstrumApp.Apps.Settings.Navigation
             if (CurrentPage == page)
                 return;
 
-            if (!(CurrentPage is NavigationPage.Null)) _backHistory.Add(CurrentPage);
+            if (!(CurrentPage is NavigationPage.None)) _backHistory.Add(CurrentPage);
+
+            var previous = CurrentPage;
 
             CurrentPage = page;
 
-            SetMenu(_pages[page]);
+            if (previous != NavigationPage.None)
+            {
+                if (GetParent(previous) == page)
+                {
+                    SetPage(_pages[page], "Right");
+                }
+                else SetMenu(_pages[page]);
+            }
+            else SetMenu(_pages[page]);
+
 
             ChangeTreeHist(page);
 
@@ -175,7 +189,7 @@ namespace AstrumApp.Apps.Settings.Navigation
         {
             if (CurrentPage == page) return;
 
-            if (!(CurrentPage is NavigationPage.Null)) _backHistory.Add(CurrentPage);
+            if (!(CurrentPage is NavigationPage.None)) _backHistory.Add(CurrentPage);
 
             CurrentPage = page;
 
@@ -243,9 +257,21 @@ namespace AstrumApp.Apps.Settings.Navigation
         public List<NavigationPage> SendHistory()
         {
             var history = _currentTreeHist.ToList();
-            //history.Add(CurrentPage);
             NavigationChanged?.Invoke(history);
             return history;
+        }
+
+        private NavigationPage GetParent(NavigationPage page)
+        {
+            if (_tree[page].Parent != null)
+            {
+                if (_tree[page].Parent is { } curPage)
+                {
+                    return GetParent(curPage);
+                }
+                else return NavigationPage.None;
+            }
+            else return page;
         }
 
         private NavigationPage GetTreePath(NavigationPage currentPage)

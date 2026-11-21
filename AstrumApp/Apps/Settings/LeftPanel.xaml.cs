@@ -201,9 +201,15 @@ namespace AstrumApp.Apps.Settings
             SettingsItems.SelectedIndex = 0;
         }
 
-        private void ProfileChange_Option(object sender, RoutedEventArgs e)
+        private void SwitchProfile_Option(object sender, RoutedEventArgs e)
         {
             App.Navigation.NavigateMenu(NavigationPage.SwitchProfilePage);
+            SettingsItems.SelectedIndex = 0;
+        }
+
+        private void DeleteProfile_Option(object sender, RoutedEventArgs e)
+        {
+            App.Navigation.NavigateMenu(NavigationPage.DeleteProfilePage);
             SettingsItems.SelectedIndex = 0;
         }
 

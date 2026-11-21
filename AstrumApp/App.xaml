@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="/ResourceDictionaries/ToggleStyles.xaml"/>
                 <ResourceDictionary Source="/ResourceDictionaries/TextBoxStyle.xaml"/>
                 <ResourceDictionary Source="/ResourceDictionaries/PasswordBoxStyle.xaml"/>
+                <ResourceDictionary Source="/ResourceDictionaries/CheckBoxStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

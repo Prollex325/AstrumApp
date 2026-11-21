@@ -62,6 +62,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
         private void Load(object sender, RoutedEventArgs e)
         {
             SaveButton.IsEnabled = profile.HasChanges;
+            App.Session.Profile.BeginEdit();
         }
 
         public bool CanClose() 

@@ -151,6 +151,20 @@ namespace AstrumApp.AuthManager
             }
         }
 
+        public async Task<AuthResult> SignOut()
+        {
+            if (Client == null) return new AuthResult { Success = false, Error = "Клиент не подключен" };
+
+            try
+            {
+                await Client.Auth.SignOut(Constants.SignOutScope.Local);
+                return new AuthResult { Success = true };
+            } catch(Exception ex)
+            {
+                return new AuthResult { Success = false, Error = ex.ToString() };
+            }
+        }
+
         public void SetData(string key, string value) => _userMetadata[key] = value;
         public object? GetData(string key) => _userMetadata.GetValueOrDefault(key);
 

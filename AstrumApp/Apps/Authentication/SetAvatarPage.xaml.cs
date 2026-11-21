@@ -51,10 +51,5 @@ namespace AstrumApp.Apps.Authentication
                 MainAuthWindow.Instance?.NavigateToPage(NavigationPage.Bio, Directions.Right);
             };
         }
-
-        private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            MainAuthWindow.Instance.NavigateToPage(NavigationPage.Registration, Directions.Right);
-        }
     }
 }

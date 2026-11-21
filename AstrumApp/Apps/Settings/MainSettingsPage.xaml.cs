@@ -10,12 +10,17 @@ namespace AstrumApp.Apps.Settings
         {
             InitializeComponent();
 
-            App.Navigation.Initialize(MenuPageHost, NavigationPage.SwitchProfilePage);
+            App.Navigation.Initialize(MenuPageHost, NavigationPage.Profile);
+        }
+        
+        public void OpenStartPage()
+        {
+            //App.Navigation.NavigateMenu(NavigationPage.Profile);
         }
 
         private void CloseSettings_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            App.Navigation.NavigateMenu(NavigationPage.NotFoundPage);
+            //App.Navigation.NavigateMenu(NavigationPage.NotFoundPage);
             if (App.Current.MainWindow is MainWindow window) window.CloseSettings();
         }
 

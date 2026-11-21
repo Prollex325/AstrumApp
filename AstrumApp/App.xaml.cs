@@ -13,11 +13,9 @@ namespace AstrumApp
 {
     public partial class App : Application
     {
-        public static AccountManager AccountManager { get; } = new();
-
-        public static NotificationService Notifications { get; } = new();
-
         public static UserSession Session { get; } = new();
+        public static AccountManager AccountManager { get; } = new();
+        public static NotificationService Notifications { get; } = new();
 
         public static SupabaseService Supabase { get; private set; } = new();
 

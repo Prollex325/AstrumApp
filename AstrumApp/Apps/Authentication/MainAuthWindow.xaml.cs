@@ -1,6 +1,7 @@
 ﻿using AstrumApp.Apps.Settings;
 using AstrumApp.Apps.Settings.MenuControls;
 using AstrumApp.Apps.Settings.MenuControls.Security;
+using AstrumApp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,7 +26,7 @@ namespace AstrumApp.Apps.Authentication
         SetAvatar,
         Bio,
         UserCard,
-
+        SelectProfile,
         Progress
     }
     public enum Directions
@@ -61,18 +62,19 @@ namespace AstrumApp.Apps.Authentication
             //StartCubeFloating(UpperCubeMove);
             StartCubeFloating(RightCubeMove, 5, -50);
 
-            StepControl.InitializeSteps(_pages.Count - 2);
+            StepControl.InitializeSteps(_pages.Count - 3);
 
             //StepControl.StepsCount = _pages.Count - 2; 
             StepControl.Visibility = Visibility.Hidden;
 
             Loaded += (_, _) => StartLogoAnim();
 
-            PageHost.Content = _pages[NavigationPage.Login];
+            //PageHost.Content = _pages[NavigationPage.Login];
         }
 
         public void SetStartPage(NavigationPage page)
         {
+            MainGrid.Visibility = Visibility.Visible;
             NavigateToPage(page, Directions.Left);
         }
 
@@ -97,6 +99,7 @@ namespace AstrumApp.Apps.Authentication
             _pages[NavigationPage.Bio] = new BioPage();
             _pages[NavigationPage.UserCard] = new UserCardPage();
             _pages[NavigationPage.Progress] = new RegistrationProgressPage();
+            _pages[NavigationPage.SelectProfile] = new SelectProfilePage();
         }
 
         private void StartCubeRotation(Image cube, int speed, int factor)
@@ -154,7 +157,7 @@ namespace AstrumApp.Apps.Authentication
                 {
                     StepControl.Visibility = Visibility.Visible;
                 }
-                else if (targetPage is LoginPage or RegistrationProgressPage)
+                else if (targetPage is LoginPage or RegistrationProgressPage or SelectProfilePage)
                 {
                     StepControl.Visibility = Visibility.Hidden;
                     StepControl.SetCurrentStep(0);
@@ -163,7 +166,7 @@ namespace AstrumApp.Apps.Authentication
                     userCardPage.SetUserData();
                 }
 
-                if (!(targetPage is LoginPage or RegistrationProgressPage))
+                if (!(targetPage is LoginPage or RegistrationProgressPage or SelectProfilePage))
                 {
                     if (directionString == "Left")
                     {
@@ -278,7 +281,7 @@ namespace AstrumApp.Apps.Authentication
             
             mainOpacityAnim.Completed += (_, _) => {
                 MainGrid.Visibility = Visibility.Collapsed;
-                if (App.Current.MainWindow is MainWindow main) main.NavigateToMain();
+                if (App.Current.MainWindow is MainWindow main) main.NavigateToMain(true);
             };
 
             MainTranslate.BeginAnimation(TranslateTransform.YProperty, mainTranslateAnim);

@@ -2,27 +2,26 @@
 using AstrumApp.Apps.Settings;
 using AstrumApp.Services;
 using AstrumApp.Views;
+using AstrumApp.Controls;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;     
+using System.Windows.Threading;
 //TODO : консоль разработчика
 
 //TODO : возможно устройства <-- Пока не надо
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
-//TODO : выход из аккаунта и удаление аккаунта
-//TODO : управление аккаунтами
-//TODO : Добавить переход на страницы управления аккаунта
+
+
+//TODO : запомнить меня
+//TODO : Extra danger messagebox
+//TODO : автообновления
+
 
 //TODO : опустить сервис навигации до уровня приложения настроек
-
-//TODO : закрывать меню опций аккаунта при нажатии на другие части окна
-//TODO : реализовать еще две функции кнопок опций
-
-//TODO : регистрация авторизация и тд добавить обработку Enter
 namespace AstrumApp
 {
     public partial class MainWindow : Window
@@ -32,7 +31,7 @@ namespace AstrumApp
         private bool _startupStarted;
 
         private StartupCoordinator? coordinator;
-        private MainAuthWindow authWindow;
+        private MainAuthWindow? authWindow;
         private MainSettingsPage settingsPage;
 
         public MainWindow()
@@ -58,6 +57,11 @@ namespace AstrumApp
                 }));
             };
 
+            LockScreenControl.Unlocked += Unlock;
+            LockScreenControl.Locked += CloseSettings;
+
+            LockScreenControl.Lock();
+
             coordinator = new(StartupView, WelcomeView);
 
             authWindow = new MainAuthWindow();
@@ -66,8 +70,9 @@ namespace AstrumApp
             ContentRendered += MainWindow_ContentRendered;
 
             CloseStartupView();
-            Unlock();
-            OpenSettings();
+            NavigateToAuth(NavigationPage.Login, "");
+            //Unlock();0
+            //OpenSettings();
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -96,18 +101,23 @@ namespace AstrumApp
         }
         public void CloseSettings()
         {
-            MainFrame.Visibility = Visibility.Collapsed;
+            //MainFrame.Visibility = Visibility.Collapsed;
             MainFrame.Content = null;
         }
         public void OpenSettings()
         {
-            MainFrame.Visibility = Visibility.Visible;
+            //MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(settingsPage);
+            settingsPage.OpenStartPage();
         }
 
-        public void NavigateToMain()
+        public void NavigateToMain(bool needsAuthFrameClearing = false)
         {
-            AuthFrame.Visibility = Visibility.Collapsed;
+            if (needsAuthFrameClearing)
+            {
+                AuthFrame.Content = null;
+                authWindow = null;
+            }
         }
 
         public void NavigateToAuth(Apps.Authentication.NavigationPage page, string err = "")
@@ -115,9 +125,39 @@ namespace AstrumApp
             if (!string.IsNullOrEmpty(err))
                 App.Notifications.Show(err, CardTypes.Error);
 
+            authWindow = new MainAuthWindow();
+
+            AuthFrame.Content = authWindow;
+
+            AuthFrame.Opacity = 0;
             AuthFrame.Visibility = Visibility.Visible;
+
+            var animation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromMilliseconds(500),
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            animation.Completed += (s, e) =>
+            {
+                MainFrame.Content = null;
+                CloseSettings();
+                Lock();
+            };
+
+            AuthFrame.BeginAnimation(UIElement.OpacityProperty, animation);
+
+
             authWindow.SetStartPage(page);
-            AuthFrame.Navigate(authWindow);
+        }
+        public void CloseAuth()
+        {
+            authWindow?.CloseAuth();
         }
 
         public void NavigateToWelcome()
@@ -176,24 +216,18 @@ namespace AstrumApp
 
         public void Unlock()
         {
-            var lockScreenTransform = LockScreenControl.RenderTransform as TranslateTransform;
-
-            DoubleAnimation animation = new DoubleAnimation
-            {
-                To = -800,
-                Duration = TimeSpan.FromMilliseconds(400),
-                EasingFunction = new CubicEase
-                {
-                    EasingMode = EasingMode.EaseInOut
-                }
-            };
-            lockScreenTransform?.BeginAnimation(TranslateTransform.YProperty, animation);
 
             DesktopControl.Visibility = Visibility.Visible;
             LeftPanelControl.Visibility = Visibility.Visible;
             RightPanelControl.Visibility = Visibility.Visible;
 
             RightPanel_Moving();
+        }
+
+        public void Lock()
+        {
+            LockScreenControl.Visibility = Visibility.Visible;
+            LockScreenControl.Lock();
         }
 
         private void RightPanel_Moving()
@@ -209,13 +243,6 @@ namespace AstrumApp
             };
             var transform = RightPanelControl.RenderTransform as TranslateTransform;
             transform?.BeginAnimation(TranslateTransform.XProperty, animation);
-        }
-
-        private void MainWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            /*if (App.Core.CurrentProcessName != "SettingsApp") return;*/
-
-            
         }
 
         private void UnLoad(object sender, RoutedEventArgs e)

@@ -32,6 +32,9 @@ namespace AstrumApp.Controls
         private int _prevLength = 0;
         private int _curLength = 0;
 
+        public event Action? Unlocked;
+        public event Action? Locked;
+
         public LockScreen()
         {
             InitializeComponent();
@@ -46,6 +49,96 @@ namespace AstrumApp.Controls
             clock.Start();
 
             DataContext = App.Session.Profile;
+        }
+
+        public void Lock()
+        {
+            var lockScreenTransform = Main.RenderTransform as TranslateTransform;
+
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(400),
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseInOut
+                }
+            };
+            animation.Completed += (s, e) => { Locked?.Invoke(); };    
+
+            lockScreenTransform?.BeginAnimation(TranslateTransform.YProperty, animation);
+        }
+
+        public void UnLock()
+        {
+            var lockScreenTransform = Main.RenderTransform as TranslateTransform;
+
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                To = -800,
+                Duration = TimeSpan.FromMilliseconds(400),
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseInOut
+                }
+            };
+            animation.Completed += (s, e) => 
+            { 
+                ResetLockScreen();
+                Unlocked?.Invoke();
+            };
+
+            lockScreenTransform?.BeginAnimation(TranslateTransform.YProperty, animation);
+        }
+
+        private void ResetLockScreen()
+        {
+            // Перетаскивание
+            _drag = false;
+            _startY = 0;
+            Mouse.Capture(null);
+
+            // Положение основного экрана
+            ScreenTransform.BeginAnimation(
+                TranslateTransform.YProperty, null);
+            ScreenTransform.Y = 0;
+
+            // Размытие
+            ImageBlurEffect.BeginAnimation(
+                BlurEffect.RadiusProperty, null);
+            ImageBlurEffect.Radius = 0;
+
+            // Приветствие и поле PIN
+            GreetingBox.BeginAnimation(
+                UIElement.OpacityProperty, null);
+            GreetingBox.Opacity = 0;
+
+            // Сбрасываем анимацию тряски
+            PinDotsTransform.BeginAnimation(
+                TranslateTransform.XProperty, null);
+            PinDotsTransform.X = 0;
+
+            // Очищаем PIN
+            PasswordInput.Password = string.Empty;
+            _curLength = 0;
+            _prevLength = 0;
+
+            // Сбрасываем цвета и анимации точек
+            foreach (Ellipse dot in new[] { Dot1, Dot2, Dot3, Dot4 })
+            {
+                dot.Fill = Brushes.Gray;
+            }
+
+            // Возвращаем экран блокировки на место
+            //if (Main.RenderTransform is TranslateTransform transform)
+            //{
+            //    transform.BeginAnimation(
+            //        TranslateTransform.YProperty, null);
+
+            //    transform.Y = 0;
+            //}
+
+            firstLoad = true;
         }
 
         // не трогаем
@@ -213,7 +306,7 @@ namespace AstrumApp.Controls
         {
             await Task.Delay(delay);
 
-            App.Unlock();
+            UnLock();
         }
 
         private async Task IncorrectPassword()

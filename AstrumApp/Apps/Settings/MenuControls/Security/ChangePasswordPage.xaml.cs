@@ -46,7 +46,19 @@ namespace AstrumApp.Apps.Settings.MenuControls.Security
             }
         }
 
-        private void ChangePassword_Click(object sender, RoutedEventArgs e)
+        private void UnloadedWin(object sender, RoutedEventArgs e)
+        {
+            NewPasswordBox.Text = string.Empty;
+            ConfirmPasswordBox.Text = string.Empty;
+            ChangePasswordButton.IsEnabled = true;
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigation.Back();
+        }
+
+        private async void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
             NewPasswordBox.RaiseError("");
             ConfirmPasswordBox.RaiseError("");
@@ -54,13 +66,16 @@ namespace AstrumApp.Apps.Settings.MenuControls.Security
             if (NewPasswordBox.Text == ConfirmPasswordBox.Text)
             {
                 string newPassword = NewPasswordBox.Text;
-                _ = ChangePasswordAsync(newPassword);
+
+                ChangePasswordButton.IsEnabled = false;
+                await ChangePasswordAsync(newPassword);
             } else
             {
-                App.Notifications.Show("Пароли не совпадают", CardTypes.Success);
+                App.Notifications.Show("Пароли не совпадают", CardTypes.Error);
                 NewPasswordBox.RaiseError("Пароли не совпадают");
                 ConfirmPasswordBox.RaiseError("Пароли не совпадают");
             }
+            ChangePasswordButton.IsEnabled = true;
         }
 
         private async Task ChangePasswordAsync(string newPassword)

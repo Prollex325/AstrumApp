@@ -10,10 +10,9 @@
         xmlns:settings="clr-namespace:AstrumApp.Apps.Settings"
         mc:Ignorable="d"
         Title="MainWindow" Height="648" Width="1152" Unloaded="UnLoad" ResizeMode="NoResize"
-        PreviewMouseDown="MainWindow_PreviewMouseDown"
         SnapsToDevicePixels="True" UseLayoutRounding="True">
 
-    <Grid>
+    <Grid x:Name="Main">
         <controls:Desktop x:Name="DesktopControl" Visibility="Visible"/>
         <controls:LeftPanel x:Name="LeftPanelControl" Visibility="Visible"/>
         <controls:RightPanel x:Name="RightPanelControl" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top">

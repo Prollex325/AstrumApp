@@ -1,7 +1,9 @@
 using AstrumApp.Profile;
 using AstrumApp.Services;
 using System.Diagnostics;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace AstrumApp.Session { 
 
@@ -18,6 +20,12 @@ namespace AstrumApp.Session {
         {
             UserId = userId;
             _avatarPath = avatarPath;
+        }
+
+        public void SetProfileFromCache(string userId, string username, string email, BitmapSource? avatar)
+        {
+            UserId = userId;
+            Profile.Load(username, string.Empty, email, avatar, string.Empty, string.Empty, false);
         }
 
         public async Task SaveUserProfile()

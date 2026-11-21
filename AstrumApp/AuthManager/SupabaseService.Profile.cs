@@ -53,7 +53,7 @@ namespace AstrumApp.AuthManager
             App.Session.SetIdentity(userId, profileAvatarPath);
 
             ImageSource? avatar = null;
-            if (!string.IsNullOrEmpty(profileAvatarPath))
+            /*if (!string.IsNullOrEmpty(profileAvatarPath))
             {
                 avatar = await _avatarStorage.DownloadAvatarAsync(profileAvatarPath);
                 if (avatar != null)
@@ -64,13 +64,23 @@ namespace AstrumApp.AuthManager
                     {
                         if (!File.Exists(AppPaths.AvatarPath) || !ReferenceEquals(localAvatar, bitmap))
                         {
-                            FrozenImage.SaveToFile(bitmap, AppPaths.AvatarPath);
+                            //FrozenImage.SaveToFile(bitmap, AppPaths.AvatarPath);
                         }
                     }
                 }
+            }*/
+
+            try
+            {
+                SaveProfileToCache(userId, name, email, avatar);
             }
-            SaveProfileToCache(userId, name, email, avatar);
-            SaveUserIDToAuth(userId);
+            catch (Exception) { }
+
+            try
+            {
+                SaveUserIDToAuth(userId);
+            } catch (Exception) { }
+
             App.Session.Profile.Load(name, bio, email, avatar, registeredAt, updatedAt, isPremium);
         }
 

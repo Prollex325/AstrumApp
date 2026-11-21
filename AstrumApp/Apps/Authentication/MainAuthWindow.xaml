@@ -101,7 +101,7 @@
 
             <!-- Здесь твоя карточка и кнопки -->
             <Frame x:Name="Main" NavigationUIVisibility="Hidden"/>
-            
+
             <ContentControl x:Name="PageHost" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"/>
         </Grid>
 

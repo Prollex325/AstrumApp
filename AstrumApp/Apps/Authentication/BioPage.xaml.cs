@@ -26,13 +26,13 @@ namespace AstrumApp.Apps.Authentication
             BioTextBox.RaiseError("");
         }
 
-        private async void NextButton_Click(object sender, RoutedEventArgs e)
+        public void NextButton_Click(object sender, RoutedEventArgs e)
         {
             string name = NameTextBox.Text.Trim();
             string bio = BioTextBox.Text.Trim();
 
-            NameTextBox.RaiseError(""); 
-            BioTextBox.RaiseError("");  
+            NameTextBox.RaiseError("");
+            BioTextBox.RaiseError("");
 
             if (string.IsNullOrEmpty(name))
             {

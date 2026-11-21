@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AstrumApp.Apps.Authentication;
 using AstrumApp.AuthManager;
 using AstrumApp.Views;
-using AstrumApp.Apps.Authentication;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using System.Threading.Tasks;
 
 
 namespace AstrumApp
@@ -141,7 +142,10 @@ namespace AstrumApp
             }
             else if (destination == StartupDestination.Auth)
             {
-                window.NavigateToAuth(NavigationPage.Login, "Сессия истекла");
+                ObservableCollection<AccountCard> accounts = App.AccountManager.LoadAllCacheProfiles(false);
+
+                if (accounts.Count < 1) window.NavigateToAuth(NavigationPage.Login, "Сессия истекла");
+                else window.NavigateToAuth(NavigationPage.SelectProfile, "");
                 await StartupView.RevealAsync();
                 window.CloseStartupView();
             } else

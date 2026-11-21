@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,6 +91,8 @@ namespace AstrumApp.Controls
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ((Border)sender).Opacity = 1;
+            if (((Border)sender).Name != "SettingsButton") return;
+
             if (App.Current.MainWindow is MainWindow _mainWindow)
                 _mainWindow.OpenSettings();
         }

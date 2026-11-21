@@ -25,7 +25,6 @@ namespace AstrumApp.Apps.Settings
 
             UserCardControl.Clicked += () =>
             {
-                App.Session.Profile.BeginEdit();
                 App.Navigation.NavigatePage(NavigationPage.ProfileEdit);
             };
         }

@@ -87,7 +87,6 @@
 
 
         <Style x:Key="DangerMenuButtonStyle" TargetType="Button" BasedOn="{StaticResource MenuButtonStyle}">
-
             <Setter Property="Background" Value="#241D23"/>
             <Setter Property="Tag" Value="#48272D"/>
             <Setter Property="BorderBrush" Value="#633038"/>
@@ -364,7 +363,7 @@
                     </Button>
 
                     <!-- Смена профиля -->
-                    <Button Style="{StaticResource MenuButtonStyle}" Margin="5,2" Background="#1B2731"  Click="ProfileChange_Option">
+                    <Button Style="{StaticResource MenuButtonStyle}" Margin="5,2" Background="#1B2731"  Click="SwitchProfile_Option">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="28"/>
@@ -374,14 +373,14 @@
                             <TextBlock Text="⇄" FontSize="20" Foreground="#AABBC6" VerticalAlignment="Center"/>
 
                             <TextBlock Grid.Column="1" Text="Сменить профиль" FontSize="16" FontWeight="SemiBold" 
-                                VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
 
                     <Border Height="1" Background="#34414D" Margin="16,8"/>
 
                     <!-- Удаление -->
-                    <Button Style="{StaticResource DangerMenuButtonStyle}" Margin="5,2" Background="#241D23">
+                    <Button Style="{StaticResource DangerMenuButtonStyle}" Margin="5,2" Background="#241D23" Click="DeleteProfile_Option">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="28"/>

@@ -43,11 +43,12 @@ namespace AstrumApp.AuthManager
                     AutoConnectRealtime = false
                 });
 
-                SessionStorage? storage = App.AccountManager.CreateStorage();
+                SessionStorage storage = App.AccountManager.CreateStorage();
 
                 Client.Auth.SetPersistence(storage);
                 return true;
             } catch (Exception ex) {
+                Debug.WriteLine($"[Supabase] PrepareClient failed: {ex}");
                 return false;
             }
         }
@@ -80,6 +81,31 @@ namespace AstrumApp.AuthManager
                 Debug.WriteLine($"Ошибка подключения к Supabase: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task<bool> ActivateAccountAsync(string? userId, string message)
+        {
+            bool res = PrepareClient();
+            if (res)
+            {
+                User? user = await RestoreSessionAsync();
+                if (App.Current.MainWindow is MainWindow window)
+                {
+                    if (userId == null) window.NavigateToAuth(Apps.Authentication.NavigationPage.Login, message);
+                    else
+                    {
+                        if (user != null)
+                        {
+                            window.NavigateToMain();
+                            await ApplyUserAsync(user);
+                        }
+                        else return false;
+                    }
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
         }
 
     }

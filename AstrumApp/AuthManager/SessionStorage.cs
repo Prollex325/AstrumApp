@@ -22,8 +22,14 @@ namespace AstrumApp.AuthManager
         {
             if (_sessionPath == null)
             {
-
+                string id = session.User.Id!;
+                _sessionPath = Path.Combine(AppPaths.AuthFolder, $"{id}.dat");
+            } else
+            {
+                string id = session.User.Id!;
+                if ((Path.Combine(AppPaths.AuthFolder, $"{id}.dat") != _sessionPath)) return;
             }
+
             string json = JsonConvert.SerializeObject(session);
             byte[] data = Encoding.UTF8.GetBytes(json);
 

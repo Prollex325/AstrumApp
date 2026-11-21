@@ -1,0 +1,9 @@
+{
+  "AttributesTolerance": 0,
+  "MaxAttributesPerLine": 1,
+  "KeepFirstAttributeOnSameLine": true,
+  "AttributeIndentation": 0,
+  "NewlineExemptionElements": "",
+  "EnableAttributeReordering": false,
+  "FormatOnSave": false
+}

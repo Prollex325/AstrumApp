@@ -84,5 +84,56 @@ namespace AstrumApp.AuthManager
             }
         }
 
+
+        public async Task<AuthResult> DeleteAccountAsync(string password)
+        {
+            string? accessToken = Client?.Auth.CurrentSession?.AccessToken;
+
+            if (string.IsNullOrEmpty(accessToken))
+                return new AuthResult
+                {
+                    Success = false,
+                    Error = "Пользователь не авторизован"
+                };
+
+            try
+            {
+                var options = new Supabase.Functions.Client.InvokeFunctionOptions
+                {
+                    Body = new Dictionary<string, object>
+                    {
+                        ["password"] = password
+                    }
+                };
+
+                string response = await Client!.Functions.Invoke(
+                    "delete-account",
+                    token: accessToken,
+                    options: options
+                );
+
+                using var json = JsonDocument.Parse(response);
+
+                bool success = json.RootElement.TryGetProperty("success", out var value)
+                    && value.ValueKind == JsonValueKind.True;
+
+                return new AuthResult
+                {
+                    Success = success,
+                    Error = success ? null : "Сервер не подтвердил удаление"
+                };
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[DeleteAccount] {ex}");
+
+                return new AuthResult
+                {
+                    Success = false,
+                    Error = "Не удалось удалить аккаунт"
+                };
+            }
+        }
+
     }
 }

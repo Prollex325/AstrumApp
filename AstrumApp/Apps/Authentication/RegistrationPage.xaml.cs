@@ -26,7 +26,8 @@ namespace AstrumApp.Apps.Authentication
             ConfirmPasswordBox.RaiseError("");
         }
 
-        private async void NextButton_Click(object sender, RoutedEventArgs e)
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Text.Trim();

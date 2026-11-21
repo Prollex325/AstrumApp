@@ -9,13 +9,16 @@
              d:DesignHeight="585" d:DesignWidth="1040"
              KeyDown="UserControl_KeyDown">
 
-    <Grid> <!-- изменить дизайн поля ввода на кружочки -->
+    <Grid x:Name="Main"> 
         <!--<MediaElement  x:Name="WallPaperVideo" Source="Assets/video.mp4" LoadedBehavior="Play" UnloadedBehavior="Manual"  Width="1040" Height="585" MediaOpened="WallPaper_MediaOpened"
                                     MediaEnded="WallPaper_MediaEnded" Visibility="Hidden">
     <MediaElement.Effect>
         <BlurEffect Radius="0" x:Name="VideoBlurEffect"/>
     </MediaElement.Effect>
 </MediaElement> -->
+        <Grid.RenderTransform>
+            <TranslateTransform Y="0"/>
+        </Grid.RenderTransform>
         <Image x:Name="WallPaperImg" Source="/Assets/wallpapers/lock-screen.png" Visibility="Visible" Stretch="Fill" Margin="0 0 0 0">
             <Image.Effect>
                 <BlurEffect Radius="0" x:Name="ImageBlurEffect"/>

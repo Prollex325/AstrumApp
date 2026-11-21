@@ -74,14 +74,10 @@ namespace AstrumApp.Controls
         {
             CurrentStepText.Text = $"{currentStep}";
             TotalStepsText.Text = $"{segments.Count}";
-
-            Debug.WriteLine($"{segments.Count}");
-            Debug.WriteLine($"");
         }
 
         public void NextStep(string hint)
         {
-            Debug.WriteLine($"step {currentStep} count {segments.Count}");
             if (currentStep < segments.Count)
             {
                 UpdateStep(currentStep + 1);
