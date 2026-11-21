@@ -53,5 +53,10 @@ namespace AstrumApp.Apps.Authentication
         {
             MainAuthWindow.Instance.NavigateToPage(NavigationPage.Login, Directions.Left);
         }
+
+        private void ChangeRememberChoice(object sender, RoutedEventArgs e)
+        {
+            App.AccountManager.RememberChoice = RememberChoice.IsChecked ?? false;
+        }
     }
 }

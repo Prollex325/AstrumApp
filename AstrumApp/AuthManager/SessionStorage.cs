@@ -12,6 +12,8 @@ namespace AstrumApp.AuthManager
     public class SessionStorage : IGotrueSessionPersistence<AuthSession>
     {
         private string? _sessionPath;
+        public bool RememberMe { get; set; } = true;
+        public bool RememberChoice { get; set; } = true;
 
         public SessionStorage(string? path = null)
         {
@@ -20,6 +22,8 @@ namespace AstrumApp.AuthManager
 
         public void SaveSession(AuthSession session)
         {
+            if (!RememberMe) return;
+
             if (_sessionPath == null)
             {
                 string id = session.User.Id!;

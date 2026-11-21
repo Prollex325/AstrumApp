@@ -35,6 +35,8 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
                 AddAccountButton.IsEnabled = false;
                 Hint.Visibility = Visibility.Visible;
             }
+
+            RememberChoice.IsChecked = App.AccountManager.RememberChoice;
         }
 
         private void AddAccount(object sender, RoutedEventArgs e)
@@ -54,6 +56,11 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
                     }
                 }
             }
+        }
+
+        private void ChangeRememberChoice(object sender, RoutedEventArgs e)
+        {
+            App.AccountManager.RememberChoice = RememberChoice.IsChecked ?? false;
         }
 
         private void LeaveAccount(object sender, RoutedEventArgs e)

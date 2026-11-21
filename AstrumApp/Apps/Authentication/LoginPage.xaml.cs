@@ -138,5 +138,10 @@ namespace AstrumApp.Apps.Authentication
                 AuthButton_Click(new(), new());
             }
         }
+
+        private void ChangeRememberMe(object sender, RoutedEventArgs e)
+        {
+            App.AccountManager.RememberMe = RememberMe.IsChecked ?? false;
+        }
     }
 }

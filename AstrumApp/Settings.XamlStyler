@@ -5,5 +5,5 @@
   "AttributeIndentation": 0,
   "NewlineExemptionElements": "",
   "EnableAttributeReordering": false,
-  "FormatOnSave": false
+  "FormatOnSave": true
 }

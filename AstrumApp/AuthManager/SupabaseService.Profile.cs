@@ -53,6 +53,10 @@ namespace AstrumApp.AuthManager
             App.Session.SetIdentity(userId, profileAvatarPath);
 
             ImageSource? avatar = null;
+            if (!string.IsNullOrEmpty(profileAvatarPath))
+            {
+                avatar = await _avatarStorage.DownloadAvatarAsync(profileAvatarPath);
+            }
             /*if (!string.IsNullOrEmpty(profileAvatarPath))
             {
                 avatar = await _avatarStorage.DownloadAvatarAsync(profileAvatarPath);
@@ -72,14 +76,15 @@ namespace AstrumApp.AuthManager
 
             try
             {
-                SaveProfileToCache(userId, name, email, avatar);
+                App.AccountManager.SaveCache(userId, name, email, avatar);
             }
             catch (Exception) { }
 
             try
             {
-                SaveUserIDToAuth(userId);
-            } catch (Exception) { }
+                App.AccountManager.SaveActiveID(userId);
+            }
+            catch (Exception) { }
 
             App.Session.Profile.Load(name, bio, email, avatar, registeredAt, updatedAt, isPremium);
         }
@@ -108,40 +113,6 @@ namespace AstrumApp.AuthManager
             var user = await Client.Auth.Update(attributes); // здесь ошибка че то с почтой ваще хз
         }
 
-        private static void SaveProfileToCache(string userId, string username, string email, ImageSource? avatar)
-        {
-            if (!Directory.Exists(AppPaths.CacheFolder)) Directory.CreateDirectory(AppPaths.CacheFolder);
-
-            string userCachePath = Path.Combine(AppPaths.CacheFolder, userId);
-            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
-
-            string profilePath = Path.Combine(userCachePath, "profile.json");
-            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
-
-            var profile = new
-            {
-                username,
-                email
-            };
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(profile, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText(profilePath, json);
-
-            string avatarCachePath = Path.Combine(userCachePath, "avatar.png");
-            if (avatar != null) FrozenImage.SaveToFile((BitmapSource)avatar, avatarCachePath);
-        }
-
-        private static void SaveUserIDToAuth(string activeID)
-        {
-            if(!Directory.Exists(AppPaths.AuthFolder)) Directory.CreateDirectory(AppPaths.AuthFolder);
-
-            string activePath = Path.Combine(AppPaths.AuthFolder, "active.json");
-
-            var profile = new
-            {
-                activeID
-            };
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(profile, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText(activePath, json);
-        }
+        
     }
 }

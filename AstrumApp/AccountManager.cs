@@ -13,25 +13,27 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace AstrumApp
 {
     public class AccountCard
     {
         public string ID { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public ImageSource Avatar { get; set; } = FrozenImage.CreateFromUri(AppPaths.DefaultAvatarPath)!;
+        public string Username { get; set; } = "N/A";
+        public string Email { get; set; } = "N/A";
+        public ImageSource Avatar
+        {
+            get => _avatar;
+            set => _avatar = value ?? FrozenImage.CreateFromUri(AppPaths.DefaultAvatarPath)!;
+        }
         public bool IsActive { get; set; } = false;
-        
-        public AccountCard(string id, string username, string email, ImageSource? avatar, bool isActive)
+
+        private ImageSource _avatar = FrozenImage.CreateFromUri(AppPaths.DefaultAvatarPath)!;
+
+        public AccountCard(string id)
         {
             ID = id;
-            Username = username;
-            Email = email;
-            IsActive = isActive;
-
-            if (avatar != null) Avatar = avatar;
         }
     }
 
@@ -47,8 +49,28 @@ namespace AstrumApp
          Иначе создаем хранилище и передаем путь
          */
 
-        private string? _activeID = string.Empty;
+        public bool RememberMe 
+        { 
+            get => _currentStorage.RememberMe;
 
+            set
+            {
+                if (_currentStorage != null)  _currentStorage.RememberMe = value;
+            }
+        }
+
+        public bool RememberChoice
+        {
+            get => _currentStorage.RememberChoice;
+
+            set
+            {
+                if (_currentStorage != null) _currentStorage.RememberChoice = value;
+            }
+        }
+
+        private string? _activeID = string.Empty;
+        private SessionStorage _currentStorage = new();
         public string? ActiveId => _activeID;
         private ObservableCollection<AccountCard> _items = new();
 
@@ -66,7 +88,7 @@ namespace AstrumApp
 
             if (Path.Exists(authAccountPath)) File.Delete(authAccountPath);
             if (Path.Exists(activeAccountPath)) File.Delete(activeAccountPath);
-            if (Directory.Exists(cacheAccountPath)) Directory.Delete(cacheAccountPath, recursive: true);
+            if (Directory.Exists(cacheAccountPath) && !string.IsNullOrWhiteSpace(_activeID)) Directory.Delete(cacheAccountPath, recursive: true);
 
             if (App.Current.MainWindow is MainWindow window)
             {
@@ -133,30 +155,80 @@ namespace AstrumApp
             foreach (string userId in IDs)
             {
                 string directory = Path.Combine(AppPaths.CacheFolder, userId);
-                string activeIdCacheJson = Path.Combine(directory, "profile.json");
-                string activeIdCacheAvatar = Path.Combine(directory, "avatar.png");
 
-                string username = "N/A", email = "N/A";
-
-                if (activeIdCacheJson != null)
+                AccountCard card = new(userId);
+                if (Directory.Exists(directory))
                 {
-                    var data = JObject.Parse(File.ReadAllText(activeIdCacheJson));
+                    string activeIdCacheJson = Path.Combine(directory, "profile.json");
+                    string activeIdCacheAvatar = Path.Combine(directory, "avatar.png");
 
-                    username = data["username"]?.ToString() ?? "N/A";
-                    email = data["email"]?.ToString() ?? "N/A";
+                    string username = "N/A", email = "N/A";
+
+                    if (Path.Exists(activeIdCacheJson))
+                    {
+                        var data = JObject.Parse(File.ReadAllText(activeIdCacheJson));
+
+                        username = data["username"]?.ToString() ?? "N/A";
+                        email = data["email"]?.ToString() ?? "N/A";
+                    }
+
+                    BitmapSource? avatar = null;
+                    if (Path.Exists(activeIdCacheAvatar))
+                    {
+                        avatar = FrozenImage.CreateFromUri(activeIdCacheAvatar)!;
+                    }
+                    card = new AccountCard(userId)
+                    { 
+                        Username = username,
+                        Email = email,
+                        Avatar = avatar!,
+                        IsActive = (userId == _activeID && withActiveID)
+                    };
                 }
 
-                BitmapSource? avatar = null;
-                if (activeIdCacheAvatar != null)
-                {
-                    avatar = FrozenImage.CreateFromUri(activeIdCacheAvatar)!;
-                }
-
-                AccountCard card = new(userId, username, email, avatar, (userId == _activeID && withActiveID));
                 _items.Add(card);
             }
                 
             return _items;
+        }
+
+        public void SaveCache(string userId, string username, string email, ImageSource? avatar)
+        {
+            if (!RememberMe) return;
+            if (!Directory.Exists(AppPaths.CacheFolder)) Directory.CreateDirectory(AppPaths.CacheFolder);
+
+            string userCachePath = Path.Combine(AppPaths.CacheFolder, userId);
+            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
+
+            string profilePath = Path.Combine(userCachePath, "profile.json");
+            if (!Directory.Exists(userCachePath)) Directory.CreateDirectory(userCachePath);
+
+            var profile = new
+            {
+                username,
+                email
+            };
+            string json = JsonConvert.SerializeObject(profile, Formatting.Indented);
+            File.WriteAllText(profilePath, json);
+
+            string avatarCachePath = Path.Combine(userCachePath, "avatar.png");
+            if (avatar != null) FrozenImage.SaveToFile((BitmapSource)avatar, avatarCachePath);
+        }
+
+        public void SaveActiveID(string activeID)
+        {
+            if (!RememberMe || !RememberChoice) return;
+
+            if (!Directory.Exists(AppPaths.AuthFolder)) Directory.CreateDirectory(AppPaths.AuthFolder);
+
+            string activePath = Path.Combine(AppPaths.AuthFolder, "active.json");
+
+            var profile = new
+            {
+                activeID
+            };
+            string json = JsonConvert.SerializeObject(profile, Formatting.Indented);
+            File.WriteAllText(activePath, json);
         }
 
         public void LoadCache()
@@ -198,8 +270,14 @@ namespace AstrumApp
         public SessionStorage CreateStorage()
         {
             string? sessionPath = SessionPath();
-            if (sessionPath != null) return new(sessionPath);
-            else return new();
+            SessionStorage tempStorage = new();
+            if (sessionPath != null) tempStorage = new(sessionPath);
+
+            tempStorage.RememberChoice = RememberChoice;
+            tempStorage.RememberMe = RememberMe;
+            _currentStorage = tempStorage;
+
+            return _currentStorage;
         }
 
         private string? SessionPath()

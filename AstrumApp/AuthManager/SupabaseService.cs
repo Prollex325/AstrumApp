@@ -27,7 +27,7 @@ namespace AstrumApp.AuthManager
         private Dictionary<string, object> _userMetadata = new();
 
 
-        public bool PrepareClient()
+        public bool PrepareClient(bool rememberMe = true)
         {
             var url = Environment.GetEnvironmentVariable("SUPABASE_URL")
                 ?? throw new InvalidOperationException("SUPABASE_URL не задан.");
@@ -43,9 +43,12 @@ namespace AstrumApp.AuthManager
                     AutoConnectRealtime = false
                 });
 
-                SessionStorage storage = App.AccountManager.CreateStorage();
+                if (rememberMe)
+                {
+                    SessionStorage storage = App.AccountManager.CreateStorage();
+                    Client.Auth.SetPersistence(storage);
+                }
 
-                Client.Auth.SetPersistence(storage);
                 return true;
             } catch (Exception ex) {
                 Debug.WriteLine($"[Supabase] PrepareClient failed: {ex}");

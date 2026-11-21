@@ -69,8 +69,8 @@ namespace AstrumApp
 
             ContentRendered += MainWindow_ContentRendered;
 
-            CloseStartupView();
-            NavigateToAuth(NavigationPage.Login, "");
+            //CloseStartupView();
+            //NavigateToAuth(NavigationPage.Login, "");
             //Unlock();0
             //OpenSettings();
         }

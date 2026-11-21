@@ -87,6 +87,11 @@ namespace AstrumApp.Apps.Authentication
             MainAuthWindow.Instance?.NavigateToPage(NavigationPage.Bio, Directions.Left);
         }
 
+        private void ChangeRememberMe(object sender, RoutedEventArgs e)
+        {
+            App.AccountManager.RememberMe = RememberMe.IsChecked ?? false;
+        }
+
         private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             MainAuthWindow.Instance.NavigateToPage(NavigationPage.Login, Directions.Right);

@@ -273,6 +273,12 @@
                     Background="#455563"
                     Margin="10,15" />
 
+            <CheckBox x:Name="RememberChoice"
+                      Content="Запомнить выбор"
+                      IsChecked="True"
+                      Margin="20,0,10,0"
+                      Click="ChangeRememberChoice" />
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
