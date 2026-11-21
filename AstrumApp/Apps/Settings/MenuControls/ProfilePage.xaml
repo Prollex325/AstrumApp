@@ -1,32 +1,40 @@
 ﻿<UserControl x:Class="AstrumApp.Apps.Settings.ProfilePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AstrumApp.Apps.Settings"
              xmlns:controls="clr-namespace:AstrumApp.Controls"
              xmlns:services="clr-namespace:AstrumApp.Services"
-             mc:Ignorable="d" 
-             d:DesignHeight="585" d:DesignWidth="720">
+             mc:Ignorable="d"
+             d:DesignHeight="585"
+             d:DesignWidth="720">
 
     <UserControl.Resources>
-        <Style TargetType="Border" x:Key="CardType">
+        <Style TargetType="Border"
+               x:Key="CardType">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#FF1E262D" Offset="0"/>
-                        <GradientStop Color="#FF2F3A43" Offset="1"/>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="1,1">
+                        <GradientStop Color="#FF1E262D"
+                                      Offset="0" />
+                        <GradientStop Color="#FF2F3A43"
+                                      Offset="1" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
-            <Setter Property="BorderBrush" Value="#00000000"/>
+            <Setter Property="BorderBrush"
+                    Value="#00000000" />
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
+                <Trigger Property="IsMouseOver"
+                         Value="True">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
                                 <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                To="#FF4DA3FF" Duration="0:0:0.15"/>
+                                                To="#FF4DA3FF"
+                                                Duration="0:0:0.15" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -35,7 +43,8 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                To="#00000000" Duration="0:0:0.15"/>
+                                                To="#00000000"
+                                                Duration="0:0:0.15" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -43,60 +52,115 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
-        <controls:UserCard x:Name="UserCardControl" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0"
-                           Margin="0, 60, 0, 0"/>
 
-        <StackPanel Grid.Row="1" Visibility="Collapsed">
-            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+        <controls:UserCard x:Name="UserCardControl"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           Grid.Row="0"
+                           Margin="0,60,0,0" />
+
+        <StackPanel Grid.Row="1"
+                    Visibility="Collapsed">
+            <Border CornerRadius="30"
+                    Padding="20"
+                    BorderThickness="2"
+                    Margin="0,0,0,10"
+                    Height="68"
+                    Cursor="Hand"
                     Style="{StaticResource CardType}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Сменить профиль" FontSize="18" FontWeight="SemiBold" Foreground="White"
-                               Margin="10,0,0,0" VerticalAlignment="Center"/>
-                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
-                        StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="0"
+                               Text="Сменить профиль"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
+                    <Path Grid.Column="1"
+                          Data="M 6 2 L 10 6 L 6 10"
+                          Stroke="#AABBC6"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center" />
                 </Grid>
             </Border>
 
-            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+            <Border CornerRadius="30"
+                    Padding="20"
+                    BorderThickness="2"
+                    Margin="0,0,0,10"
+                    Height="68"
+                    Cursor="Hand"
                     Style="{StaticResource CardType}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Выйти из аккаунта" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="10,0,0,0"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="0"
+                               Text="Выйти из аккаунта"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
 
-                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Path Grid.Column="1"
+                          Data="M 6 2 L 10 6 L 6 10"
+                          Stroke="#AABBC6"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center" />
                 </Grid>
             </Border>
 
-            <Border CornerRadius="30" Padding="20" BorderThickness="2" Margin="0,0,0,10" Height="68" Cursor="Hand"
+            <Border CornerRadius="30"
+                    Padding="20"
+                    BorderThickness="2"
+                    Margin="0,0,0,10"
+                    Height="68"
+                    Cursor="Hand"
                     Style="{StaticResource CardType}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Удалить аккаунт" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="10,0,0,0"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="0"
+                               Text="Удалить аккаунт"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
 
-                    <Path Grid.Column="1" Data="M 6 2 L 10 6 L 6 10" Stroke="#AABBC6" StrokeThickness="1.8" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Path Grid.Column="1"
+                          Data="M 6 2 L 10 6 L 6 10"
+                          Stroke="#AABBC6"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center" />
                 </Grid>
             </Border>
         </StackPanel>

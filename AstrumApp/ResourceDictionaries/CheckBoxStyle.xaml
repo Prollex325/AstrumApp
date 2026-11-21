@@ -2,109 +2,121 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="{x:Type CheckBox}">
-        <Setter Property="Foreground" Value="#AABBC6"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="Medium"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="Foreground"
+                Value="#AABBC6" />
+        <Setter Property="FontSize"
+                Value="13" />
+        <Setter Property="FontWeight"
+                Value="Medium" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,5" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
 
                     <Grid x:Name="Root"
-                      SnapsToDevicePixels="True">
+                          SnapsToDevicePixels="True">
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Квадратик -->
+                        <!--  Квадратик  -->
                         <Border x:Name="CheckBorder"
-        Grid.Column="0"
-        Width="20"
-        Height="20"
-        CornerRadius="6"
-        Background="#101820"
-        BorderBrush="#52687A"
-        BorderThickness="1.2"
-        SnapsToDevicePixels="False"
-        UseLayoutRounding="False"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"/>
-                        <!-- Галочка -->
+                                Grid.Column="0"
+                                Width="20"
+                                Height="20"
+                                CornerRadius="6"
+                                Background="#101820"
+                                BorderBrush="#52687A"
+                                BorderThickness="1.2"
+                                SnapsToDevicePixels="False"
+                                UseLayoutRounding="False"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        <!--  Галочка  -->
                         <Path x:Name="CheckMark"
-      Grid.Column="0"
-      Width="18"
-      Height="18"
-      Data="M 4,9 L 7.5,12 L 14,5"
-      Stretch="None"
-      Stroke="#69A7FF"
-      StrokeThickness="1.8"
-      StrokeStartLineCap="Round"
-      StrokeEndLineCap="Round"
-      StrokeLineJoin="Round"
-      SnapsToDevicePixels="False"
-      UseLayoutRounding="False"
-      RenderOptions.EdgeMode="Unspecified"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Center"
-      Visibility="Collapsed"/>
+                              Grid.Column="0"
+                              Width="18"
+                              Height="18"
+                              Data="M 4,9 L 7.5,12 L 14,5"
+                              Stretch="None"
+                              Stroke="#69A7FF"
+                              StrokeThickness="1.8"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              StrokeLineJoin="Round"
+                              SnapsToDevicePixels="False"
+                              UseLayoutRounding="False"
+                              RenderOptions.EdgeMode="Unspecified"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Visibility="Collapsed" />
 
-                        <!-- Текст -->
+                        <!--  Текст  -->
                         <ContentPresenter Grid.Column="1"
-                                      Margin="9,0,0,0"
-                                      VerticalAlignment="Center"
-                                      RecognizesAccessKey="True"/>
+                                          Margin="9,0,0,0"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
 
                     </Grid>
 
                     <ControlTemplate.Triggers>
 
-                        <!-- Выбран -->
-                        <Trigger Property="IsChecked" Value="True">
+                        <!--  Выбран  -->
+                        <Trigger Property="IsChecked"
+                                 Value="True">
                             <Setter TargetName="CheckBorder"
-            Property="Background"
-            Value="#101820"/>
+                                    Property="Background"
+                                    Value="#101820" />
 
                             <Setter TargetName="CheckBorder"
-            Property="BorderBrush"
-            Value="#4A8DFF"/>
+                                    Property="BorderBrush"
+                                    Value="#4A8DFF" />
 
                             <Setter TargetName="CheckMark"
-            Property="Visibility"
-            Value="Visible"/>
+                                    Property="Visibility"
+                                    Value="Visible" />
                         </Trigger>
 
-                        <!-- Наведение -->
-                        <Trigger Property="IsMouseOver" Value="True">
+                        <!--  Наведение  -->
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
                             <Setter TargetName="CheckBorder"
-                                Property="BorderBrush"
-                                Value="#83B7FF"/>
+                                    Property="BorderBrush"
+                                    Value="#83B7FF" />
                         </Trigger>
 
-                        <!-- Нажатие -->
-                        <Trigger Property="IsPressed" Value="True">
+                        <!--  Нажатие  -->
+                        <Trigger Property="IsPressed"
+                                 Value="True">
                             <Setter TargetName="CheckBorder"
-                                Property="Opacity"
-                                Value="0.75"/>
+                                    Property="Opacity"
+                                    Value="0.75" />
                         </Trigger>
 
-                        <!-- Фокус клавиатуры -->
-                        <Trigger Property="IsKeyboardFocused" Value="True">
+                        <!--  Фокус клавиатуры  -->
+                        <Trigger Property="IsKeyboardFocused"
+                                 Value="True">
                             <Setter TargetName="CheckBorder"
-                                Property="BorderBrush"
-                                Value="#9CC9FF"/>
+                                    Property="BorderBrush"
+                                    Value="#9CC9FF" />
                         </Trigger>
 
-                        <!-- Отключён -->
-                        <Trigger Property="IsEnabled" Value="False">
+                        <!--  Отключён  -->
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
                             <Setter TargetName="Root"
-                                Property="Opacity"
-                                Value="0.4"/>
-                            <Setter Property="Cursor" Value="Arrow"/>
+                                    Property="Opacity"
+                                    Value="0.4" />
+                            <Setter Property="Cursor"
+                                    Value="Arrow" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>

@@ -9,33 +9,58 @@
         xmlns:services="clr-namespace:AstrumApp.Services"
         xmlns:settings="clr-namespace:AstrumApp.Apps.Settings"
         mc:Ignorable="d"
-        Title="MainWindow" Height="648" Width="1152" Unloaded="UnLoad" ResizeMode="NoResize"
-        SnapsToDevicePixels="True" UseLayoutRounding="True">
+        Title="MainWindow"
+        Height="648"
+        Width="1152"
+        Unloaded="UnLoad"
+        ResizeMode="NoResize"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
 
     <Grid x:Name="Main">
-        <controls:Desktop x:Name="DesktopControl" Visibility="Visible"/>
-        <controls:LeftPanel x:Name="LeftPanelControl" Visibility="Visible"/>
-        <controls:RightPanel x:Name="RightPanelControl" Visibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <controls:Desktop x:Name="DesktopControl"
+                          Visibility="Visible" />
+        <controls:LeftPanel x:Name="LeftPanelControl"
+                            Visibility="Visible" />
+        <controls:RightPanel x:Name="RightPanelControl"
+                             Visibility="Visible"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Top">
             <controls:RightPanel.RenderTransform>
-                <TranslateTransform X="300" Y="20"/>
+                <TranslateTransform X="300"
+                                    Y="20" />
             </controls:RightPanel.RenderTransform>
         </controls:RightPanel>
 
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="MainFrame"
+               NavigationUIVisibility="Hidden" />
 
-        <controls:LockScreen x:Name="LockScreenControl" Visibility="Visible">
+        <controls:LockScreen x:Name="LockScreenControl"
+                             Visibility="Visible">
             <controls:LockScreen.RenderTransform>
-                <TranslateTransform X="0" Y="0"/>
+                <TranslateTransform X="0"
+                                    Y="0" />
             </controls:LockScreen.RenderTransform>
         </controls:LockScreen>
 
-        <Frame x:Name="AuthFrame" NavigationUIVisibility="Hidden" Visibility="Collapsed"/>
+        <Frame x:Name="AuthFrame"
+               NavigationUIVisibility="Hidden"
+               Visibility="Collapsed" />
 
-        <controls:NotificationControl HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0, 0, 0, 50"/>
-        <views:WelcomeView x:Name="WelcomeView" Visibility="Collapsed" AutoPlayIntro="False"/>
+        <controls:NotificationControl HorizontalAlignment="Right"
+                                      VerticalAlignment="Stretch"
+                                      Margin="0,0,0,50" />
+        <views:WelcomeView x:Name="WelcomeView"
+                           Visibility="Collapsed"
+                           AutoPlayIntro="False" />
 
-        <views:StartupView x:Name="StartupView" Visibility="Collapsed" IsHitTestVisible="False"/>
+        <views:StartupView x:Name="StartupView"
+                           Visibility="Collapsed"
+                           IsHitTestVisible="False" />
 
-        <Rectangle x:Name="BlackoutMask" Fill="Black" Opacity="0.5" Visibility="Hidden"/>
+        <Rectangle x:Name="BlackoutMask"
+                   Fill="Black"
+                   Opacity="0.5"
+                   Visibility="Hidden" />
     </Grid>
 </Window>

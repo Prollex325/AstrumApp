@@ -4,18 +4,17 @@
              xmlns:local="clr-namespace:AstrumApp"
              ShutdownMode="OnMainWindowClose"
              StartupUri="MainWindow.xaml">
-    
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ResourceDictionaries/DefaultInput.xaml"/>
-                <ResourceDictionary Source="/ResourceDictionaries/ButtonStyle.xaml"/>
-                <ResourceDictionary Source="/ResourceDictionaries/ToggleStyles.xaml"/>
-                <ResourceDictionary Source="/ResourceDictionaries/TextBoxStyle.xaml"/>
-                <ResourceDictionary Source="/ResourceDictionaries/PasswordBoxStyle.xaml"/>
-                <ResourceDictionary Source="/ResourceDictionaries/CheckBoxStyle.xaml"/>
+                <ResourceDictionary Source="/ResourceDictionaries/DefaultInput.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/ToggleStyles.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/TextBoxStyle.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/PasswordBoxStyle.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/CheckBoxStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
-    
