@@ -62,8 +62,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
                 {
                     string newPassword = NewPasswordBox.Text;
 
-                    //AuthResult result = await App.Supabase.DeleteAccountAsync(newPassword);
-                    AuthResult result = new(){ Success = true };
+                    AuthResult result = await App.Supabase.DeleteAccountAsync(newPassword);
 
                     if (!result.Success) App.Notifications.Show(result.Error ?? "Неизвестная ошибка", CardTypes.Error);
 

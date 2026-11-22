@@ -96,7 +96,10 @@ namespace AstrumApp.Controls
             // Перетаскивание
             _drag = false;
             _startY = 0;
-            Mouse.Capture(null);
+            if (Mouse.Captured == Main)
+            {
+                Mouse.Capture(null);
+            }
 
             // Положение основного экрана
             ScreenTransform.BeginAnimation(

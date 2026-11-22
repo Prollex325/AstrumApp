@@ -215,7 +215,8 @@ namespace AstrumApp
 
         public void Unlock()
         {
-            LockScreenControl.UnLock();
+            LockScreenControl.Visibility = Visibility.Collapsed;
+
             DesktopControl.Visibility = Visibility.Visible;
             LeftPanelControl.Visibility = Visibility.Visible;
             RightPanelControl.Visibility = Visibility.Visible;
