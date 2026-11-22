@@ -86,7 +86,8 @@ namespace AstrumApp
             string activeAccountPath = Path.Combine(AppPaths.AuthFolder, "active.json");
             string cacheAccountPath = Path.Combine(AppPaths.CacheFolder, $"{_activeID}");
 
-            if (Path.Exists(authAccountPath)) File.Delete(authAccountPath);
+            if (Path.Exists(authAccountPath)) 
+                File.Delete(authAccountPath);
             if (Path.Exists(activeAccountPath)) File.Delete(activeAccountPath);
             if (Directory.Exists(cacheAccountPath) && !string.IsNullOrWhiteSpace(_activeID)) Directory.Delete(cacheAccountPath, recursive: true);
 

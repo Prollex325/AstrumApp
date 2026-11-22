@@ -16,8 +16,7 @@ using System.Windows.Threading;
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
 
 
-//TODO : запомнить меня
-//TODO : Extra danger messagebox
+//TODO : Extra danger messagebox - доделать
 //TODO : автообновления
 
 
@@ -55,6 +54,7 @@ namespace AstrumApp
                     //widget = new DesktopWidget();
                     //widget.Show();
                 }));
+                MainWindow_ContentRendered(new(), new());
             };
 
             LockScreenControl.Unlocked += Unlock;
@@ -67,11 +67,10 @@ namespace AstrumApp
             authWindow = new MainAuthWindow();
             settingsPage = new MainSettingsPage();
 
-            ContentRendered += MainWindow_ContentRendered;
+            //ContentRendered += MainWindow_ContentRendered;
 
-            //CloseStartupView();
-            //NavigateToAuth(NavigationPage.Login, "");
-            //Unlock();0
+            CloseStartupView();
+            Unlock();
             //OpenSettings();
         }
 
@@ -216,7 +215,7 @@ namespace AstrumApp
 
         public void Unlock()
         {
-
+            LockScreenControl.UnLock();
             DesktopControl.Visibility = Visibility.Visible;
             LeftPanelControl.Visibility = Visibility.Visible;
             RightPanelControl.Visibility = Visibility.Visible;
@@ -228,6 +227,18 @@ namespace AstrumApp
         {
             LockScreenControl.Visibility = Visibility.Visible;
             LockScreenControl.Lock();
+        }
+
+        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F8)
+            {
+                Debug.WriteLine($"Captured: {Mouse.Captured}");
+                Debug.WriteLine($"DirectlyOver: {Mouse.DirectlyOver}");
+
+                System.Diagnostics.Debugger.Break();
+                e.Handled = true;
+            }
         }
 
         private void RightPanel_Moving()

@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
 {
-    /// <summary>
-    /// Логика взаимодействия для DeleteProfilePage.xaml
-    /// </summary>
     public partial class DeleteProfilePage : UserControl
     {
         public DeleteProfilePage()
@@ -59,15 +56,21 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
 
             if (NewPasswordBox.Text == ConfirmPasswordBox.Text)
             {
-                string newPassword = NewPasswordBox.Text;
 
-                AuthResult result = await App.Supabase.DeleteAccountAsync(newPassword);
-
-                if (!result.Success) App.Notifications.Show(result.Error ?? "Неизвестная ошибка", CardTypes.Error);
-
-                if (result.Success)
+                if (MessageBox.Show("Вы собираетесь навсегда удалить аккаунт.\nЭто действие невозможно отменить.",
+                    MessageBoxButton.YesNo, MessageBoxType.Destructive) == MessageBoxResult.Yes)
                 {
-                    App.AccountManager.DeleteAccount();
+                    string newPassword = NewPasswordBox.Text;
+
+                    //AuthResult result = await App.Supabase.DeleteAccountAsync(newPassword);
+                    AuthResult result = new(){ Success = true };
+
+                    if (!result.Success) App.Notifications.Show(result.Error ?? "Неизвестная ошибка", CardTypes.Error);
+
+                    if (result.Success)
+                    {
+                        App.AccountManager.DeleteAccount();
+                    }
                 }
             }
             else

@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System.Diagnostics.Metrics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace AstrumApp
 {
@@ -8,7 +11,8 @@ namespace AstrumApp
     {
         Info,
         Warning,
-        Error
+        Error,
+        Destructive
     }
 
     public enum MessageBoxButton
@@ -40,9 +44,12 @@ namespace AstrumApp
 
     public partial class MessageWindow : Window
     {
+        public MessageBoxType MessageType => _messageType;
         private MessageBoxType _messageType;
         private MessageBoxButton _messageButtons;
         private MainWindow? _mainWindow;
+        DispatcherTimer clock = new DispatcherTimer();
+        private int _counter = 7;
 
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.None;
 
@@ -52,19 +59,42 @@ namespace AstrumApp
 
         public MessageWindow(string messageText, MessageBoxButton buttons, MessageBoxType type)
         {
-            InitializeComponent();
-
             _messageType = type;
             _messageButtons = buttons;
-            MessageTextBlock.Text = messageText;
 
+            InitializeComponent();
+
+            clock.Tick += StartTimer;
+            clock.Interval = TimeSpan.FromSeconds(1);
+
+            MessageTextBlock.Text = messageText;
             _mainWindow = Application.Current.MainWindow as MainWindow;
         }
 
         public MessageBoxResult ShowWindow()
         {
-            SelectMessageType();
-            CreateButtons();
+            if (_messageType == MessageBoxType.Destructive)
+            {
+                NormalDialog.Visibility = Visibility.Collapsed;
+                DestructiveDialog.Visibility = Visibility.Visible;
+
+                Width = 550;
+                Height = 350;
+
+                _counter = 7;
+
+                DestructiveMessageTextBlock.Text = MessageTextBlock.Text;
+
+                clock.Start();
+            }
+            else
+            {
+                NormalDialog.Visibility = Visibility.Visible;
+                DestructiveDialog.Visibility = Visibility.Collapsed;
+
+                SelectMessageType();
+                CreateButtons();
+            }
 
             _mainWindow?.ShowBlackoutMask();
 
@@ -119,10 +149,28 @@ namespace AstrumApp
                     iconPath = "/Assets/dialogs/error.png";
                     iconText = "Ошибка";
                     break;
+                case MessageBoxType.Destructive:
+                    //iconPath = "/Assets/dialogs/error.png";
+                    //iconText = "Опасное действие";
+                    break;
             }
 
             HeaderIconImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(iconPath, UriKind.Relative));
             HeaderTextBlock.Text = iconText;
+        }
+
+        private void StartTimer(object? sender, EventArgs e)
+        {
+            if (_counter == 0)
+            {
+                DestructiveConfirmButton.Content = "Удалить";
+                DestructiveConfirmButton.IsEnabled = true;
+                clock.Stop();
+                return;
+            }
+
+            DestructiveConfirmButton.Content = $"Удалить ({_counter})";
+            _counter--;
         }
 
         private void PositiveButton_Click(object sender, RoutedEventArgs e)
@@ -162,17 +210,17 @@ namespace AstrumApp
             {
                 if (_messageButtons == MessageBoxButton.OKCancel || _messageButtons == MessageBoxButton.YesNoCancel)
                 {
-                    CancelButton_Click(new object(), new RoutedEventArgs());
+                    CancelButton_Click(new(), new());
                 }
                 else if (_messageButtons == MessageBoxButton.YesNo)
                 {
-                    NegativeButton_Click(new object(), new RoutedEventArgs());
+                    NegativeButton_Click(new(), new());
                 }
                 e.Handled = true;
             }
-            else if (e.Key == Key.Enter)
+            else if (e.Key == Key.Enter && _messageType != MessageBoxType.Destructive)
             {
-                PositiveButton_Click(new object(), new RoutedEventArgs());
+                PositiveButton_Click(new(), new());
                 e.Handled = true;
             }
         }

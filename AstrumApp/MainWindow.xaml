@@ -12,10 +12,12 @@
         Title="MainWindow"
         Height="648"
         Width="1152"
+        WindowStartupLocation="CenterScreen"
         Unloaded="UnLoad"
         ResizeMode="NoResize"
         SnapsToDevicePixels="True"
-        UseLayoutRounding="True">
+        UseLayoutRounding="True"
+        PreviewKeyDown="MainWindow_PreviewKeyDown">
 
     <Grid x:Name="Main">
         <controls:Desktop x:Name="DesktopControl"

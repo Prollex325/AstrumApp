@@ -443,7 +443,9 @@
                     <Button Style="{StaticResource MenuButtonStyle}"
                             Margin="5,2"
                             Background="#1B2731"
-                            Click="SwitchProfile_Option">
+                            Click="SwitchProfile_Option"
+                            PreviewMouseLeftButtonDown="Test_Down"
+                            PreviewMouseLeftButtonUp="Test_Up">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="28" />

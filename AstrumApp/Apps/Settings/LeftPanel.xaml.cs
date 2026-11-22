@@ -47,7 +47,18 @@ namespace AstrumApp.Apps.Settings
         {
             SettingsItems.SelectedIndex = _pagesIndexes.GetValueOrDefault(page, 0);
         }
-        
+        private void Test_Down(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Button btn)
+                Debug.WriteLine($"DOWN | Pressed: {btn.IsPressed} | Over: {btn.IsMouseOver}");
+        }
+
+        private void Test_Up(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Button btn)
+                Debug.WriteLine($"UP | Pressed: {btn.IsPressed} | Over: {btn.IsMouseOver}");
+        }
+
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigation.NavigateMenu(NavigationPage.Profile);
