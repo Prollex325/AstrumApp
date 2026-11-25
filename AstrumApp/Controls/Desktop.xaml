@@ -31,5 +31,13 @@
                    VerticalAlignment="Top"
                    Margin="0,150,0,0"
                    Visibility="Visible" />
+
+        <TextBlock Text="МЫ ОБНОВИЛИСЬ!"
+                   FontSize="60"
+                   Foreground="Red"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontWeight="Bold"
+                   Visibility="Collapsed" />
     </Grid>
 </UserControl>

@@ -65,7 +65,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
 
         private void LeaveAccount(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Вы уверены, что хотите выйти?\nТекущая сессия будет удалена.", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Вы уверены, что хотите выйти?\nТекущая сессия будет удалена.", "", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes)
             {
                 _ = App.AccountManager.DeleteCurrentSession();
             }

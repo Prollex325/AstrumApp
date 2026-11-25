@@ -25,7 +25,7 @@ namespace AstrumApp.Apps.Settings.MenuControls
 
             AvatarPicker.AvatarDeleted += () =>
             {
-                bool res = MessageBox.Show("Вы уверены, что хотите сбросить аватар?", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes;
+                bool res = MessageBox.Show("Вы уверены, что хотите сбросить аватар?", "", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes;
                 if (!res) return;
                 App.Session.ClearAvatar();
                 App.Navigation.Back();
@@ -41,7 +41,7 @@ namespace AstrumApp.Apps.Settings.MenuControls
         {
             if (AvatarPicker.CanClose()) return true;
 
-            bool res = MessageBox.Show("Изменения могут не сохраниться!\nВы уверены, что хотите выйти?", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes;
+            bool res = MessageBox.Show("Изменения могут не сохраниться!\nВы уверены, что хотите выйти?", "", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.Yes;
 
             return res;
         }

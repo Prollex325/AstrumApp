@@ -33,7 +33,6 @@ namespace AstrumApp.Services
             
             try
             {
-                
                 string url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric&lang=ru";
 
                 return await client.GetStringAsync(url);

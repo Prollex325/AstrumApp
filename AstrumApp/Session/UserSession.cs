@@ -37,7 +37,9 @@ namespace AstrumApp.Session {
                 _avatarPath = await App.Supabase.UpdateAvatarAsync(needsDeleting);
             }
 
-            await App.Supabase.UpdateUserData(Profile, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), _avatarPath);
+            long timestamp = Profile.SetUpdateTime(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
+            await App.Supabase.UpdateUserData(Profile, timestamp, _avatarPath);
         }
 
         public void CancelChanges()

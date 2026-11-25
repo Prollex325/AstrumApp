@@ -36,7 +36,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.Security
             if (!App.Security.Pin.HasPin())
             {
                 App.Notifications.Show("PIN не установлен", CardTypes.Error);
-            } else if (MessageBox.Show("Вы уверены, что хотите удалить PIN?", MessageBoxButton.OKCancel, MessageBoxType.Warning) == MessageBoxResult.Yes)
+            } else if (MessageBox.Show("Вы уверены, что хотите удалить PIN?", "", MessageBoxButton.OKCancel, MessageBoxType.Warning) == MessageBoxResult.Yes)
             {
                 App.Security.Pin.Remove(PasswordBox.Password); 
 

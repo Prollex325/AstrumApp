@@ -30,7 +30,7 @@ namespace AstrumApp.Apps.Settings.Navigation
         DeletePinPage,
         ChangePasswordPage,
 
-        ChangelogPage,
+        UpdatesPage,
 
         SystemInfo,
 
@@ -70,7 +70,7 @@ namespace AstrumApp.Apps.Settings.Navigation
 
             [NavigationPage.SystemInfo] = new(null, "О системе"),
 
-            [NavigationPage.ChangelogPage] = new(null, "Список изменений"),
+            [NavigationPage.UpdatesPage] = new(null, "Центр обновлений"),
 
             [NavigationPage.NotFoundPage] = new(null, "Страница не найдена"),
         };
@@ -117,7 +117,7 @@ namespace AstrumApp.Apps.Settings.Navigation
 
             _pages[NavigationPage.SystemInfo] = new SystemInfo();
 
-            _pages[NavigationPage.ChangelogPage] = new ChangelogPage();
+            _pages[NavigationPage.UpdatesPage] = new UpdatesPage();
 
             _pages[NavigationPage.NotFoundPage] = new NotFoundPage();
         }

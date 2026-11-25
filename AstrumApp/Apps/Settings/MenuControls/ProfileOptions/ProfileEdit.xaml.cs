@@ -69,7 +69,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
         {
             if (!hasChanges || isSaved) return true;
 
-            return MessageBox.Show("У вас есть несохраненные настройки. Изменения могут не примениться", MessageBoxButton.OKCancel, MessageBoxType.Warning) == MessageBoxResult.Yes;
+            return MessageBox.Show("У вас есть несохраненные настройки. Изменения могут не примениться", "", MessageBoxButton.OKCancel, MessageBoxType.Warning) == MessageBoxResult.Yes;
         }
     }
 }

@@ -33,10 +33,10 @@ namespace AstrumApp
 
     public static class MessageBox
     {
-        public static MessageBoxResult Show(string messageText = "Текст ошибки", MessageBoxButton buttons = MessageBoxButton.OK,
+        public static MessageBoxResult Show(string messageText = "Текст ошибки", string headerText = "", MessageBoxButton buttons = MessageBoxButton.OK,
             MessageBoxType type = MessageBoxType.Error)
         {
-            var messageWindow = new MessageWindow(messageText, buttons, type);
+            var messageWindow = new MessageWindow(messageText, headerText, buttons, type);
             messageWindow.Owner = Application.Current.MainWindow;
             return messageWindow.ShowWindow();
         }
@@ -48,26 +48,27 @@ namespace AstrumApp
         private MessageBoxType _messageType;
         private MessageBoxButton _messageButtons;
         private MainWindow? _mainWindow;
-        DispatcherTimer clock = new DispatcherTimer();
+        DispatcherTimer timer = new DispatcherTimer();
         private int _counter = 7;
 
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.None;
 
-        public MessageWindow() : this("Текст ошибки", MessageBoxButton.OK, MessageBoxType.Error)
+        public MessageWindow() : this("Текст ошибки", "", MessageBoxButton.OK, MessageBoxType.Error)
         {
         }
 
-        public MessageWindow(string messageText, MessageBoxButton buttons, MessageBoxType type)
+        public MessageWindow(string messageText, string headerText, MessageBoxButton buttons, MessageBoxType type)
         {
             _messageType = type;
             _messageButtons = buttons;
 
             InitializeComponent();
 
-            clock.Tick += StartTimer;
-            clock.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += StartTimer;
+            timer.Interval = TimeSpan.FromSeconds(1);
 
             MessageTextBlock.Text = messageText;
+            if (!string.IsNullOrEmpty(headerText)) HeaderTextBlock.Text = headerText;
             _mainWindow = Application.Current.MainWindow as MainWindow;
         }
 
@@ -85,7 +86,7 @@ namespace AstrumApp
 
                 DestructiveMessageTextBlock.Text = MessageTextBlock.Text;
 
-                clock.Start();
+                timer.Start();
             }
             else
             {
@@ -165,7 +166,7 @@ namespace AstrumApp
             {
                 DestructiveConfirmButton.Content = "Удалить";
                 DestructiveConfirmButton.IsEnabled = true;
-                clock.Stop();
+                timer.Stop();
                 return;
             }
 

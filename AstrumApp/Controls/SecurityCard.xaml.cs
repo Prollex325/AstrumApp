@@ -89,7 +89,8 @@ namespace AstrumApp.Controls
         public static readonly DependencyProperty NavPageProperty = DependencyProperty.Register(
             nameof(NavPage),
             typeof(NavigationPage),
-            typeof(SecurityCard));
+            typeof(SecurityCard),
+            new PropertyMetadata(NavigationPage.NotFoundPage));
 
         public NavigationPage NavPage
         {

@@ -9,7 +9,7 @@
         xmlns:services="clr-namespace:AstrumApp.Services"
         xmlns:settings="clr-namespace:AstrumApp.Apps.Settings"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="Astrum"
         Height="648"
         Width="1152"
         WindowStartupLocation="CenterScreen"

@@ -27,7 +27,7 @@ namespace AstrumApp.Apps.Authentication
             {
                 if (image == null)
                 {
-                    if (MessageBox.Show("Вы не выбрали аватарку.\nХотите продолжить без неё?", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.No)
+                    if (MessageBox.Show("Вы не выбрали аватарку.\nХотите продолжить без неё?", "", MessageBoxButton.YesNo, MessageBoxType.Warning) == MessageBoxResult.No)
                     {
                         return;
                     } else

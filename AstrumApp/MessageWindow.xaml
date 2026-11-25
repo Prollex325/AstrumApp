@@ -296,7 +296,7 @@
     <Grid>
         <Grid x:Name="NormalDialog"
               Margin="12"
-              Visibility="Collapsed">
+              Visibility="Visible">
             <Border CornerRadius="14"
                     Background="{StaticResource WindowBackgroundBrush}"
                     BorderBrush="#26384A"
@@ -429,7 +429,7 @@
         <!--  Независимый макет для необратимых действий. Без анимаций и таймера.  -->
         <Grid x:Name="DestructiveDialog"
               Margin="12"
-              Visibility="Visible"
+              Visibility="Collapsed"
               UseLayoutRounding="True"
               SnapsToDevicePixels="True">
 

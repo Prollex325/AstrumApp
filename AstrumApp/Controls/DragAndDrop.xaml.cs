@@ -181,7 +181,7 @@ namespace AstrumApp.Controls
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
                 if (files != null && files.Length <= MaxFilesCount) if (IsValidDrop(e)) FilesDropped?.Invoke(this, files);
-                else MessageBox.Show($"Вы можете загрузить не более {MaxFilesCount} файлов.", MessageBoxButton.OK, 
+                else MessageBox.Show($"Вы можете загрузить не более {MaxFilesCount} файлов.", "", MessageBoxButton.OK, 
                                     MessageBoxType.Error);
             }
         }

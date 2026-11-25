@@ -1,5 +1,6 @@
 using AstrumApp.Profile;
 using AstrumApp.Services;
+using AstrumApp.Services.Configuration;
 using Supabase;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
@@ -29,11 +30,13 @@ namespace AstrumApp.AuthManager
 
         public bool PrepareClient(bool rememberMe = true)
         {
+            var config = PublicAppConfig.Load();
+
             var url = Environment.GetEnvironmentVariable("SUPABASE_URL")
-                ?? throw new InvalidOperationException("SUPABASE_URL не задан.");
+                ?? config.SupabaseUrl;
 
             var key = Environment.GetEnvironmentVariable("SUPABASE_KEY")
-                ?? throw new InvalidOperationException("SUPABASE_KEY не задан.");
+                ?? config.SupabaseKey;
 
             try
             {

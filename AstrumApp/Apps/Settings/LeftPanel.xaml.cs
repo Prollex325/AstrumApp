@@ -22,7 +22,7 @@ namespace AstrumApp.Apps.Settings
             [NavigationPage.Profile] = 0,
             [NavigationPage.Security] = 1,
             // Уведомления = 2
-            [NavigationPage.ChangelogPage] = 3,
+            [NavigationPage.UpdatesPage] = 3,
             [NavigationPage.SystemInfo] = 4,
         };
 
@@ -73,7 +73,7 @@ namespace AstrumApp.Apps.Settings
         }
         private void ChangelogButton_Click(object sender, RoutedEventArgs e)
         {
-            App.Navigation.NavigateMenu(NavigationPage.ChangelogPage);
+            App.Navigation.NavigateMenu(NavigationPage.UpdatesPage);
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

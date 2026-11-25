@@ -30,10 +30,14 @@ namespace AstrumApp.Services
 
         public static string FormatTimestamp(long timestamp, string format = "dd.MM.yyyy HH:mm")
         {
-            return DateTimeOffset
-                .FromUnixTimeMilliseconds(timestamp)
-                .ToLocalTime()
-                .ToString(format);
+            if (timestamp <= 0)
+                return "Неизвестно";
+
+            DateTimeOffset date = timestamp >= 1_000_000_000_000L
+                ? DateTimeOffset.FromUnixTimeMilliseconds(timestamp)
+                : DateTimeOffset.FromUnixTimeSeconds(timestamp);
+
+            return date.ToLocalTime().ToString(format);
         }
 
         public static bool IsAllowedEmailChar(char c)

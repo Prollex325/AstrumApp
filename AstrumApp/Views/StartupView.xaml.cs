@@ -2,6 +2,7 @@ using AstrumApp.AuthManager;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ public enum StartupStep
 {
     Supabase,
     Connection,
+    Updates,
     Session,
     Profile,
     Interface
@@ -34,6 +36,8 @@ public sealed class StartupStepItem : INotifyPropertyChanged
 {
     public StartupStep Id { get; }
     public string Title { get; }
+    public string ProgressText { get; set; } = "";
+    public int ProgressValue { get; set; } = 0;
 
     private StartupStepStatus _status = StartupStepStatus.Pending;
 
@@ -59,10 +63,24 @@ public sealed class StartupStepItem : INotifyPropertyChanged
         _ => ""
     };
 
-    public StartupStepItem(StartupStep id, string title)
+    public void SetProgressText(string progressText)
+    {
+        ProgressText = progressText;
+        OnPropertyChanged(nameof(ProgressText));
+    }
+
+    public void SetProgressValue(int progressValue)
+    {
+        ProgressValue = progressValue;
+        OnPropertyChanged(nameof(ProgressValue));
+    }
+
+    public StartupStepItem(StartupStep id, string title, string progressText = "", int progressValue = 0)
     {
         Id = id;
         Title = title;
+        ProgressText = progressText;
+        ProgressValue = progressValue;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -86,6 +104,7 @@ public partial class StartupView : UserControl
     [
         new(StartupStep.Supabase, "Создание локального клиента"),
         new(StartupStep.Connection, "Проверка подключения к Supabase"),
+        new(StartupStep.Updates, "Проверка обновлений"),
         new(StartupStep.Session, "Проверка сессии"),
         new(StartupStep.Profile, "Загрузка профиля"),
         new(StartupStep.Interface, "Подготовка интерфейса")
@@ -97,6 +116,7 @@ public partial class StartupView : UserControl
     private bool _notReady;
     private bool _outroStarted;
     private bool _flashCovered;
+    private StartupStepItem _currentItem = null!;
 
     public StartupView()
     {
@@ -106,6 +126,16 @@ public partial class StartupView : UserControl
 
         Loaded += StartupView_Loaded;
         Unloaded += StartupView_Unloaded;
+    }
+    
+    public void SetCurrentStepText(string text)
+    {
+        _currentItem.SetProgressText(text);
+    }
+
+    public void SetCurrentStepProgress(int progress)
+    {
+        _currentItem.SetProgressValue(progress);
     }
 
     private void StartupView_Loaded(object sender, RoutedEventArgs e)
@@ -129,6 +159,7 @@ public partial class StartupView : UserControl
     {
         // Методы представления вызываются в UI-потоке WPF.
         _steps.First(item => item.Id == step).Status = status;
+        _currentItem = _steps.First(item => item.Id == step);
     }
 
     public void ShowReady()

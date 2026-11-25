@@ -8,6 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ResourceDictionaries/ProgressBarStyle.xaml" />
                 <ResourceDictionary Source="/ResourceDictionaries/DefaultInput.xaml" />
                 <ResourceDictionary Source="/ResourceDictionaries/ButtonStyle.xaml" />
                 <ResourceDictionary Source="/ResourceDictionaries/ToggleStyles.xaml" />
