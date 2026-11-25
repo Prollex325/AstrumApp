@@ -2,23 +2,25 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
-    <!-- ASTRUM FLOW PROGRESS BAR -->
+    <!--  ASTRUM FLOW PROGRESS BAR  -->
     <Style TargetType="{x:Type ProgressBar}">
 
-        <Setter Property="Height" Value="8"/>
-        <Setter Property="Minimum" Value="0"/>
-        <Setter Property="Maximum" Value="100"/>
-        <Setter Property="Background" Value="#101B27"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Height"
+                Value="8" />
+        <Setter Property="Minimum"
+                Value="0" />
+        <Setter Property="Maximum"
+                Value="100" />
+        <Setter Property="Background"
+                Value="#101B27" />
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
 
         <Setter Property="Foreground">
             <Setter.Value>
-                <LinearGradientBrush StartPoint="0,0"
-                                 EndPoint="1,0">
-                    <GradientStop Color="#3D78C3" Offset="0"/>
-                    <GradientStop Color="#548FD7" Offset="0.4"/>
-                    <GradientStop Color="#7FBCFF" Offset="0.8"/>
-                    <GradientStop Color="#5A9DE8" Offset="1"/>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#397CC5" Offset="0"/>
+                    <GradientStop Color="#77B8FF" Offset="1"/>
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
@@ -28,64 +30,64 @@
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
 
                     <Grid x:Name="Root"
-                      ClipToBounds="True">
-
-                        <!-- Дорожка -->
-                        <Grid x:Name="PART_Track"
                           ClipToBounds="True">
 
+                        <!--  Дорожка  -->
+                        <Grid x:Name="PART_Track"
+                              ClipToBounds="True">
+
                             <Border Background="{TemplateBinding Background}"
-                                BorderBrush="#30465B"
-                                BorderThickness="1"
-                                CornerRadius="99"/>
+                                    BorderBrush="#30465B"
+                                    BorderThickness="1"
+                                    CornerRadius="4" />
 
-                            <!-- Заполненная часть -->
+                            <!--  Заполненная часть  -->
                             <Border x:Name="PART_Indicator"
-                                HorizontalAlignment="Left"
-                                CornerRadius="99"
-                                Background="{TemplateBinding Foreground}">
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="4"
+                                    Background="{TemplateBinding Foreground}">
 
-                                <!-- Тонкий верхний блик -->
+                                <!--  Тонкий верхний блик  -->
                                 <Border Height="2"
-                                    Margin="2,1,2,0"
-                                    VerticalAlignment="Top"
-                                    Background="#38FFFFFF"
-                                    CornerRadius="99"/>
+                                        Margin="2,1,2,0"
+                                        VerticalAlignment="Top"
+                                        Background="#38FFFFFF"
+                                        CornerRadius="4" />
                             </Border>
 
-                            <!-- Фон при неопределённой загрузке -->
+                            <!--  Фон при неопределённой загрузке  -->
                             <Border x:Name="IndeterminateBase"
-                                Background="#233F5C"
-                                CornerRadius="99"
-                                Visibility="Collapsed"/>
+                                    Background="#233F5C"
+                                    CornerRadius="4"
+                                    Visibility="Collapsed" />
 
-                            <!-- Движущийся световой импульс -->
+                            <!--  Движущийся световой импульс  -->
                             <Border x:Name="IndeterminateSweep"
-                                CornerRadius="99"
-                                Visibility="Collapsed">
+                                    CornerRadius="4"
+                                    Visibility="Collapsed">
 
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0"
-                                                     EndPoint="1,0">
+                                                         EndPoint="1,0">
 
                                         <GradientStop Color="#007FBCFF"
-                                                  Offset="0"/>
+                                                      Offset="0" />
                                         <GradientStop Color="#007FBCFF"
-                                                  Offset="0.35"/>
+                                                      Offset="0.35" />
                                         <GradientStop Color="#587FBCFF"
-                                                  Offset="0.44"/>
+                                                      Offset="0.44" />
                                         <GradientStop Color="#FFB0D8FF"
-                                                  Offset="0.5"/>
+                                                      Offset="0.5" />
                                         <GradientStop Color="#587FBCFF"
-                                                  Offset="0.56"/>
+                                                      Offset="0.56" />
                                         <GradientStop Color="#007FBCFF"
-                                                  Offset="0.65"/>
+                                                      Offset="0.65" />
                                         <GradientStop Color="#007FBCFF"
-                                                  Offset="1"/>
+                                                      Offset="1" />
 
                                         <LinearGradientBrush.RelativeTransform>
                                             <TranslateTransform x:Name="SweepTransform"
-                                                            X="-1.1"/>
+                                                                X="-1.1" />
                                         </LinearGradientBrush.RelativeTransform>
                                     </LinearGradientBrush>
                                 </Border.Background>
@@ -96,47 +98,46 @@
 
                     <ControlTemplate.Triggers>
 
-                        <!-- Неопределённая загрузка -->
+                        <!--  Неопределённая загрузка  -->
                         <Trigger Property="IsIndeterminate"
-                             Value="True">
+                                 Value="True">
 
                             <Setter TargetName="PART_Indicator"
-                                Property="Visibility"
-                                Value="Collapsed"/>
+                                    Property="Visibility"
+                                    Value="Collapsed" />
 
                             <Setter TargetName="IndeterminateBase"
-                                Property="Visibility"
-                                Value="Visible"/>
+                                    Property="Visibility"
+                                    Value="Visible" />
 
                             <Setter TargetName="IndeterminateSweep"
-                                Property="Visibility"
-                                Value="Visible"/>
+                                    Property="Visibility"
+                                    Value="Visible" />
 
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="SweepStoryboard">
                                     <Storyboard>
-                                        <DoubleAnimation
-                                        Storyboard.TargetName="SweepTransform"
-                                        Storyboard.TargetProperty="X"
-                                        From="-1.1"
-                                        To="1.1"
-                                        Duration="0:0:1.6"
-                                        RepeatBehavior="Forever"/>
+                                        <DoubleAnimation Storyboard.TargetName="SweepTransform"
+                                                         Storyboard.TargetProperty="X"
+                                                         From="-1.1"
+                                                         To="1.1"
+                                                         Duration="0:0:1.6"
+                                                         RepeatBehavior="Forever" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
 
                             <Trigger.ExitActions>
-                                <StopStoryboard BeginStoryboardName="SweepStoryboard"/>
+                                <StopStoryboard BeginStoryboardName="SweepStoryboard" />
                             </Trigger.ExitActions>
                         </Trigger>
 
-                        <!-- Отключённый ProgressBar -->
+                        <!--  Отключённый ProgressBar  -->
                         <Trigger Property="IsEnabled"
-                             Value="False">
+                                 Value="False">
                             <Setter TargetName="Root"
-                                Property="Opacity"
-                                Value="0.45"/>
+                                    Property="Opacity"
+                                    Value="0.45" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>

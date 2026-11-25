@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace AstrumApp.Apps.Settings.MenuControls
 {//TODO : улучшить стили
@@ -25,7 +26,8 @@ namespace AstrumApp.Apps.Settings.MenuControls
                                     typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion?
                                                .Split('+')[0] ?? "0.0.0";
         private bool _starSpinning = false;
-        private int _lastProgress = -1;
+        private UpdateStatus? _lastVisualStatus;
+
         public UpdatesPage()
         {
             InitializeComponent();
@@ -139,7 +141,13 @@ namespace AstrumApp.Apps.Settings.MenuControls
                 case UpdateStatus.Available:
                     SetData("UpdateAvailableBrush", $"Доступна новая версия {version}", "Обновить");
                     break;
-                case UpdateStatus.Downloading:  
+                case UpdateStatus.Downloading:
+                    if (_lastVisualStatus != UpdateStatus.Downloading)
+                    {
+                        UpdateProgressBar.BeginAnimation(ProgressBar.ValueProperty, null);
+                        UpdateProgressBar.Value = 0;
+                        ProgressBarPercents.Text = "0%";
+                    }
                     SetData("UpdateDownloadingBrush", "Загрузка обновления...", "Скачивание...");
                     break;
                 case UpdateStatus.ReadyToInstall:
@@ -152,6 +160,8 @@ namespace AstrumApp.Apps.Settings.MenuControls
                     SetData("UpdateFailedBrush", "Не удалось проверить обновления", "Повторить");
                     break;
             }
+
+            _lastVisualStatus = status;
         }
 
         private void StartStarRotation()
@@ -200,13 +210,25 @@ namespace AstrumApp.Apps.Settings.MenuControls
             {
                 int progress = App.Updates.DownloadProgress;
 
-                if (_lastProgress == progress)
-                    return;
-
-                _lastProgress = progress;
-
                 ProgressBarPercents.Text = $"{progress}%";
+
+                double current = UpdateProgressBar.Value;
+
                 UpdateProgressBar.Value = progress;
+
+                var animation = new DoubleAnimation
+                {
+                    From = current,
+                    To = progress,
+                    Duration = TimeSpan.FromMilliseconds(200),
+                    EasingFunction = new QuadraticEase
+                    {
+                        EasingMode = EasingMode.EaseOut
+                    },
+                    FillBehavior = FillBehavior.Stop
+                };
+
+                UpdateProgressBar.BeginAnimation(ProgressBar.ValueProperty, animation);
             }));
         }
 
