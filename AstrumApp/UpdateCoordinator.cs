@@ -28,12 +28,17 @@ namespace AstrumApp
         public UpdateInfo? AvailableUpdate { get; private set; }
         public int DownloadProgress { get; private set; }
         public bool IsInstalled => _service.IsInstalled;
+        public bool IsRequired { get; private set; }
+        public SemanticVersion? MinimumSupportedVersion { get; private set; }
+        public SemanticVersion? PendingVersion => _service.PendingVersion;
 
         private readonly UpdateService _service;
+        private readonly UpdatePolicyService _policyService;
 
         public UpdateCoordinator(UpdateService service)
         {
             _service = service;
+            _policyService = new();
 
             if (_service.IsUpdateReady)
             {
@@ -42,13 +47,14 @@ namespace AstrumApp
             }
         }
 
-        public async Task CheckAsync()
+        public async Task CheckAsync(bool force = false)
         {
-            if (_service.IsUpdateReady)
+            if (!force && _service.IsUpdateReady)
             {
                 StatusUpdate(UpdateStatus.ReadyToInstall);
                 return;
             }
+
             if (Status is UpdateStatus.Checking or UpdateStatus.Downloading or UpdateStatus.Installing) 
                 return;
 
@@ -124,6 +130,20 @@ namespace AstrumApp
                 LastError = ex.Message;
                 StatusUpdate(UpdateStatus.Failed);
             }
+        }
+        public async Task RefreshPolicyAsync()
+        {
+            var policy = await _policyService.GetPolicyAsync();
+
+            var current = _service.CurrentVersion
+                ?? throw new InvalidOperationException("Не удалось определить версию Astrum.");
+
+            var minimum = SemanticVersion.Parse(policy.MinimumSupportedVersion);
+
+            MinimumSupportedVersion = SemanticVersion.Parse(policy.MinimumSupportedVersion);
+
+            IsRequired = _service.CurrentVersion != null &&
+                         _service.CurrentVersion.CompareTo(MinimumSupportedVersion) < 0;
         }
 
         private void StatusUpdate(UpdateStatus status)

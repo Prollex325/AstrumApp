@@ -9,7 +9,7 @@ namespace AstrumApp
     {
         public static string AppDataFolder { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         public static string LocalAppDataFolder { get;  }  = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        public static string AppFolder { get; } = CreateDirectory(Path.Combine(LocalAppDataFolder, "AstrumApp"));
+        public static string AppFolder { get; } = CreateDirectory(Path.Combine(LocalAppDataFolder, "AstrumData"));
         public static string CacheFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "Cache"));
         public static string AuthFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "Auth"));
         public static string UserFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "user"));

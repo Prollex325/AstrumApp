@@ -19,19 +19,11 @@ namespace AstrumApp.Services.Updates
 
         public bool IsUpdateReady => _manager.UpdatePendingRestart != null;
 
+        public SemanticVersion? PendingVersion => _manager.UpdatePendingRestart?.Version;
+
         public UpdateService(IUpdateSource source)
         {
-            #if DEBUG
-                var locator = new TestVelopackLocator(
-                    appId: "AstrumApp.Test",
-                    version: "0.1.3",
-                    packagesDir: @"D:\AstrumVelopackTest\debug-packages"
-                );
-
-                _manager = new UpdateManager(source, null, locator);
-            #else
-                _manager = new UpdateManager(source);
-            #endif
+            _manager = new UpdateManager(source);
         }
 
         public Task<UpdateInfo?> CheckAsync() => _manager.CheckForUpdatesAsync();

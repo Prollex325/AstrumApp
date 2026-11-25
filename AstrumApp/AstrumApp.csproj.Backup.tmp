@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <StartupObject>AstrumApp.Program</StartupObject>
+    <ProjectGuid>{0DDFDE19-DD33-9AA2-A0D9-1DCFA1AD4216}</ProjectGuid>
+
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.public.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Конфигурация файла переменных окружения -->
+  <ItemGroup>
+    <None Remove=".env" />
+    <None Remove="Docs\changelog.md" />
+    <Content Include=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Docs\changelog.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Управление ресурсами картинок и медиа (Assets) -->
+  <ItemGroup>
+    <None Remove="Assets\**" />
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Особое правило для аватара, у вас там стояло Always -->
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Assets\user\default_avatar.png" />
+  </ItemGroup>
+
+  <!-- Подключенные NuGet пакеты -->
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
+    <PackageReference Include="MdXaml" Version="1.27.0" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.6" />
+    <PackageReference Include="Supabase" Version="1.6.0" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
+    <PackageReference Include="zxcvbn-core" Version="7.0.92" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\user\default_avatar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Apps\Authentication\SelectProfilePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="MessageWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+</Project>

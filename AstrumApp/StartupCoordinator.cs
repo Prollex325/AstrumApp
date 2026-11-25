@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml.XPath;
 
 
 namespace AstrumApp
@@ -89,99 +90,8 @@ namespace AstrumApp
 
             // ПРОВЕРКА ОБНОВЛЕНИЙ
 
-            if (App.Updates.IsInstalled)
-            {
-                StartupView.BeginStep(StartupStep.Updates);
-                UpdateStatus status = App.Updates.Status;
-
-                if (status is not UpdateStatus.ReadyToInstall) { 
-                    await App.Updates.CheckAsync(); 
-                    status = App.Updates.Status;
-
-                    switch (status)
-                    {
-                        case UpdateStatus.Available:
-                            {
-                                StartupView.CompleteStep(StartupStep.Updates);
-
-                                var result = MessageBox.Show("Доступно обновление Astrum. Скачать?", "Обновление", MessageBoxButton.YesNo,
-                                                             MessageBoxType.Info);
-
-                                if (result != MessageBoxResult.Yes) break;
-
-                                StartupView.BeginStep(StartupStep.Updates);
-                                StartupView.SetCurrentStepText("Загрузка обновления Astrum");
-                                StartupView.SetCurrentStepProgress(0);
-
-                                Action progressHandler = () =>
-                                {
-                                    StartupView.Dispatcher.BeginInvoke(new Action(() =>
-                                    {
-                                        StartupView.SetCurrentStepProgress(App.Updates.DownloadProgress);
-                                    }));
-                                };
-
-                                App.Updates.ProgressChanged += progressHandler;
-
-                                try
-                                {
-                                    await App.Updates.DownloadAsync();
-                                }
-                                finally
-                                {
-                                    App.Updates.ProgressChanged -= progressHandler;
-                                }
-
-                                if (App.Updates.Status != UpdateStatus.ReadyToInstall)
-                                {
-                                    StartupView.FailStep(StartupStep.Updates);
-
-                                    MessageBox.Show(App.Updates.LastError ?? "Не удалось скачать обновление.", "Ошибка обновления",
-                                                    MessageBoxButton.OK, MessageBoxType.Error);
-
-                                    break;
-                                }
-
-                                StartupView.SetCurrentStepProgress(100);
-                                StartupView.CompleteStep(StartupStep.Updates);
-
-                                result = MessageBox.Show("Обновление скачано. Перезапустить Astrum для установки?", "Обновление",
-                                                         MessageBoxButton.YesNo, MessageBoxType.Info);
-
-                                if (result == MessageBoxResult.Yes)
-                                {
-                                    App.Updates.InstallAndRestart();
-                                }
-                                else
-                                {
-                                    StartupView.SetCurrentStepText("");
-                                    StartupView.SetCurrentStepProgress(0);
-                                }
-
-                                break;
-                            }
-                        case UpdateStatus.UpToDate:
-                            StartupView.CompleteStep(StartupStep.Updates);
-                            break;
-                        case UpdateStatus.Failed:
-                            StartupView.FailStep(StartupStep.Updates);
-                            break;
-                        default:
-                            StartupView.CompleteStep(StartupStep.Updates);
-                            break;
-                    }
-                } else
-                {
-                    var result = MessageBox.Show("Обновление скачано. Перезапустить Astrum для установки?", "Обновление",
-                                                         MessageBoxButton.YesNo, MessageBoxType.Info);
-
-                    if (result == MessageBoxResult.Yes) App.Updates.InstallAndRestart();
-                    StartupView.CompleteStep(StartupStep.Updates);
-                }
-            } else
-            {
-                StartupView.SkipStep(StartupStep.Updates);
-            }
+            if (!await HandleUpdatesAsync())
+                return false;
 
 
             // ПРОВЕРЯЕМ СУЩЕСТВУЮЩУЮ СЕССИЮ
@@ -257,6 +167,179 @@ namespace AstrumApp
                 await WelcomeView.PlayIntroAsync();
             }
 
+            return true;
+        }
+
+        private async Task<bool> HandleUpdatesAsync()
+        {
+            if (StartupView == null) return false;
+
+            if (!App.Updates.IsInstalled)
+            {
+                StartupView.SkipStep(StartupStep.Updates);
+                return true;
+            }
+
+            StartupView.BeginStep(StartupStep.Updates);
+
+            try
+            {
+                await App.Updates.RefreshPolicyAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                StartupView.FailStep(StartupStep.Updates);
+                StartupView.ShowNotReady("Не удалось проверить требования к версии");
+                return false;
+            }
+
+            bool pendingIsOutdated = 
+                App.Updates.PendingVersion is { } pending && 
+                App.Updates.MinimumSupportedVersion is { } minimum && 
+                pending.CompareTo(minimum) < 0;
+
+            if (pendingIsOutdated)
+            {
+                await App.Updates.CheckAsync(force: true);
+
+                if (App.Updates.Status == UpdateStatus.Available &&
+                    App.Updates.AvailableUpdate is { } update &&
+                    App.Updates.MinimumSupportedVersion is { } min &&
+                    update.TargetFullRelease.Version.CompareTo(min) >= 0)
+                {
+                    bool downloaded = await DownloadUpdateAsync();
+
+                    if (downloaded &&
+                        App.Updates.PendingVersion is { } newVersion &&
+                        newVersion.CompareTo(min) >= 0)
+                    {
+                        return ConfirmUpdateInstallation();
+                    }
+                }
+
+                StartupView.FailStep(StartupStep.Updates);
+                StartupView.ShowNotReady("Не удалось получить поддерживаемое обновление");
+                return false;
+            }
+
+            if (App.Updates.Status != UpdateStatus.ReadyToInstall)
+                await App.Updates.CheckAsync();
+
+            if (App.Updates.Status == UpdateStatus.ReadyToInstall)
+                return ConfirmUpdateInstallation();
+
+            if (App.Updates.Status == UpdateStatus.Available)
+            {
+                var result = MessageBox.Show(
+                    App.Updates.IsRequired
+                        ? "Доступно обязательное обновление Astrum. Скачать?"
+                        : "Доступно обновление Astrum. Скачать?",
+                    "Обновление",
+                    MessageBoxButton.YesNo,
+                    App.Updates.IsRequired
+                        ? MessageBoxType.Warning
+                        : MessageBoxType.Info
+                );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool downloaded = await DownloadUpdateAsync();
+
+                    if (downloaded)
+                        return ConfirmUpdateInstallation();
+
+                    MessageBox.Show(
+                        App.Updates.LastError ?? "Не удалось скачать обновление.",
+                        "Ошибка обновления",
+                        MessageBoxButton.OK,
+                        MessageBoxType.Error
+                    );
+                }
+            }
+
+            if (App.Updates.IsRequired)
+            {
+                StartupView.FailStep(StartupStep.Updates);
+                StartupView.ShowNotReady("Обновление обязательно для запуска");
+                return false;
+            }
+
+            if (App.Updates.Status == UpdateStatus.Failed)
+                StartupView.FailStep(StartupStep.Updates);
+            else
+                StartupView.CompleteStep(StartupStep.Updates);
+
+            return true;
+        }
+
+        private async Task<bool> DownloadUpdateAsync()
+        {
+            if (StartupView == null) return false;
+
+            StartupView.SetCurrentStepText("Загрузка обновления Astrum");
+            StartupView.SetCurrentStepProgress(0);
+
+            Action progressHandler = () =>
+            {
+                StartupView.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    StartupView.SetCurrentStepProgress(
+                        App.Updates.DownloadProgress
+                    );
+                }));
+            };
+
+            App.Updates.ProgressChanged += progressHandler;
+
+            try
+            {
+                await App.Updates.DownloadAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                App.Updates.ProgressChanged -= progressHandler;
+            }
+
+            return App.Updates.Status == UpdateStatus.ReadyToInstall;
+        }
+
+        private bool ConfirmUpdateInstallation()
+        {
+            if (StartupView == null) return false;
+
+            bool required = App.Updates.IsRequired;
+
+            var result = MessageBox.Show(
+                required
+                    ? "Обязательное обновление загружено.\nУстановить сейчас?"
+                    : "Обновление загружено.\nПерезапустить Astrum для установки?",
+                "Обновление",
+                MessageBoxButton.YesNo,
+                required
+                    ? MessageBoxType.Warning
+                    : MessageBoxType.Info
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                App.Updates.InstallAndRestart();
+                return false;
+            }
+
+            if (required)
+            {
+                StartupView.FailStep(StartupStep.Updates);
+                StartupView.ShowNotReady("Обновление обязательно для запуска");
+                return false;
+            }
+
+            StartupView.CompleteStep(StartupStep.Updates);
             return true;
         }
     }

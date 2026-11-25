@@ -162,7 +162,7 @@
                         <StackPanel Grid.Column="1"
                                     Margin="14,0,12,0">
 
-                            <TextBlock Text="Astrum 222"
+                            <TextBlock Text="Astrum"
                                        Foreground="#F2F8FF"
                                        FontSize="23"
                                        FontWeight="SemiBold" />
