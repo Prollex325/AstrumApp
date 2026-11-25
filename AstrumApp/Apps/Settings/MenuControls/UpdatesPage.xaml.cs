@@ -27,6 +27,7 @@ namespace AstrumApp.Apps.Settings.MenuControls
                                                .Split('+')[0] ?? "0.0.0";
         private bool _starSpinning = false;
         private UpdateStatus? _lastVisualStatus;
+        private int _easterEggClicks = 0;
 
         public UpdatesPage()
         {
@@ -253,6 +254,25 @@ namespace AstrumApp.Apps.Settings.MenuControls
             {
                 ChangelogViewer.Markdown = "# История обновлений\n\nФайл не найден.";
             }
+        }
+
+        private void StarEasterEgg_Click(object sender, MouseButtonEventArgs e)
+        {
+            _easterEggClicks++;
+
+            if (_easterEggClicks < 5) return;
+
+            _easterEggClicks = 0;
+
+            MessageBox.Show(
+                "Говорят, зимой звёзды светят немного иначе...\n" +
+                "Возможно, Astrum скоро это докажет. ❄️",
+                "Маленькая тайна Astrum",
+                MessageBoxButton.OK,
+                MessageBoxType.Info
+            );
+
+            e.Handled = true;
         }
     }
 }
