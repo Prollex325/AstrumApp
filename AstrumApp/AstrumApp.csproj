@@ -6,10 +6,23 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <StartupObject>AstrumApp.Program</StartupObject>
     <ProjectGuid>{0DDFDE19-DD33-9AA2-A0D9-1DCFA1AD4216}</ProjectGuid>
 
-     <Version>0.1.0</Version>
+    <Version>0.1.4</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.public.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
   <!-- Конфигурация файла переменных окружения -->
   <ItemGroup>
@@ -17,7 +30,7 @@
     <None Remove="Docs\changelog.md" />
     <Content Include=".env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
     <Content Include="Docs\changelog.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -42,6 +55,7 @@
     <PackageReference Include="MdXaml" Version="1.27.0" />
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.6" />
     <PackageReference Include="Supabase" Version="1.6.0" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
     <PackageReference Include="zxcvbn-core" Version="7.0.92" />
   </ItemGroup>
   <ItemGroup>

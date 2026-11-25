@@ -1,8 +1,9 @@
 ﻿using AstrumApp.Apps.Authentication;
 using AstrumApp.Apps.Settings;
-using AstrumApp.Services;
-using AstrumApp.Views;
 using AstrumApp.Controls;
+using AstrumApp.Services;
+using AstrumApp.Services.Updates;
+using AstrumApp.Views;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +17,6 @@ using System.Windows.Threading;
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
 
 
-//TODO : Extra danger messagebox - доделать
 //TODO : автообновления
 
 
@@ -47,6 +47,8 @@ namespace AstrumApp
                 }, DispatcherPriority.Background); // чтоб мыла не было
             };
 
+            Loaded += UpdateTestOnLoaded;
+
             Loaded += (s, e) =>
             {
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -69,9 +71,14 @@ namespace AstrumApp
 
             //ContentRendered += MainWindow_ContentRendered;
 
-            CloseStartupView();
-            Unlock();
+            //CloseStartupView();
+            //Unlock(); // уведомление обновление доступно или скачано
             //OpenSettings();
+        }
+
+        private async void UpdateTestOnLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= UpdateTestOnLoaded;
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -215,6 +222,7 @@ namespace AstrumApp
 
         public void Unlock()
         {
+            CheckForUpdates();
             LockScreenControl.Visibility = Visibility.Collapsed;
 
             DesktopControl.Visibility = Visibility.Visible;
@@ -228,6 +236,15 @@ namespace AstrumApp
         {
             LockScreenControl.Visibility = Visibility.Visible;
             LockScreenControl.Lock();
+        }
+
+        private async void CheckForUpdates()
+        {
+            await App.Updates.CheckAsync();
+            UpdateStatus status = App.Updates.Status;
+
+            if (status is UpdateStatus.Available) App.Notifications.Show("Обновление доступно", CardTypes.Success);
+            else if (status is UpdateStatus.ReadyToInstall) App.Notifications.Show("Обновление скачано", CardTypes.Success);
         }
 
         private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)

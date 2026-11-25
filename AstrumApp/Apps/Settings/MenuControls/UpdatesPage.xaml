@@ -1,0 +1,392 @@
+﻿<UserControl x:Class="AstrumApp.Apps.Settings.MenuControls.UpdatesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:md="clr-namespace:MdXaml;assembly=MdXaml"
+             xmlns:local="clr-namespace:AstrumApp.Apps.Settings.MenuControls"
+             mc:Ignorable="d"
+             d:DesignHeight="585"
+             d:DesignWidth="720">
+
+    <UserControl.Resources>
+        <!--  Цвета состояний обновления  -->
+
+        <SolidColorBrush x:Key="UpdateIdleBrush"
+                         Color="#788BA0" />
+
+        <SolidColorBrush x:Key="UpdateCheckingBrush"
+                         Color="#7FBCFF" />
+
+        <SolidColorBrush x:Key="UpdateUpToDateBrush"
+                         Color="#7AD7B0" />
+
+        <SolidColorBrush x:Key="UpdateAvailableBrush"
+                         Color="#F4C27A" />
+
+        <SolidColorBrush x:Key="UpdateDownloadingBrush"
+                         Color="#7FBCFF" />
+
+        <SolidColorBrush x:Key="UpdateReadyBrush"
+                         Color="#B9A3FF" />
+
+        <SolidColorBrush x:Key="UpdateInstallingBrush"
+                         Color="#B9A3FF" />
+
+        <SolidColorBrush x:Key="UpdateFailedBrush"
+                         Color="#F3A29D" />
+
+        <!--  Кнопка проверки обновлений  -->
+        <Style x:Key="CheckUpdatesButtonStyle"
+               TargetType="Button">
+            <Setter Property="Background"
+                    Value="#304E6B" />
+            <Setter Property="Foreground"
+                    Value="#EAF3FF" />
+            <Setter Property="FontSize"
+                    Value="13" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="Padding"
+                    Value="18,11" />
+            <Setter Property="Cursor"
+                    Value="Hand" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBackground"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#45698A"
+                                BorderThickness="1"
+                                CornerRadius="9"
+                                Padding="{TemplateBinding Padding}">
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="ButtonBackground"
+                                        Property="Background"
+                                        Value="#3C648A" />
+                            </Trigger>
+
+                            <Trigger Property="IsPressed"
+                                     Value="True">
+                                <Setter TargetName="ButtonBackground"
+                                        Property="Background"
+                                        Value="#25435E" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled"
+                                     Value="False">
+                                <Setter Property="Opacity"
+                                        Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!--  Основной контейнер страницы  -->
+    <Border Padding="20"
+            CornerRadius="20"
+            BorderBrush="#22FFFFFF"
+            BorderThickness="1">
+
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                <GradientStop Color="#1C2530"
+                              Offset="0" />
+                <GradientStop Color="#18212B"
+                              Offset="1" />
+            </LinearGradientBrush>
+        </Border.Background>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  КАРТОЧКА ASTRUM  -->
+            <Border Grid.Row="0"
+                    Background="#243240"
+                    CornerRadius="14"
+                    BorderBrush="#28465E75"
+                    BorderThickness="1"
+                    Padding="18"
+                    Margin="0,0,0,15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="54" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Логотип  -->
+                        <Border Width="48"
+                                Height="48"
+                                CornerRadius="12"
+                                Background="#304A63"
+                                VerticalAlignment="Top">
+
+                            <Viewbox Width="29"
+                                     Height="29"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     RenderTransformOrigin="0.5,0.5">
+                                <Viewbox.RenderTransform>
+                                    <RotateTransform x:Name="StarRotation" />
+                                </Viewbox.RenderTransform>
+                                <Path Fill="#A4C8FF"
+                                      Data="M12,1 L15.5,8.5 L23,12 L15.5,15.5 L12,23 L8.5,15.5 L1,12 L8.5,8.5 Z" />
+                            </Viewbox>
+                        </Border>
+
+                        <!--  Информация о приложении  -->
+                        <StackPanel Grid.Column="1"
+                                    Margin="14,0,12,0">
+
+                            <TextBlock Text="Astrum"
+                                       Foreground="#F2F8FF"
+                                       FontSize="23"
+                                       FontWeight="SemiBold" />
+
+                            <TextBlock x:Name="CurrentVersionText"
+                                       Text="Версия 0.1.2"
+                                       Foreground="#A4C8FF"
+                                       FontSize="13"
+                                       Margin="0,3,0,0" />
+
+                            <!--  Статус обновлений  -->
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="0,12,0,0">
+
+                                <Ellipse x:Name="UpdateStatusIndicator"
+                                         Width="7"
+                                         Height="7"
+                                         Fill="{StaticResource UpdateIdleBrush}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,8,0" />
+
+                                <TextBlock x:Name="UpdateStatusText"
+                                           Text="Обновления не проверялись"
+                                           Foreground="#9DADBF"
+                                           FontSize="12"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--  Действие  -->
+                        <Button x:Name="ActionButton"
+                                Grid.Column="2"
+                                Content="Проверить"
+                                Style="{StaticResource CheckUpdatesButtonStyle}"
+                                VerticalAlignment="Center"
+                                Click="ActionButton_Click"
+                                Width="150" />
+                    </Grid>
+
+                    <Grid Grid.Row="1"
+                          Margin="0,14,0,0">
+
+                        <StackPanel x:Name="ProgressStack"
+                                    Orientation="Horizontal"
+                                    Visibility="Visible">
+
+                            <ProgressBar x:Name="UpdateProgressBar"
+                                         Style="{x:Null}"
+                                         Visibility="Visible"
+                                         Value="30"
+                                         Height="8"
+                                         Margin="0,10,0,0" />
+
+                            <TextBlock x:Name="ProgressBarPercents"
+                                       Grid.Row="0"
+                                       Grid.Column="1"
+                                       Text="67%"
+                                       Foreground="#A8BFD6"
+                                       FontSize="11"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock x:Name="UpdateErrorDetails"
+                                   Visibility="Collapsed"
+                                   Foreground="#F3A29D"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  ЧТО НОВОГО  -->
+            <Border Grid.Row="1"
+                    Background="#141F2A"
+                    CornerRadius="14"
+                    BorderBrush="#22FFFFFF"
+                    BorderThickness="1"
+                    Padding="16">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Заголовок changelog  -->
+                    <StackPanel Grid.Row="0"
+                                Margin="12,5,12,14">
+
+                        <TextBlock Text="Что нового"
+                                   Foreground="#F2F8FF"
+                                   FontSize="20"
+                                   FontWeight="SemiBold" />
+
+                        <TextBlock Text="Список изменений текущей версии"
+                                   Foreground="#8095AA"
+                                   FontSize="12"
+                                   Margin="0,5,0,0" />
+                    </StackPanel>
+
+                    <!--  Markdown  -->
+                    <md:MarkdownScrollViewer x:Name="ChangelogViewer"
+                                             Grid.Row="1"
+                                             Background="Transparent"
+                                             Foreground="#E8EDF3"
+                                             Padding="10,4,10,10">
+
+                        <md:MarkdownScrollViewer.MarkdownStyle>
+                            <Style TargetType="FlowDocument"
+                                   BasedOn="{x:Static md:MarkdownStyle.Sasabune}">
+
+                                <Setter Property="Foreground"
+                                        Value="#E8EDF3" />
+
+                                <Style.Resources>
+                                    <Style TargetType="Paragraph">
+                                        <Style.Triggers>
+
+                                            <!--  Главный заголовок  -->
+                                            <Trigger Property="Tag"
+                                                     Value="Heading1">
+                                                <Setter Property="Foreground"
+                                                        Value="#FFFFFF" />
+                                                <Setter Property="FontSize"
+                                                        Value="28" />
+                                                <Setter Property="FontWeight"
+                                                        Value="SemiBold" />
+                                                <Setter Property="Margin"
+                                                        Value="0,0,0,20" />
+                                            </Trigger>
+
+                                            <!--  Версия  -->
+                                            <Trigger Property="Tag"
+                                                     Value="Heading2">
+                                                <Setter Property="Foreground"
+                                                        Value="#A4C8FF" />
+                                                <Setter Property="FontSize"
+                                                        Value="21" />
+                                                <Setter Property="FontWeight"
+                                                        Value="SemiBold" />
+                                                <Setter Property="Margin"
+                                                        Value="0,16,0,12" />
+                                            </Trigger>
+
+                                            <!--  Названия разделов  -->
+                                            <Trigger Property="Tag"
+                                                     Value="Heading3">
+                                                <Setter Property="Foreground"
+                                                        Value="#E8EDF3" />
+                                                <Setter Property="FontSize"
+                                                        Value="17" />
+                                                <Setter Property="FontWeight"
+                                                        Value="SemiBold" />
+                                                <Setter Property="Margin"
+                                                        Value="0,14,0,8" />
+                                            </Trigger>
+
+                                        </Style.Triggers>
+                                    </Style>
+                                </Style.Resources>
+                            </Style>
+                        </md:MarkdownScrollViewer.MarkdownStyle>
+
+                        <!--  Кастомный ScrollBar  -->
+                        <md:MarkdownScrollViewer.Resources>
+                            <Style TargetType="{x:Type ScrollBar}">
+                                <Setter Property="Width"
+                                        Value="8" />
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ScrollBar">
+                                            <Grid Background="Transparent">
+
+                                                <Border Background="#1A2531"
+                                                        CornerRadius="5" />
+
+                                                <Track x:Name="PART_Track"
+                                                       Orientation="Vertical"
+                                                       IsDirectionReversed="True">
+
+                                                    <Track.DecreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageUpCommand"
+                                                                      Opacity="0"
+                                                                      Focusable="False" />
+                                                    </Track.DecreaseRepeatButton>
+
+                                                    <Track.Thumb>
+                                                        <Thumb MinHeight="30">
+                                                            <Thumb.Template>
+                                                                <ControlTemplate TargetType="Thumb">
+                                                                    <Border x:Name="ThumbBorder"
+                                                                            Background="#455B73"
+                                                                            CornerRadius="5" />
+
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver"
+                                                                                 Value="True">
+                                                                            <Setter TargetName="ThumbBorder"
+                                                                                    Property="Background"
+                                                                                    Value="#7BAAFF" />
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Thumb.Template>
+                                                        </Thumb>
+                                                    </Track.Thumb>
+
+                                                    <Track.IncreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageDownCommand"
+                                                                      Opacity="0"
+                                                                      Focusable="False" />
+                                                    </Track.IncreaseRepeatButton>
+
+                                                </Track>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </md:MarkdownScrollViewer.Resources>
+                    </md:MarkdownScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

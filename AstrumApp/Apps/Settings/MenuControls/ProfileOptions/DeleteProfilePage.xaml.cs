@@ -57,7 +57,7 @@ namespace AstrumApp.Apps.Settings.MenuControls.ProfileOptions
             if (NewPasswordBox.Text == ConfirmPasswordBox.Text)
             {
 
-                if (MessageBox.Show("Вы собираетесь навсегда удалить аккаунт.\nЭто действие невозможно отменить.",
+                if (MessageBox.Show("Вы собираетесь навсегда удалить аккаунт.\nЭто действие невозможно отменить.", "",
                     MessageBoxButton.YesNo, MessageBoxType.Destructive) == MessageBoxResult.Yes)
                 {
                     string newPassword = NewPasswordBox.Text;

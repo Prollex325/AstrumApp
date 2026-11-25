@@ -514,7 +514,7 @@
                              MouseLeftButtonUp="SecurityButton_Click" />
                 <ListBoxItem Content="Уведомления"
                              IsEnabled="False" />
-                <ListBoxItem Content="Обновления"
+                <ListBoxItem Content="Центр обновлений"
                              MouseLeftButtonUp="ChangelogButton_Click" />
                 <ListBoxItem Content="О системе"
                              MouseLeftButtonUp="SystemInfoButton_Click" />

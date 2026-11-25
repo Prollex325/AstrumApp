@@ -175,6 +175,13 @@ namespace AstrumApp.Profile
             OnPropertyChanged();
         }
 
+        public long SetUpdateTime(long timestamp)
+        {
+            UpdatedAt = StringFormatService.FormatTimestamp(timestamp);
+            OnPropertyChanged();
+            return timestamp;
+        }
+
         private void EndEdit()
         {
             _isEditing = false;

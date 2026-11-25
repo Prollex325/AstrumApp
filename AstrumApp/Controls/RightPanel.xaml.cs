@@ -16,10 +16,14 @@ namespace AstrumApp.Controls
         private async void RightPanelLoaded(object? sender, RoutedEventArgs e)
         {
             var weatherService = new WeatherService();
-            Dictionary<string, object> weather = await weatherService.GetWeather("Almaty");
+            //Dictionary<string, object> weather = await weatherService.GetWeather("Almaty");
+            object? weather = null; // отключаем погоду временно
             if (weather == null)
-            { return;  }
-            TextFilling(weather);
+            { return; }
+            else
+            {
+                //TextFilling(weather); //TODO : тоже включить как то добавим погоду
+            }
         }
 
         public void TextFilling(Dictionary<string, object> weather)

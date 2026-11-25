@@ -20,29 +20,38 @@
                     Value="0.5,0.5" />
         </Style>
 
+
         <DataTemplate x:Key="StartupStepTemplate">
             <Border x:Name="StepBackground"
                     Background="Transparent"
                     CornerRadius="9"
                     Padding="10,9"
                     Margin="0,2">
+
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="24" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Grid Width="20"
+                    <!--  ИКОНКА ШАГА  -->
+                    <Grid Grid.Row="0"
+                          Grid.Column="0"
+                          Width="20"
                           Height="20"
                           VerticalAlignment="Center">
-                        <!--  Ожидание  -->
+
                         <Ellipse x:Name="PendingIcon"
                                  Width="7"
                                  Height="7"
                                  Fill="#60748B" />
 
-                        <!--  В процессе  -->
                         <Path x:Name="BusyIcon"
                               Data="M 10,2 A 8,8 0 1 1 2,10"
                               Stroke="#7FBCFF"
@@ -56,7 +65,6 @@
                             </Path.RenderTransform>
                         </Path>
 
-                        <!--  Выполнено  -->
                         <Path x:Name="CompletedIcon"
                               Data="M 3,10 L 8,15 L 17,5"
                               Stroke="#7AD7B0"
@@ -65,7 +73,6 @@
                               StrokeEndLineCap="Round"
                               Visibility="Collapsed" />
 
-                        <!--  Пропущено  -->
                         <TextBlock x:Name="SkippedIcon"
                                    Text="—"
                                    FontSize="16"
@@ -74,7 +81,6 @@
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center" />
 
-                        <!--  Ошибка  -->
                         <Path x:Name="FailedIcon"
                               Data="M 5,5 L 15,15 M 15,5 L 5,15"
                               Stroke="#F3A29D"
@@ -84,37 +90,111 @@
                               Visibility="Collapsed" />
                     </Grid>
 
+                    <!--  НАЗВАНИЕ ШАГА  -->
                     <TextBlock x:Name="StepTitle"
+                               Grid.Row="0"
                                Grid.Column="1"
                                Text="{Binding Title}"
                                VerticalAlignment="Center"
                                Foreground="#B6C4D4"
                                FontSize="13" />
 
+                    <!--  СТАТУС  -->
                     <TextBlock x:Name="StepStatusText"
+                               Grid.Row="0"
                                Grid.Column="2"
                                Text="{Binding StatusText}"
                                VerticalAlignment="Center"
                                Foreground="#788BA0"
                                FontSize="11"
                                Margin="12,0,0,0" />
+
+                    <!--  ДОПОЛНИТЕЛЬНЫЙ БЛОК ПРОГРЕССА  -->
+                    <Grid x:Name="ProgressDetails"
+                          Grid.Row="1"
+                          Grid.ColumnSpan="3"
+                          Margin="34,10,0,2"
+                          Visibility="Visible">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  ТЕКСТ ПРОГРЕССА  -->
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding ProgressText}"
+                                   Foreground="#A8BFD6"
+                                   FontSize="11"
+                                   VerticalAlignment="Center" />
+
+                        <!--  ПРОЦЕНТЫ  -->
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="1"
+                                   Text="{Binding ProgressValue, StringFormat={}{0:0}%}"
+                                   Foreground="#A8BFD6"
+                                   FontSize="11"
+                                   Margin="12,0,0,0"
+                                   VerticalAlignment="Center" />
+
+                        <!--  ПОЛОСА ПРОГРЕССА  -->
+                        <ProgressBar Grid.Row="1"
+                                     Grid.ColumnSpan="2"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="{Binding ProgressValue}"
+                                     Height="5"
+                                     Margin="0,8,0,0"
+                                     Background="#293E52"
+                                     Foreground="#7FBCFF"
+                                     BorderThickness="0" />
+                    </Grid>
                 </Grid>
             </Border>
+
             <DataTemplate.Triggers>
+
+                <!--  Скрываем блок при отсутствии текста  -->
+                <DataTrigger Binding="{Binding ProgressText}"
+                             Value="{x:Null}">
+                    <Setter TargetName="ProgressDetails"
+                            Property="Visibility"
+                            Value="Collapsed" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding ProgressText}"
+                             Value="">
+                    <Setter TargetName="ProgressDetails"
+                            Property="Visibility"
+                            Value="Collapsed" />
+                </DataTrigger>
+
+                <!--  В ПРОЦЕССЕ  -->
                 <DataTrigger Binding="{Binding Status}"
                              Value="Active">
+
                     <Setter TargetName="StepBackground"
                             Property="Background"
                             Value="#192838" />
+
                     <Setter TargetName="StepTitle"
                             Property="Foreground"
                             Value="#F2F8FF" />
+
                     <Setter TargetName="PendingIcon"
                             Property="Visibility"
                             Value="Collapsed" />
+
                     <Setter TargetName="BusyIcon"
                             Property="Visibility"
                             Value="Visible" />
+
                     <DataTrigger.EnterActions>
                         <BeginStoryboard x:Name="ActiveSpinner">
                             <Storyboard>
@@ -127,10 +207,13 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
+
                     <DataTrigger.ExitActions>
                         <StopStoryboard BeginStoryboardName="ActiveSpinner" />
                     </DataTrigger.ExitActions>
                 </DataTrigger>
+
+                <!--  ЗАВЕРШЕНО  -->
                 <DataTrigger Binding="{Binding Status}"
                              Value="Completed">
                     <Setter TargetName="PendingIcon"
@@ -140,6 +223,8 @@
                             Property="Visibility"
                             Value="Visible" />
                 </DataTrigger>
+
+                <!--  ПРОПУЩЕНО  -->
                 <DataTrigger Binding="{Binding Status}"
                              Value="Skipped">
                     <Setter TargetName="PendingIcon"
@@ -149,6 +234,8 @@
                             Property="Visibility"
                             Value="Visible" />
                 </DataTrigger>
+
+                <!--  ОШИБКА  -->
                 <DataTrigger Binding="{Binding Status}"
                              Value="Failed">
                     <Setter TargetName="PendingIcon"
@@ -161,6 +248,7 @@
                             Property="Foreground"
                             Value="#F3A29D" />
                 </DataTrigger>
+
             </DataTemplate.Triggers>
         </DataTemplate>
     </UserControl.Resources>
