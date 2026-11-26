@@ -1,4 +1,5 @@
 using AstrumApp.AuthManager;
+using AstrumApp.Controls.Seasonal;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +11,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
+using System.Windows.Shapes;
 
 namespace AstrumApp.Views;
 
@@ -127,7 +130,9 @@ public partial class StartupView : UserControl
         Loaded += StartupView_Loaded;
         Unloaded += StartupView_Unloaded;
     }
-    
+
+    // ВСЕ ОСТАЛЬНОЕ
+
     public void SetCurrentStepText(string text)
     {
         _currentItem.SetProgressText(text);
@@ -140,12 +145,19 @@ public partial class StartupView : UserControl
 
     private void StartupView_Loaded(object sender, RoutedEventArgs e)
     {
+        SnowControl.Start();
         if (!_ready && !_notReady && _loadingStoryboard is null)
             StartLoadingAnimation();
     }
 
     private void StartupView_Unloaded(object sender, RoutedEventArgs e)
     {
+        StopAnims();
+    }
+
+    public void StopAnims()
+    {
+        SnowControl.Stop();
         StopLoadingAnimation();
     }
 

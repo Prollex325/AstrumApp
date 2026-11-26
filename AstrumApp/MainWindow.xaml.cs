@@ -94,6 +94,8 @@ namespace AstrumApp
                 if (coordinator == null) return;
 
                 bool result = await coordinator.StartUpScenario();
+                StartupView.StopAnims();
+
                 if (!result)
                 {
                     Close();
