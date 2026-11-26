@@ -16,10 +16,7 @@
     <ApplicationIcon>Assets\astrum.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ApplicationDefinition Remove="App.xaml" />
-    <Page Include="App.xaml" />
-  </ItemGroup>
+  
 
   <ItemGroup>
     <Content Include="appsettings.public.json">
