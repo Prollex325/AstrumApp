@@ -4,21 +4,27 @@ using AstrumApp.Controls;
 using AstrumApp.Services;
 using AstrumApp.Services.Updates;
 using AstrumApp.Views;
+using SharpVectors.Dom;
+using Superpower.Model;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
-using SettingsPage = AstrumApp.Apps.Settings.Navigation.NavigationPage;
+using static System.Windows.Forms.AxHost;
 using AuthPage = AstrumApp.Apps.Authentication.NavigationPage;
+using SettingsPage = AstrumApp.Apps.Settings.Navigation.NavigationPage;
+
 //TODO : консоль разработчика
 
 //TODO : возможно устройства <-- Пока не надо
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
 
 //TODO : опустить сервис навигации до уровня приложения настроек
+//TODO : изменить звездочку на экране загрузки
 namespace AstrumApp
 {
     public partial class MainWindow : Window
@@ -69,7 +75,7 @@ namespace AstrumApp
 
             CloseStartupView();
             Unlock(); // уведомление обновление доступно или скачано
-            OpenSettings();
+            //OpenSettings();
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -86,7 +92,6 @@ namespace AstrumApp
 
                 bool result = await coordinator.StartUpScenario();
                 StartupView.StopAnims();
-
                 if (!result)
                 {
                     Close();
@@ -226,6 +231,8 @@ namespace AstrumApp
             LeftPanelControl.Visibility = Visibility.Visible;
             //RightPanelControl.Visibility = Visibility.Visible;
 
+            ShowGarland();
+
             //RightPanel_Moving();
         }
 
@@ -255,6 +262,25 @@ namespace AstrumApp
                     OpenDetails(parameter);
                     break;
             }
+        }
+
+        private void ShowGarland()
+        {
+            GarlandControl.Opacity = 0;
+            GarlandControl.Visibility = Visibility.Visible; 
+
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new SineEase
+                {
+                    EasingMode = EasingMode.EaseInOut
+                }
+            };
+
+            GarlandControl.BeginAnimation(UIElement.OpacityProperty, animation);
         }
 
         private void OpenUrl(string parameter)

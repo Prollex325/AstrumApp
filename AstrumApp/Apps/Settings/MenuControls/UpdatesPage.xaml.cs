@@ -265,8 +265,8 @@ namespace AstrumApp.Apps.Settings.MenuControls
             _easterEggClicks = 0;
 
             MessageBox.Show(
-                "Говорят, зимой звёзды светят немного иначе...\n" +
-                "Возможно, Astrum скоро это докажет. ❄️",
+                "С каждым днём мы все ближе и ближе." +
+                "Как скоро наступит новогоднее чудо? ❄️",
                 "Маленькая тайна Astrum",
                 MessageBoxButton.OK,
                 MessageBoxType.Info

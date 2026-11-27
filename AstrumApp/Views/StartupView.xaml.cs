@@ -131,8 +131,6 @@ public partial class StartupView : UserControl
         Unloaded += StartupView_Unloaded;
     }
 
-    // ВСЕ ОСТАЛЬНОЕ
-
     public void SetCurrentStepText(string text)
     {
         _currentItem.SetProgressText(text);
@@ -238,6 +236,10 @@ public partial class StartupView : UserControl
 
         // Буквы гаснут параллельно с полётом. Само зажигание начинается,
         // когда логотип действительно долетел до центра окна.
+
+        await AnimateOpacityAsync(AstriHat, 0, 300);
+
+        AstriHat.Visibility = Visibility.Collapsed;
 
         var rotation = new DoubleAnimation
         {

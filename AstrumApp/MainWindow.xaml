@@ -8,6 +8,7 @@
         xmlns:controls="clr-namespace:AstrumApp.Controls"
         xmlns:services="clr-namespace:AstrumApp.Services"
         xmlns:settings="clr-namespace:AstrumApp.Apps.Settings"
+        xmlns:seasonal="clr-namespace:AstrumApp.Controls.Seasonal"
         mc:Ignorable="d"
         Title="Astrum"
         Height="648"
@@ -21,6 +22,9 @@
     <Grid x:Name="Main">
         <controls:Desktop x:Name="DesktopControl"
                           Visibility="Visible" />
+
+        <seasonal:GarlandControl x:Name="GarlandControl" Visibility="Collapsed"/>
+
         <controls:LeftPanel x:Name="LeftPanelControl"
                             Visibility="Visible" />
         <controls:RightPanel x:Name="RightPanelControl"
@@ -33,7 +37,8 @@
             </controls:RightPanel.RenderTransform>
         </controls:RightPanel>
 
-        <controls:NewsControl x:Name="NewsControl" Visibility="Visible"/>
+        <controls:NewsControl x:Name="NewsControl"
+                              Visibility="Visible" />
 
         <Frame x:Name="MainFrame"
                NavigationUIVisibility="Hidden" />

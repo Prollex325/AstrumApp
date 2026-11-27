@@ -14,6 +14,10 @@
 
   <PropertyGroup>
     <ApplicationIcon>Assets\astrum.ico</ApplicationIcon>
+
+    <ApplicationIcon Condition="'$(Configuration)' == 'Debug'
+        And Exists('$(MSBuildProjectDirectory)\.local\astrum_winter.ico')">.local\astrum_winter.ico
+    </ApplicationIcon>
   </PropertyGroup>
 
   

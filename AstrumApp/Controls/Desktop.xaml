@@ -9,9 +9,15 @@
              d:DesignWidth="1040">
 
     <Grid>
-        <Image Source="/Assets/wallpapers/desktop.png"
-               Stretch="Fill"
+        <Image Source="/Assets/wallpapers/winter_desktop_wallpaper.jpg"
+               Stretch="UniformToFill"
                Margin="0,0,0,0" />
+
+        <Canvas x:Name="MeteorCanvas"
+                IsHitTestVisible="False"
+                ClipToBounds="True"
+                Loaded="MeteorCanvas_Loaded"
+                Unloaded="MeteorCanvas_Unloaded" />
 
         <TextBlock x:Name="Clock"
                    Text="HH:MM"
