@@ -271,7 +271,12 @@
                               HorizontalScrollBarVisibility="Disabled">
                     <ScrollViewer.Resources>
                         <Style TargetType="ScrollBar"
-                               BasedOn="{StaticResource GlassScrollBarStyle}" />
+                               BasedOn="{StaticResource GlassScrollBarStyle}">
+
+                            <Setter Property="Margin"
+                                    Value="0,0,0,0" />
+
+                        </Style>
                     </ScrollViewer.Resources>
 
                     <ScrollViewer.OpacityMask>
@@ -366,7 +371,8 @@
                         </StackPanel>
 
                         <StackPanel x:Name="NewsContainer"
-                                    Visibility="Collapsed">
+                                    Visibility="Collapsed"
+                                    Margin="0,0,0,0">
                             <StackPanel.Resources>
                                 <Style TargetType="{x:Type local:AnnouncementCard}">
                                     <Setter Property="Margin"

@@ -217,5 +217,32 @@ namespace AstrumApp.Controls
 
             transform?.BeginAnimation(TranslateTransform.XProperty, animation);
         }
+
+        private void NewsScrollViewer_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+                return;
+
+            scrollViewer.ApplyTemplate();
+
+            if (scrollViewer.Template.FindName(
+                "PART_ScrollContentPresenter", scrollViewer)
+                is ScrollContentPresenter presenter)
+            {
+                presenter.OpacityMask = new LinearGradientBrush
+                {
+                    StartPoint = new Point(0, 0),
+                    EndPoint = new Point(0, 1),
+
+                    GradientStops = new GradientStopCollection
+            {
+                new(Colors.Transparent, 0),
+                new(Colors.White, 0.025),
+                new(Colors.White, 0.975),
+                new(Colors.Transparent, 1)
+            }
+                };
+            }
+        }
     }
 }

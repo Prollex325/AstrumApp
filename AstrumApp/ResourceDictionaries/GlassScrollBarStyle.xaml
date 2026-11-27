@@ -3,13 +3,20 @@
     <Style x:Key="GlassScrollBarStyle"
            TargetType="ScrollBar">
 
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="Width" Value="6"/>
-        <Setter Property="MinWidth" Value="0"/>
-        <Setter Property="MaxWidth" Value="6"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
+        <Setter Property="OverridesDefaultStyle"
+                Value="True" />
+        <Setter Property="Width"
+                Value="6" />
+        <Setter Property="MinWidth"
+                Value="0" />
+        <Setter Property="MaxWidth"
+                Value="6" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Padding"
+                Value="0" />
 
         <Setter Property="Width"
                 Value="6" />
@@ -24,7 +31,8 @@
 
                         <Track x:Name="PART_Track"
                                Orientation="Vertical"
-                               IsDirectionReversed="True">
+                               IsDirectionReversed="True"
+                               Margin="0,12,0,12">
 
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
