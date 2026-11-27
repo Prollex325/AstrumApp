@@ -17,8 +17,7 @@ namespace AstrumApp.Profile
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void OnPropertyChanged(string? name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         private UserProfile _profile = new();
         private UserProfile _draft = new();
@@ -95,7 +94,7 @@ namespace AstrumApp.Profile
         public void Load(string username, string bio, string email, ImageSource? avatar, string registeredAt, string updatedAt,
             bool isPremium)
         {
-            var incoming = new UserProfile
+            var incoming = new UserProfile(avatar)
             {
                 Username = username,
                 Bio = bio,
@@ -218,18 +217,17 @@ namespace AstrumApp.Profile
         private string _bio = "биография";
         private string _email = "example@example.com";
         private bool _isPremium = false;
-        private static readonly ImageSource DefaultAvatar = FrozenImage.CreateFromUri(AppPaths.DefaultAvatarPath);
+        private static ImageSource? _defaultAvatar;
 
-        private ImageSource _avatar = DefaultAvatar;
+        private static ImageSource? DefaultAvatar => _defaultAvatar ??= FrozenImage.CreateFromUri(AppPaths.DefaultAvatarPath);
+
+        private ImageSource _avatar;
 
         public UserProfile(ImageSource? avatar = null)
         {
-            if (avatar != null)
-                _avatar = avatar;
-            else if (File.Exists(AppPaths.AvatarPath))
-                _avatar = FrozenImage.CreateFromUri(AppPaths.AvatarPath);
-            else
-                _avatar = DefaultAvatar;
+            _avatar = avatar
+                ?? FrozenImage.CreateFromUri(AppPaths.AvatarPath)
+                ?? DefaultAvatar!;
         }
 
         public string Username

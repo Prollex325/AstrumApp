@@ -13,9 +13,9 @@ namespace AstrumApp.Apps.Settings
             App.Navigation.Initialize(MenuPageHost, NavigationPage.Profile);
         }
         
-        public void OpenStartPage()
+        public void OpenStartPage(NavigationPage startPage = NavigationPage.None)
         {
-            //App.Navigation.NavigateMenu(NavigationPage.Profile);
+            if (startPage is not NavigationPage.None) App.Navigation.NavigateMenu(startPage);
         }
 
         private void CloseSettings_Click(object sender, System.Windows.RoutedEventArgs e)

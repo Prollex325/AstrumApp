@@ -13,6 +13,7 @@ namespace AstrumApp
         public static string CacheFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "Cache"));
         public static string AuthFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "Auth"));
         public static string UserFolder { get; } = CreateDirectory(Path.Combine(AppFolder, "user"));
+        public static string AnnouncementsCache { get; } = CreateDirectory(Path.Combine(CacheFolder, "Announcements"));
         public static string SecurityFile { get; } = Path.Combine(AppFolder, "security.json");
         public static string DefaultAvatarPath { get; } = "pack://application:,,,/Assets/user/default_avatar.png";
         public static string? AvatarPath

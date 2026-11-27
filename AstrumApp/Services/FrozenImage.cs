@@ -10,8 +10,9 @@ namespace AstrumApp.Services
 {
     internal class FrozenImage
     {
-        public static BitmapImage? CreateFromUri(string uri)
+        public static BitmapImage? CreateFromUri(string? uri)
         {
+            _ = System.IO.Packaging.PackUriHelper.UriSchemePack;
             if (!Uri.TryCreate(uri, UriKind.Absolute, out var imageUri))
                 return null;
 

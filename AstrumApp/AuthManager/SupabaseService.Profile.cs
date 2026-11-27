@@ -56,6 +56,9 @@ namespace AstrumApp.AuthManager
             if (!string.IsNullOrEmpty(profileAvatarPath))
             {
                 avatar = await _avatarStorage.DownloadAvatarAsync(profileAvatarPath);
+            } else
+            {
+                
             }
             /*if (!string.IsNullOrEmpty(profileAvatarPath))
             {
