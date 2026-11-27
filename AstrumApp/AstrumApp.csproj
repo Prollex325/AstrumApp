@@ -9,7 +9,7 @@
     <StartupObject>AstrumApp.Program</StartupObject>
     <ProjectGuid>{0DDFDE19-DD33-9AA2-A0D9-1DCFA1AD4216}</ProjectGuid>
 
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\user\default_avatar.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>

@@ -240,7 +240,7 @@ namespace AstrumApp
             string activeIdCacheAvatar = Path.Combine(cachePath, _activeID, "avatar.png");
 
             string username = string.Empty, email = string.Empty;
-            if (activeIdCacheJson != null) {
+            if (Path.Exists(activeIdCacheJson)) {
                 var data = JObject.Parse(File.ReadAllText(activeIdCacheJson));
 
                 username = data["username"]?.ToString() ?? string.Empty;
@@ -248,7 +248,7 @@ namespace AstrumApp
             }
 
             BitmapSource? avatar = null;
-            if (activeIdCacheAvatar != null) 
+            if (Path.Exists(activeIdCacheAvatar))
             {
                 avatar = FrozenImage.CreateFromUri(activeIdCacheAvatar)!;
             }

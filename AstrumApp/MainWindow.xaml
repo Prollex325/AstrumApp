@@ -16,8 +16,7 @@
         Unloaded="UnLoad"
         ResizeMode="NoResize"
         SnapsToDevicePixels="True"
-        UseLayoutRounding="True"
-        PreviewKeyDown="MainWindow_PreviewKeyDown">
+        UseLayoutRounding="True">
 
     <Grid x:Name="Main">
         <controls:Desktop x:Name="DesktopControl"
@@ -33,6 +32,8 @@
                                     Y="20" />
             </controls:RightPanel.RenderTransform>
         </controls:RightPanel>
+
+        <controls:NewsControl x:Name="NewsControl" Visibility="Visible"/>
 
         <Frame x:Name="MainFrame"
                NavigationUIVisibility="Hidden" />

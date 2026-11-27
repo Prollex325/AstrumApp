@@ -11,14 +11,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using SettingsPage = AstrumApp.Apps.Settings.Navigation.NavigationPage;
+using AuthPage = AstrumApp.Apps.Authentication.NavigationPage;
 //TODO : консоль разработчика
 
 //TODO : возможно устройства <-- Пока не надо
 //TODO : придумать как закрывать окно в приложении и подумать над ядром <-- Пока не надо
-
-
-//TODO : автообновления
-
 
 //TODO : опустить сервис навигации до уровня приложения настроек
 namespace AstrumApp
@@ -47,8 +45,6 @@ namespace AstrumApp
                 }, DispatcherPriority.Background); // чтоб мыла не было
             };
 
-            Loaded += UpdateTestOnLoaded;
-
             Loaded += (s, e) =>
             {
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -71,14 +67,9 @@ namespace AstrumApp
 
             //ContentRendered += MainWindow_ContentRendered;
 
-            //CloseStartupView();
-            //Unlock(); // уведомление обновление доступно или скачано
-            //OpenSettings();
-        }
-
-        private async void UpdateTestOnLoaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= UpdateTestOnLoaded;
+            CloseStartupView();
+            Unlock(); // уведомление обновление доступно или скачано
+            OpenSettings();
         }
 
         private async void MainWindow_ContentRendered(object? sender, EventArgs e)
@@ -99,22 +90,26 @@ namespace AstrumApp
                     Close();
                 }
 
+                NewsControl.UpdateNews(new(), new());
+                NewsControl.ActionRequested += ExecuteAnnouncementAction;
             }
             catch (Exception ex)
             {
                 // Здесь обработка ошибки запуска
             }
         }
+
         public void CloseSettings()
         {
             //MainFrame.Visibility = Visibility.Collapsed;
             MainFrame.Content = null;
         }
-        public void OpenSettings()
+
+        public void OpenSettings(SettingsPage startPage = SettingsPage.None)
         {
             //MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(settingsPage);
-            settingsPage.OpenStartPage();
+            settingsPage.OpenStartPage(startPage);
         }
 
         public void NavigateToMain(bool needsAuthFrameClearing = false)
@@ -126,7 +121,7 @@ namespace AstrumApp
             }
         }
 
-        public void NavigateToAuth(Apps.Authentication.NavigationPage page, string err = "")
+        public void NavigateToAuth(AuthPage page, string err = "")
         {
             if (!string.IsNullOrEmpty(err))
                 App.Notifications.Show(err, CardTypes.Error);
@@ -227,15 +222,70 @@ namespace AstrumApp
 
             DesktopControl.Visibility = Visibility.Visible;
             LeftPanelControl.Visibility = Visibility.Visible;
-            RightPanelControl.Visibility = Visibility.Visible;
+            //RightPanelControl.Visibility = Visibility.Visible;
 
-            RightPanel_Moving();
+            //RightPanel_Moving();
         }
 
         public void Lock()
         {
             LockScreenControl.Visibility = Visibility.Visible;
             LockScreenControl.Lock();
+        }
+
+        private void ExecuteAnnouncementAction(ActionTypes type, string parameter)
+        {
+            switch (type)
+            {
+                case ActionTypes.OpenUrl:
+                    OpenUrl(parameter);
+                    break;
+
+                case ActionTypes.OpenUpdates:
+                    OpenSettings(SettingsPage.UpdatesPage);
+                    break;
+
+                case ActionTypes.OpenApp:
+                    OpenApp(parameter);
+                    break;
+
+                case ActionTypes.OpenDetails:
+                    OpenDetails(parameter);
+                    break;
+            }
+        }
+
+        private void OpenUrl(string parameter)
+        {
+            if (!Uri.TryCreate(parameter, UriKind.Absolute, out var uri))
+                return;
+
+            if (uri.Scheme != Uri.UriSchemeHttps &&
+                uri.Scheme != Uri.UriSchemeHttp)
+                return;
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = uri.AbsoluteUri,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка открытия ссылки: {ex.Message}");
+            }
+        }
+
+        private void OpenDetails(string parameter)
+        {
+
+        }
+
+        private void OpenApp(string parameter)
+        {
+
         }
 
         private async void CheckForUpdates()
@@ -245,18 +295,6 @@ namespace AstrumApp
 
             if (status is UpdateStatus.Available) App.Notifications.Show("Обновление доступно", CardTypes.Success);
             else if (status is UpdateStatus.ReadyToInstall) App.Notifications.Show("Обновление скачано", CardTypes.Success);
-        }
-
-        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F8)
-            {
-                Debug.WriteLine($"Captured: {Mouse.Captured}");
-                Debug.WriteLine($"DirectlyOver: {Mouse.DirectlyOver}");
-
-                System.Diagnostics.Debugger.Break();
-                e.Handled = true;
-            }
         }
 
         private void RightPanel_Moving()

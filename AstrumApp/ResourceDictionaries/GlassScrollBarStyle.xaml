@@ -1,0 +1,89 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="GlassScrollBarStyle"
+           TargetType="ScrollBar">
+
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Width" Value="6"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="MaxWidth" Value="6"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+
+        <Setter Property="Width"
+                Value="6" />
+        <Setter Property="Background"
+                Value="Transparent" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+
+                    <Grid Background="{TemplateBinding Background}">
+
+                        <Track x:Name="PART_Track"
+                               Orientation="Vertical"
+                               IsDirectionReversed="True">
+
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                              Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+
+                                            <Border x:Name="ThumbBorder"
+                                                    Background="#60687F99"
+                                                    CornerRadius="3" />
+
+                                            <ControlTemplate.Triggers>
+
+                                                <Trigger Property="IsMouseOver"
+                                                         Value="True">
+                                                    <Setter TargetName="ThumbBorder"
+                                                            Property="Background"
+                                                            Value="#A0687F99" />
+                                                </Trigger>
+
+                                                <Trigger Property="IsDragging"
+                                                         Value="True">
+                                                    <Setter TargetName="ThumbBorder"
+                                                            Property="Background"
+                                                            Value="#D0687F99" />
+                                                </Trigger>
+
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                              Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+
+                        </Track>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

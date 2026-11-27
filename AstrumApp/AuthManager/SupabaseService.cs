@@ -1,3 +1,4 @@
+using AstrumApp.Models;
 using AstrumApp.Profile;
 using AstrumApp.Services;
 using AstrumApp.Services.Configuration;
@@ -12,6 +13,7 @@ using System.Reactive;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -27,6 +29,24 @@ namespace AstrumApp.AuthManager
         private AvatarStorageService? _avatarStorage;
         private Dictionary<string, object> _userMetadata = new();
 
+        public async Task<List<Announcement>> LoadAnnouncementsAsync()
+        {
+            if (Client == null) return new();
+            var response = await Client.From<Announcement>().Get();
+
+            var announcements = response.Models;
+            return announcements;
+        }
+
+        public string? GetAnnouncementImageUrl(string imagePath)
+        {
+            if (Client == null) return null;
+            if (string.IsNullOrWhiteSpace(imagePath)) return null;
+
+            return Client.Storage
+                .From("announcements")
+                .GetPublicUrl(imagePath);
+        }
 
         public bool PrepareClient(bool rememberMe = true)
         {
